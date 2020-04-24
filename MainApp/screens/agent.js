@@ -6,6 +6,7 @@ import Theme from "../styles/Theme";
 import AsyncStorage from '@react-native-community/async-storage';
 import Spinner from 'react-native-loading-spinner-overlay';
 import Constant from "../components/Constant";
+import {SCLAlert,SCLAlertButton} from 'react-native-scl-alert'
 
 export default class agent extends Component {
     constructor(props) {
@@ -20,8 +21,10 @@ export default class agent extends Component {
             customer_id: this.props.navigation.getParam('customer_id', '0'),
             amount: this.props.navigation.getParam('amount', '0'),
             rate: this.props.navigation.getParam('rate', '0'),
+            rate_type: this.props.navigation.getParam('rate_type', '0'),
             charges: this.props.navigation.getParam('charges', '0'),
             to: this.props.navigation.getParam('to', '0'),
+            to_id: this.props.navigation.getParam('to_id', '0'),
             from: this.props.navigation.getParam('from', '0'),
             ben_name:this.props.navigation.getParam('ben_name', '0'),
             ben_id:this.props.navigation.getParam('ben_id', '0'),
@@ -30,6 +33,8 @@ export default class agent extends Component {
             ben_phone:this.props.navigation.getParam('ben_phone', '0'),
             message:this.props.navigation.getParam('message', '0'),
             fromAgent:this.props.navigation.getParam('fromAgent', '0'),
+            bank_id:this.props.navigation.getParam('bank_id', '0'),
+            Amessage:"",
         }
     }
 
@@ -37,9 +42,11 @@ export default class agent extends Component {
         this.setState({ personal_info_id: await AsyncStorage.getItem('@personal_info_id')}); 
         try {
        
-            const CountryApiCall = await fetch(Constant.URL+Constant.getAGENT);
+            const CountryApiCall = await fetch(Constant.URL+Constant.getAGENT+"/"+this.state.to_id);
             const getCountry = await CountryApiCall .json();
-          
+            if(getCountry.length <= 0){
+            this.setState({ spinner: false,show: true ,Amessage:"Not Agent Has Been Registered To Recieve " + this.state.to });
+            }
             this.setState({CountryList: getCountry, spinner: false});
         } catch(err) {
             console.log("Error fetching data-----------", err);
@@ -59,6 +66,7 @@ export default class agent extends Component {
                 customer_id: this.state.customer_id,
                 amount:this.state.amount,
                 rate:this.state.rate,
+                rate_type:this.state.rate_type,
                 charges:this.state.charges,
                 to:this.state.to,
                 from:this.state.from,
@@ -69,6 +77,8 @@ export default class agent extends Component {
                 ben_phone:this.state.ben_phone,
                 message:this.state.message,
                 fromAgent:this.state.fromAgent,
+                bank_id:this.state.bank_id,
+               
               
               })} >
                 <View style={{ flex: 1 }}>
@@ -99,7 +109,7 @@ export default class agent extends Component {
                     <TouchableOpacity onPress={() => this.props.navigation.goBack()}>
                         <Icon family="MaterialIcons" name="arrow-back" size={25} color="#FFF" />
                     </TouchableOpacity>
-        <Text style={styles.headTxt}>Select Receiver</Text>
+        <Text style={styles.headTxt}>Select Receiver  </Text>
                 </View>
                 <View style={{ flexDirection: 'row', alignItems: 'center', borderWidth: 1, margin: 15, paddingHorizontal: 15 }}>
                         <Icon family="Feather" name="search" size={25} />
@@ -116,6 +126,20 @@ export default class agent extends Component {
                         renderItem={this._renderTransfer.bind(this)}
                     />
                 </ScrollView>
+                <SCLAlert
+                        theme="danger"
+                        show={this.state.show}
+                        title="Error Message"
+                        subtitle={this.state.Amessage}
+                        onRequestClose={() => {
+                            this.setState({ show: false })
+                            }}
+                        >         
+                 
+                    <SCLAlertButton theme="danger" onPress={() => {
+                            this.setState({ show: false })
+                            }} >Close</SCLAlertButton>
+                 </SCLAlert>
             </View>
         );
     }

@@ -2,8 +2,10 @@ import React, { Component } from 'react';
 import { View, Text, ScrollView, StyleSheet, Image, FlatList, TouchableOpacity, ImageBackground, Dimensions } from 'react-native';
 import Icon from '../../common/icons';
 import LinearGradient from 'react-native-linear-gradient';
+import AsyncStorage from '@react-native-community/async-storage';
 import Theme from '../../styles/Theme';
-
+import Constant from "../../components/Constant";
+import Spinner from 'react-native-loading-spinner-overlay';
 
 const { width } = Dimensions.get('window');
 
@@ -23,12 +25,32 @@ export default class HomeScreen extends Component {
             last_name :this.props.navigation.getParam('last_name', 'Last Name'),
             getCurrency : this.props.navigation.getParam('getCurrency', 'Currency'),
             wallet : this.props.navigation.getParam('wallet', '0.00'),
+            personal_info_id :this.props.navigation.getParam('personal_info_id', '0'),
+            
            
 
         }
 
     }
 
+    async componentDidMount() {
+        this.setState({ spinner: true });
+    
+        try {
+   
+        const BalApiCall = await fetch(Constant.URL+Constant.getAgBal+"/"+this.state.personal_info_id);
+            const dataSource = await BalApiCall.json();
+            await AsyncStorage.setItem('@wallet', dataSource.bal)  
+          
+            this.setState({wallet: dataSource.bal, spinner: false});
+
+        } catch(err) {
+            console.log("Error fetching data-----------", err);
+            this.setState({ spinner: false });
+        }
+       
+    
+    }
     _renderBannerItems(rowData) {
         return (
             <TouchableOpacity style={{ paddingHorizontal: 5 }} onPress={() => this.props.navigation.navigate("Giftcard")} >
@@ -40,6 +62,10 @@ export default class HomeScreen extends Component {
     render() {
         return (
             <View style={{ flex: 1, backgroundColor: Theme.bgcolor }}>
+                  <Spinner
+                visible={this.state.spinner}
+                overlayColor={'rgba(0, 0, 0, 0.15)'}
+                />
                 <ScrollView>
                     <LinearGradient colors={['#fc0f84', '#020cab']}
                         start={{ x: 1, y: 0 }} end={{ x: 0, y: 1 }} style={styles.linerSty}>
@@ -64,12 +90,12 @@ export default class HomeScreen extends Component {
                     <View style={[styles.transferbox, { marginTop: -75 }]}>
 
                         <View style={styles.balance}>
-                            <Text style={styles.curSty}>Current Balance</Text>
+        <Text style={styles.curSty}>Current Balance</Text>
                             <Text style={styles.balSty}>{this.state.getCurrency}{this.state.wallet}</Text>
                         </View>
                         <View style={{ flex: 1, flexDirection: "row" }}>
                             <View style={{ flex: 0.5, margin: 10 }}>
-                                <TouchableOpacity onPress={() => this.props.navigation.navigate("SendContacts")}>
+                                <TouchableOpacity onPress={() => this.props.navigation.navigate("CreditSend")}>
                                     <LinearGradient colors={['#fc0f84', '#020cab']}
                                         start={{ x: 1, y: 0 }} end={{ x: 0, y: 1 }} style={styles.gradsty}>
                                         <View style={{ padding: 5, alignItems: 'center', }}>
@@ -82,7 +108,7 @@ export default class HomeScreen extends Component {
                                 </TouchableOpacity>
                             </View>
                             <View style={{ flex: 0.5, margin: 10 }}>
-                                <TouchableOpacity onPress={() => this.props.navigation.navigate("ReceiveContacts")}>
+                                <TouchableOpacity onPress={() => this.props.navigation.navigate("Credit")}>
                                     <LinearGradient colors={['#fc0f84', '#020cab']}
                                         start={{ x: 1, y: 0 }} end={{ x: 0, y: 1 }} style={styles.gradsty} >
                                         <View style={{ padding: 5, alignItems: 'center', }}>

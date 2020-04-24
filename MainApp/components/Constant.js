@@ -1,7 +1,7 @@
 
 
-//const URL = "http://192.168.43.165/king/portal/";
-const URL = "http://kingokagroup.com/";
+const URL = "http://192.168.43.165/king/portal/";
+//const URL = "http://kingokagroup.com/";
 const LOGIN = "MobileApi/m_login";
 const getCOUNTRY ="MobileApi/getCountry";
 const getRATE = "MobileApi/getRate";
@@ -10,6 +10,7 @@ const getCUSTOMERS = "MobileApi/getCustomer";
 const getUSER= "MobileApi/getUser";
 const addCREDIT ="MobileApi/addCredit";
 const getCusBal ="MobileApi/getBal";
+const getAgBal ="MobileApi/getAgBal";
 const getHistory ="MobileApi/getHistory";
 const getBEN ="MobileApi/getBen";
 const getBENID ="MobileApi/getBenID";
@@ -18,6 +19,7 @@ const addTRANSFER="MobileApi/addTransfer"
 const getTRANSFER="MobileApi/getAgentT"
 const CPAYOUT="MobileApi/Cpayout"
 const RPAYOUT="MobileApi/Rpayout"
+const getBANKS="MobileApi/getBanks"
 export default {
   URL,
   LOGIN,
@@ -35,6 +37,8 @@ export default {
   addTRANSFER,
   getTRANSFER,
   CPAYOUT,
-  RPAYOUT
+  RPAYOUT,
+  getBANKS,
+  getAgBal 
   
 };

@@ -56,7 +56,7 @@ fetch(Constant.URL+Constant.LOGIN,{
         await AsyncStorage.setItem('@store_vid', this.state.dataSource.data.store_vid),
         await AsyncStorage.setItem('@getCurrency', this.state.dataSource.data.currency)
         await AsyncStorage.setItem('@getFrom', this.state.dataSource.data.country_id)
-        await AsyncStorage.setItem('@wallet', this.state.dataSource.data.bal)
+      
     })();
 
    
@@ -67,8 +67,9 @@ fetch(Constant.URL+Constant.LOGIN,{
       email: this.state.dataSource.data.email,
       getCurrency: this.state.dataSource.data.currency,
       phone: this.state.dataSource.data.phone,
-      wallet: this.state.dataSource.data.bal,
       userInfo: this.state.dataSource.data,
+      personal_info_id: this.state.dataSource.data.personal_info_id,
+      
     });
     
     }else{

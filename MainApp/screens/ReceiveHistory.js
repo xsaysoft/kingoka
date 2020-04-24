@@ -8,7 +8,7 @@ import Spinner from 'react-native-loading-spinner-overlay';
 import Constant from "../components/Constant";
 const Credited = <Text style={{ color: 'blue', fontSize: 10 ,fontFamily:'Poppins-Regular',  textAlign: 'center',}}>Credited</Text>
 const Success = <Text style={{ color: '#8d44ad', fontSize: 10 ,fontFamily:'Poppins-Regular',  textAlign: 'center',}}>Success</Text>
-const Falied = <Text style={{ color: 'red', fontSize: 10,fontFamily:'Poppins-Regular',  textAlign: 'center', }}>Falied</Text>
+const Debit = <Text style={{ color: 'red', fontSize: 10,fontFamily:'Poppins-Regular',  textAlign: 'center', }}>Debit</Text>
 export default class ReceiveHistory extends Component {
     constructor(props) {
         super(props)
@@ -45,13 +45,14 @@ export default class ReceiveHistory extends Component {
                         </View>
                         <View style={styles.flexrow}>
                             <View style={styles.userdetails}>
-                                <Text style={{fontSize: 18,color: '#000',fontFamily: 'Poppins-Light'}}>{rowdata.item.msg}</Text>
+                                <Text style={{fontSize: 15,color: '#000',fontFamily: 'Poppins-Light'}}>{rowdata.item.msg}</Text>
+                                <Text style={{ fontSize: 9, color: '#000', fontFamily: 'Poppins-Thin' }}>{rowdata.item.c_type} Transfer</Text>
                                 <Text style={{ fontSize: 9, color: '#000', fontFamily: 'Poppins-Thin' }}>{rowdata.item.s_date}</Text>
                             </View>
                         </View>
                         <View style={styles.paymentsty}>
                             <Text style={styles.amountSty}>{this.state.getCurrency} {rowdata.item.amount}</Text>
-                            <Text style={styles.debited}>{rowdata.item.t_type}</Text>
+                            <Text >{rowdata.item.t_type}</Text>
                         </View>
                     </View>
                 </View>

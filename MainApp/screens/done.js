@@ -15,6 +15,7 @@ export default class Rewards extends Component {
             customer_id: this.props.navigation.getParam('customer_id', '0'),
             amount: this.props.navigation.getParam('amount', '0'),
             rate: this.props.navigation.getParam('rate', '0'),
+            rate_type: this.props.navigation.getParam('rate_type', '1'),
             charges: this.props.navigation.getParam('charges', '0'),
             to: this.props.navigation.getParam('to', '0'),
             from: this.props.navigation.getParam('from', '0'),
@@ -30,6 +31,7 @@ export default class Rewards extends Component {
             last_name: this.props.navigation.getParam('last_name', '0'),
             phone: this.props.navigation.getParam('phone', '0'),
             fromAgent: this.props.navigation.getParam('fromAgent', '0'),
+            bank_id: this.props.navigation.getParam('bank_id', '0'),
             pin:"",
             spinner: false,
             Amessage:"",
@@ -71,6 +73,7 @@ onPressTransfer = async() => {
             customer_id: this.state.customer_id,
             amount: this.state.amount,
             rate: this.state.rate,
+            rate_type: this.state.rate_type,
             charges: this.state.charges,
             to: this.state.to,
             from: this.state.from,
@@ -87,6 +90,7 @@ onPressTransfer = async() => {
             phone: this.state.phone,
             fromAgent: this.state.fromAgent,
             pin: this.state.pin,
+            bank_id: this.state.bank_id,
         })
           })
           .then((response) => response.json())
@@ -119,7 +123,13 @@ onPressTransfer = async() => {
     }
 
     render() {
-        const bal = (this.state.amount - this.state.charges) * this.state.rate
+        let bal
+      if(this.state.rate_type==1){
+        bal = (this.state.amount - this.state.charges)* (this.state.rate)
+      }else {
+        bal = (this.state.amount - this.state.charges)/ (this.state.rate)
+      }
+       
        
         return (
             <View style={{ flex: 1, backgroundColor: Theme.bgcolor }}>
@@ -191,13 +201,12 @@ onPressTransfer = async() => {
                         onRequestClose={() => {
                             this.setState({ show: false })
                             }}
-                        >
-                            
+                        >         
                  
-          <SCLAlertButton theme="danger" onPress={() => {
+                    <SCLAlertButton theme="danger" onPress={() => {
                             this.setState({ show: false })
                             }} >Close</SCLAlertButton>
-        </SCLAlert>
+                 </SCLAlert>
 
         <SCLAlert
                         theme="success"

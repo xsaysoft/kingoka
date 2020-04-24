@@ -42,6 +42,7 @@ export default class SendContacts extends Component {
                 customer_id: rowdata.item.customer_id,
                 amount: rowdata.item.amount,
                 rate: rowdata.item.rate,
+                rate_type: rowdata.item.rate_type,
                 charges: rowdata.item.charges,
                 message: rowdata.item.message,
                 from: rowdata.item.cur_from,

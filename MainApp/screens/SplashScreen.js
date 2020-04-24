@@ -85,8 +85,9 @@ export default class SplashScreen extends Component {
                     await AsyncStorage.setItem('@country', this.state.dataSource.data.country),
                     await AsyncStorage.setItem('@personal_info_id', this.state.dataSource.data.personal_info_id),
                     await AsyncStorage.setItem('@store_vid', this.state.dataSource.data.store_vid),
-                    await AsyncStorage.setItem('@getCurrency', this.state.dataSource.data.currency)
-                    await AsyncStorage.setItem('@wallet', this.state.dataSource.data.bal)    
+                    await AsyncStorage.setItem('@getCurrency', this.state.dataSource.data.currency) 
+                    await AsyncStorage.setItem('@getFrom', this.state.dataSource.data.country_id)
+                   
                     //Local Store
                   
                 this.props.navigation.navigate("TabNav", {
@@ -95,7 +96,6 @@ export default class SplashScreen extends Component {
                     email: await AsyncStorage.getItem('@email'),
                     getCurrency: await AsyncStorage.getItem('@getCurrency'),
                     phone: await AsyncStorage.getItem('@phone'),
-                    wallet: await AsyncStorage.getItem('@wallet'),
                 });
             }else{
                 this.props.navigation.navigate("LoginScreen") 

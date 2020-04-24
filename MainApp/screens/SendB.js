@@ -17,10 +17,14 @@ export default class Send extends Component {
             customer_id: this.props.navigation.getParam('customer_id', '0'),
             amount: this.props.navigation.getParam('amount', '0'),
             rate: this.props.navigation.getParam('rate', '0'),
+            rate_type : this.props.navigation.getParam('rate_type', '1'),
             charges: this.props.navigation.getParam('charges', '0'),
             to: this.props.navigation.getParam('to', '0'),
+            to_id: this.props.navigation.getParam('to_id', '0'),
             from: this.props.navigation.getParam('from', '0'),
             fromAgent: this.props.navigation.getParam('fromAgent', '0'),
+            bank_id:this.props.navigation.getParam('bank_id', '0'),
+
             ben_name:"",
             message:"",
             ben_id:"",
@@ -82,7 +86,7 @@ export default class Send extends Component {
        
             this.setState({BenIDList: getBenID, spinner: false});
             
-            if(ben_id==90000)
+            if(ben_id=="New")
             {
 
             }else{
@@ -103,6 +107,7 @@ export default class Send extends Component {
             rate:this.state.rate,
             charges:this.state.charges,
             to:this.state.to,
+            to_id:this.state.to_id,
             from:this.state.from,
             ben_name:this.state.ben_name,
             ben_id:this.state.ben_id,
@@ -111,6 +116,8 @@ export default class Send extends Component {
             ben_phone:this.state.ben_phone,
             message:this.state.message,
             fromAgent:this.state.fromAgent,
+            rate_type:this.state.rate_type,
+            bank_id:this.state.bank_id,
             
          })
     
@@ -132,7 +139,7 @@ export default class Send extends Component {
                     <TouchableOpacity onPress={() => this.props.navigation.goBack()}>
                         <Icon family="MaterialIcons" name="arrow-back" size={25} color="#FFF" />
                     </TouchableOpacity>
-        <Text style={styles.headTxt}> Add Beneficiary {this.state.cus_name} </Text>
+        <Text style={styles.headTxt}> Add Beneficiary {this.state.cus_name}  </Text>
                 </View>
                 <ScrollView>
                     <View style={{ flexDirection: 'row', borderBottomWidth: 1, borderColor: 'lightgray', alignItems: 'center' }}>
@@ -151,7 +158,7 @@ export default class Send extends Component {
                             onValueChange={(itemValue, itemPosition) => this.setState({ben_id: itemValue, ben_idIndex: itemPosition})}   > 
                             
                              <Picker.Item label=" SELECT BENEFICIARY" value="0"/> 
-                             <Picker.Item label=" CREATE NEW BENEFICIARY" value="90000" /> 
+                             <Picker.Item label=" CREATE NEW BENEFICIARY" value="New" /> 
                              {
                                 this.state.BenList.map( (x)=>{
                                 return <Picker.Item label={x.ben_name +" - "+ x.ben_phone }  value={x.ben_id} />
@@ -161,7 +168,7 @@ export default class Send extends Component {
                           
                     </View>
                  
-{this.state.ben_id==90000 ? (  <View >
+{this.state.ben_id=="New" ? (  <View >
                                 <View style={styles.txtbox}>
                             <TextInput
                                 style={{ flex: 0.9, paddingLeft: 20 }}
@@ -198,9 +205,10 @@ export default class Send extends Component {
                             <TextInput
                                 style={{ flex: 0.9, paddingLeft: 20 }}
                                 placeholder="Beneficiary Account Number"
-                                keyboardType="name-phone-pad" 
+                                keyboardType="phone-pad"
                                 onChangeText={(ben_acc)=>this.setState({ben_acc})}
                                 value={this.state.ben_acc}
+                                maxLength={14}
                             />
                           
                         </View>

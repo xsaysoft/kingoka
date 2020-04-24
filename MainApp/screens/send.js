@@ -17,44 +17,65 @@ export default class Send extends Component {
             cus_name : this.props.navigation.getParam('cus_name', 'Name'),
             cus_phone: this.props.navigation.getParam('cus_phone', 'phone'),
             customer_id: this.props.navigation.getParam('customer_id', '0'),
+            cc_type:this.props.navigation.getParam('cc_type', '0'),
             wallet:"0.00",
             amount:"" ,
+            charges:"",
             to:"",
             rate:"",
+            country_id:0,
             CountryList: [],
             currentLabel: 'Select your currency',
             personal_info_id:"",
             spinner: true,
             bal:"0.00",
+            r_bal:0,
+            BankList:[],
+            bank_id:0,
+
         
           
         }
        
     }
     async componentDidMount() {
+     
         this.setState({ spinner: true });
         this.setState({ 
         personal_info_id: await AsyncStorage.getItem('@personal_info_id') ,
         getCurrency: await AsyncStorage.getItem('@getCurrency'),
         getFrom: await AsyncStorage.getItem('@getFrom'),
+     
+       
     
     });
+   
         try {
    
         const BalApiCall = await fetch(Constant.URL+Constant.getCusBal+"/"+this.state.customer_id);
             const dataSource = await BalApiCall.json();
            console.log("dataSource",dataSource)
-            this.setState({bal: dataSource.bal, spinner: false});
+            this.setState({bal: dataSource.bal,r_bal:dataSource.r_bal, spinner: false});
         } catch(err) {
             console.log("Error fetching data-----------", err);
         }
 
         try {
        
-            const CountryApiCall = await fetch(Constant.URL+Constant.getCOUNTRY);
+            const CountryApiCall = await fetch(Constant.URL+Constant.getCOUNTRY+"/"+this.state.getFrom);
             const getCountry = await CountryApiCall.json();
             console.log("getCountry",getCountry)
             this.setState({CountryList: getCountry, spinner: false});
+        } catch(err) {
+            console.log("Error fetching data-----------", err);
+        }
+
+           //gET Bank
+           try {
+       
+            const BankApiCall = await fetch(Constant.URL+Constant.getBANKS);
+            const getBank = await BankApiCall.json();
+            this.setState({BankList: getBank, spinner: false});
         } catch(err) {
             console.log("Error fetching data-----------", err);
         }
@@ -65,26 +86,34 @@ export default class Send extends Component {
         this.setState({ show: false })
      }
 
+
     onPress = async() => {
+ 
             const getAmount =this.amountV.getRawValue()
             const getCharges = this.chargesV.getRawValue()
         this.setState({ getAmount :getAmount, getCharges : getCharges});
-
         const { amount ,charges} = this.state;
-        if (amount.length <= 0|| charges.length <=0) {
+
+        if(this.state.cc_type == 2){
+            
+            if (this.state.bank_id<= 0) {
+            Alert.alert("Please Select a Bank");
+            return false
+            }
+        }
+        if (amount.length <= 0 || charges.length <=0 || this.state.to<=0)  {
         
           Alert.alert("Please fill out the required field.");
         }else if(getAmount <= getCharges  ){
             Alert.alert("Your Charges Must Be Less  Than The Amount You Are Sending");
-        } else if(this.state.bal < (getAmount-getCharges )  ){
+        } else if(this.state.r_bal < (getAmount)  ){
           
             Alert.alert("Insufficient Credit ");
         }
         else {
             this.setState({spinner: true});
         //Get rate
-        console.log("to",this.state.to)
-        console.log("from",this.state.getFrom)
+        console.log("KPAK",this.state.r_bal )
         fetch(Constant.URL+Constant.getRATE,{
             method: 'POST',
             body: JSON.stringify({ 
@@ -118,11 +147,15 @@ export default class Send extends Component {
                    amount:getAmount,
                    dollar:this.state.dataSource.data.dollar_rate_1,
                    local:this.state.dataSource.data.local_rate_1,
+                   dollar2:this.state.dataSource.data.dollar_rate_2,
+                   local2:this.state.dataSource.data.local_rate_2,
                    charges:getCharges,
                    to:this.state.dataSource.data.to_currency,
+                   to_id:this.state.to,
                    from:this.state.getCurrency,
                    fromAgent:this.state.personal_info_id,
                    cus_phone:this.state.cus_phone,
+                   bank_id:this.state.bank_id,
                             
                 } )
             
@@ -142,14 +175,14 @@ export default class Send extends Component {
             <View style={{ flex: 1, backgroundColor: Theme.bgcolor }}>
                  <Spinner
                 visible={this.state.spinner}
-                overlayColor={'rgba(0, 0, 0, 0.15)'}
+                overlayColor={'rgba(0, 0, 0, 0.25)'}
                 />
             <StatusBar backgroundColor="#020cab" barStyle="light-content" />
                 <View style={styles.headContainer}>
                     <TouchableOpacity onPress={() => this.props.navigation.goBack()}>
                         <Icon family="MaterialIcons" name="arrow-back" size={25} color="#FFF" />
                     </TouchableOpacity>
-            <Text style={styles.headTxt}>Send {this.state.cus_name}</Text>
+        <Text style={styles.headTxt}>Send {this.state.cus_name} </Text>
                 </View>
                 <ScrollView>
                     <View style={{ flexDirection: 'row', borderBottomWidth: 1, borderColor: 'lightgray', alignItems: 'center' }}>
@@ -170,6 +203,22 @@ export default class Send extends Component {
                             <Text style={{ fontSize: 20, color: '#000', fontFamily: 'Poppins-ExtraLight' }}> {this.state.getCurrency} : {this.state.bal}</Text>
                         </View>
                     </TouchableOpacity>
+
+                    {this.state.cc_type ==2 ? (
+                    <View style={{ flexDirection: 'row', alignItems: 'center', borderWidth: 1, margin: 15,marginTop:2, paddingHorizontal: 15 }}>
+                            <Text  style={{ flex: 0.1, paddingLeft: 1 }} ></Text> 
+                            <Picker  style={{ flex: 0.9, paddingLeft: 150 }}  
+                            selectedValue={this.state.bank_id}  
+                            onValueChange={(itemValue, itemPosition) => this.setState({bank_id: itemValue, toIndex: itemPosition})}   >  
+                             <Picker.Item label="SELECT BANK" value="0" /> 
+                             {
+                                this.state.BankList.map( (v)=>{
+                                return <Picker.Item label={v.bank_name  }  value={v.bank_id} />
+                                })
+                                } 
+                            </Picker> 
+                        </View>
+                     ): null }
 
                     <View style={{ flexDirection: 'row', alignItems: 'center', borderWidth: 1, margin: 15, paddingHorizontal: 15 }}>
                         
@@ -222,7 +271,7 @@ export default class Send extends Component {
                             <Picker  style={{ flex: 0.9, paddingLeft: 150 }}  
                             selectedValue={this.state.to}  
                             onValueChange={(itemValue, itemPosition) => this.setState({to: itemValue, toIndex: itemPosition})}   >  
-                             <Picker.Item label="Select Sending Currency" value="0" /> 
+                             <Picker.Item label="RECEIVING CURRENCY" value="0" /> 
                              {
                                 this.state.CountryList.map( (v)=>{
                                 return <Picker.Item label={v.country +" - "+ v.currency }  value={v.country_id} />

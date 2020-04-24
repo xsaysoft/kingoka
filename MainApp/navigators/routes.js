@@ -29,6 +29,9 @@ import done from '../screens/done';
 import Rate from '../screens/Rate';
 import Payout from '../screens/Payout';
 import PayoutDone from '../screens/PayoutDone';
+import Credit from '../screens/Credit';
+import CreditSend from '../screens/CreditSend';
+
 
 
 
@@ -236,6 +239,20 @@ const Routes = {
       header: null
     },
   },
+  Credit: {
+    screen: Credit,
+    navigationOptions: {
+      header: null
+    },
+  },
+
+  CreditSend: {
+    screen: CreditSend,
+    navigationOptions: {
+      header: null
+    },
+  },
+
 }
 export default Routes;
 

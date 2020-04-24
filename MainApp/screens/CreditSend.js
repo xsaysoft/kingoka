@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
 import { View, Text, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
-import Icon from '../../common/icons';
-import Theme from '../../styles/Theme';
+import Icon from '../common/icons';
+import Theme from '../styles/Theme';
 import LinearGradient from 'react-native-linear-gradient';
+
 import AsyncStorage from '@react-native-community/async-storage';
 
-export default class ProfileScreen extends Component {
+export default class CreditSend extends Component {
     constructor(props) {
        
         super(props)
@@ -43,10 +44,14 @@ await AsyncStorage.removeItem('@wallet')
         return (
             <View style={{ flex: 1, backgroundColor: Theme.bgcolor }}>
                 <ScrollView>
-
+                
                     <LinearGradient colors={['#fc0f84', '#020cab']}
                         start={{ x: 1, y: 0 }} end={{ x: 0, y: 1 }} style={styles.BGsty}>
-                        <Text style={styles.myAc}>My Account</Text>
+                <TouchableOpacity onPress={() => this.props.navigation.goBack()}>
+
+                    <Icon style={{paddingLeft:10 , paddingTop:10}} family="MaterialIcons" name="arrow-back" size={25} color="#FFF" />
+                </TouchableOpacity>
+                        <Text style={styles.myAc}>Transfer Type</Text>
                             <View style={styles.balancesty}>
                                 <Text style={{ fontFamily: 'Poppins-Medium', color: '#000' }}>Balance </Text>
         <Text style={styles.coststy}>{this.state.getCurrency} {this.state.wallet} </Text>
@@ -54,54 +59,29 @@ await AsyncStorage.removeItem('@wallet')
                     </LinearGradient>
 
                     <View style={styles.tablistContainer}>
-                        <TouchableOpacity style={styles.tabBox}  onPress={() => this.props.navigation.navigate("Topup")}>
-                            <View style={styles.tabIconSty}>
-                                <Icon family="MaterialCommunityIcons" name="briefcase-upload-outline" size={25} color="#FFF" />
-                            </View>
-                            <Text style={styles.tabName}>TopUp</Text>
-                        </TouchableOpacity>
+                       
 
-                    
-
-                        <TouchableOpacity style={styles.tabBox} onPress={() => this.props.navigation.navigate("Wallet")}>
+                        <TouchableOpacity style={styles.tabBox} onPress={() => this.props.navigation.navigate("SendContacts",
+                        {c_type: "1"}
+                        )}>
                             <View style={styles.tabIconSty}>
                                 <Icon family="SimpleLineIcons" name="wallet" size={25} color="#FFF" />
                             </View>
                             <Text style={styles.tabName}>Wallet</Text>
                         </TouchableOpacity>
-                    </View>
 
-
-                    <View>
-                        <View style={{ marginTop: 30, paddingLeft: 35, paddingVertical: 10, }}>
-                            <TouchableOpacity onPress={() => this.props.navigation.navigate("ProfileEdit")}>
-                                <View style={styles.settingLayout}>
-                                    <View style={styles.settingNamesty}>
-                                        <Icon family="FontAwesome5" name='user' size={27} color={Theme.mainColor} />
-                                        <Text style={styles.meunSty}>Profile</Text>
-                                    </View>
-                                    <Icon family="MaterialIcons" name="keyboard-arrow-right" size={30} color="black" />
-                                </View>
-                            </TouchableOpacity>
-                        </View>
-
-                      
-                        <View style={{ paddingLeft: 35, paddingVertical: 10, }}>
-                            <TouchableOpacity onPress={() => this.props.navigation.navigate("About")}>
-                                <View style={styles.settingLayout}>
-                                    <View style={styles.settingNamesty}>
-                                        <Icon family="SimpleLineIcons" name='question' size={30} color={Theme.mainColor} />
-                                        <Text style={styles.meunSty}>About </Text>
-                                    </View>
-                                    <Icon family="MaterialIcons" name="keyboard-arrow-right" size={30} color="black" />
-                                </View>
-                            </TouchableOpacity>
-                        </View>
-                        <TouchableOpacity style={styles.logContainer} onPress={this.logout}>
-                            <Icon family="AntDesign" name="logout" size={30} color={Theme.mainColor} />
-                            <Text style={styles.logoutTxt}>Log out</Text>
+                        <TouchableOpacity style={styles.tabBox}  onPress={() => this.props.navigation.navigate("SendContacts",
+                         {c_type: "2"}
+                        )}>
+                            <View style={styles.tabIconSty}>
+                                <Icon family="MaterialCommunityIcons" name="briefcase-upload-outline" size={25} color="#FFF" />
+                            </View>
+                            <Text style={styles.tabName}>Bank</Text>
                         </TouchableOpacity>
                     </View>
+
+
+                  
                 </ScrollView>
             </View >
         );
@@ -134,7 +114,7 @@ const styles = StyleSheet.create({
         borderRadius: 20
     },
     balancesty: {
-        padding: 10,
+        padding: 30,
         backgroundColor: '#FFF',
         marginHorizontal: 40,
         borderRadius: 20,
@@ -180,7 +160,8 @@ const styles = StyleSheet.create({
         shadowColor: 'lightgrey',
         shadowOffset: { width: -0.5, height: 0.5 },
         shadowOpacity: 0.2,
-        shadowRadius: 1
+        shadowRadius: 1,
+        paddingTop:60
     },
     tabIconSty: {
         backgroundColor: Theme.mainColor,

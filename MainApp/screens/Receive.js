@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Image, TextInput,StatusBar ,Alert,} from 'react-native';
+import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Image, TextInput,StatusBar ,Alert,Picker} from 'react-native';
 import Icon from '../common/icons';
 import Theme from '../styles/Theme';
 import AsyncStorage from '@react-native-community/async-storage';
@@ -18,6 +18,9 @@ export default class Receive extends Component {
             cus_name : this.props.navigation.getParam('cus_name', 'Name'),
             cus_phone: this.props.navigation.getParam('cus_phone', 'phone'),
             customer_id: this.props.navigation.getParam('customer_id', '0'),
+            c_type: this.props.navigation.getParam('c_type', '0'),
+            BankList:[],
+            bank_id:"",
             amount:'',
             msg:"",
             personal_info_id:"",
@@ -25,7 +28,8 @@ export default class Receive extends Component {
             bal:"0.00",
             show: false,
             pin:"",
-            
+            Amessage:"",
+            Smessage:"",
   
  
         }
@@ -41,6 +45,15 @@ export default class Receive extends Component {
             const dataSource = await BalApiCall.json();
            console.log("dataSource",dataSource)
             this.setState({bal: dataSource.bal, spinner: false});
+        } catch(err) {
+            console.log("Error fetching data-----------", err);
+        }
+        //gET Bank
+        try {
+       
+            const BankApiCall = await fetch(Constant.URL+Constant.getBANKS);
+            const getBank = await BankApiCall.json();
+            this.setState({BankList: getBank, spinner: false});
         } catch(err) {
             console.log("Error fetching data-----------", err);
         }
@@ -77,6 +90,7 @@ export default class Receive extends Component {
             personal_info_id: this.state.personal_info_id,
             msg: this.state.msg,
             pin: this.state.pin,
+            bank_id:this.state.bank_id,
             amount: this.state.amount})
           })
           .then((response) => response.json())
@@ -89,9 +103,8 @@ export default class Receive extends Component {
       
           console.log(this.state.dataSource.data);
           if(this.state.dataSource.code==200){
-           
-          this.setState({spinner: false });
-          Alert.alert(this.state.dataSource.data.message);
+
+          this.setState({ spinner: false,Sshow: true ,Smessage:this.state.dataSource.data.message });
         this.setState({
             amount:'',
             pin:"",
@@ -99,8 +112,7 @@ export default class Receive extends Component {
         });
           
           }else{
-            this.setState({ spinner: false });
-            Alert.alert(this.state.dataSource.data.message);
+            this.setState({ spinner: false,Ashow: true ,show: false,Amessage:this.state.dataSource.data.message });
           }
           
          }).catch(function (error) {
@@ -126,7 +138,7 @@ export default class Receive extends Component {
                     <TouchableOpacity onPress={() => this.props.navigation.goBack()}>
                         <Icon family="MaterialIcons" name="arrow-back" size={25} color="#FFF" />
                     </TouchableOpacity>
-                    <Text style={styles.headTxt}>Credit  {this.state.cus_name}</Text>
+                    <Text style={styles.headTxt}>Credit  {this.state.cus_name} </Text>
                 </View>
                 <ScrollView>
                     <View style={{ flexDirection: 'row', borderBottomWidth: 1, borderColor: 'lightgray', alignItems: 'center' }}>
@@ -152,6 +164,21 @@ export default class Receive extends Component {
                             <Text style={{ fontSize: 20, color: '#000', fontFamily: 'Poppins-ExtraLight' }}> {this.state.getCurrency} {this.state.bal}</Text>
                         </View>
                     </TouchableOpacity>
+                    {this.state.c_type==2? (
+                    <View style={{ flexDirection: 'row', alignItems: 'center', borderWidth: 1, margin: 15,marginTop:2, paddingHorizontal: 15 }}>
+                            <Text  style={{ flex: 0.1, paddingLeft: 1 }} ></Text> 
+                            <Picker  style={{ flex: 0.9, paddingLeft: 150 }}  
+                            selectedValue={this.state.bank_id}  
+                            onValueChange={(itemValue, itemPosition) => this.setState({bank_id: itemValue, toIndex: itemPosition})}   >  
+                             <Picker.Item label="SELECT BANK" value="0" /> 
+                             {
+                                this.state.BankList.map( (v)=>{
+                                return <Picker.Item label={v.bank_name  }  value={v.bank_id} />
+                                })
+                                } 
+                            </Picker> 
+                        </View>
+                     ): null }
                     <View style={{ flexDirection: 'row', alignItems: 'center', borderWidth: 1, margin: 15, paddingHorizontal: 15 }}>
                         <Icon family="FontAwesome" name="money" size={25} />
                         <TextInput style={{ paddingLeft: 10, fontSize: 16 }}
@@ -200,6 +227,38 @@ export default class Receive extends Component {
                         />
           <SCLAlertButton theme="info" onPress={this.onPressCredit} >CREDIT</SCLAlertButton>
         </SCLAlert>
+
+        <SCLAlert
+                        theme="danger"
+                        show={this.state.Ashow}
+                        title="Error Message"
+                        subtitle={this.state.Amessage}
+                        onRequestClose={() => {
+                            this.setState({ Ashow: false })
+                            }}
+                        >         
+                 
+                    <SCLAlertButton theme="danger" onPress={() => {
+                            this.setState({ Ashow: false })
+                            }} >Close</SCLAlertButton>
+                 </SCLAlert>
+
+        <SCLAlert
+                        theme="success"
+                        show={this.state.Sshow}
+                        title="Successful Message"
+                        subtitle={this.state.Smessage}
+                        onRequestClose={() => {
+                            this.setState({ Sshow: false })
+                            }}
+                        >
+                            
+                 
+          <SCLAlertButton theme="success" onPress={() => {
+                            this.props.navigation.navigate("TabNav")
+                            }} >Close</SCLAlertButton>
+        </SCLAlert>
+
                 </ScrollView>
             </View>
         );

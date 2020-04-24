@@ -14,12 +14,14 @@ export default class ReceiveContacts extends Component {
             customerList: [ ],
             spinner: true,
             personal_info_id:"",
-            cus_img: "../assets/img/boy.png"
+            cus_img: "../assets/img/boy.png",
+            c_type : this.props.navigation.getParam('c_type', '0'),
         }
     }
 
     async componentDidMount() {
         this.setState({ personal_info_id: await AsyncStorage.getItem('@personal_info_id')}); 
+       
         try {
    
             const CustomerApiCall = await fetch(Constant.URL+Constant.getCUSTOMERS+"/"+this.state.personal_info_id);
@@ -37,6 +39,7 @@ export default class ReceiveContacts extends Component {
                 cus_name: rowdata.item.cus_name,
                 cus_phone: rowdata.item.cus_phone,
                 customer_id: rowdata.item.customer_id,
+                c_type:this.state.c_type
               
               })} >
                 <View style={{ flex: 1 }}>
@@ -66,14 +69,14 @@ export default class ReceiveContacts extends Component {
                     <TouchableOpacity onPress={() => this.props.navigation.goBack()}>
                         <Icon family="MaterialIcons" name="arrow-back" size={25} color="#FFF" />
                     </TouchableOpacity>
-        <Text style={styles.headTxt}>Credit Customers</Text>
+        <Text style={styles.headTxt}>Credit Customers </Text>
                 </View>
                 <View style={{ flexDirection: 'row', alignItems: 'center', borderWidth: 1, margin: 15, paddingHorizontal: 15 }}>
                         <Icon family="Feather" name="search" size={25} />
                         <TextInput style={{ paddingLeft: 10, fontSize: 16 }}
                            
                             placeholder="Quick Search"
-                            onChangeText={text => this.searchFilterFunction(text)}
+                            // onChangeText={text => this.searchFilterFunction(text)}
                             autoCorrect={false}  
                         />
                 </View>

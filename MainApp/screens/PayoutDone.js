@@ -15,6 +15,7 @@ export default class PayoutDone extends Component {
             customer_id: this.props.navigation.getParam('customer_id', '0'),
             amount: this.props.navigation.getParam('amount', '0'),
             rate: this.props.navigation.getParam('rate', '0'),
+            rate_type: this.props.navigation.getParam('rate_type', '0'),
             charges: this.props.navigation.getParam('charges', '0'),
             to: this.props.navigation.getParam('to', '0'),
             from: this.props.navigation.getParam('from', '0'),
@@ -152,7 +153,13 @@ onPressTransfer = async() => {
         }
     }
     render() {
-        const bal = (this.state.amount - this.state.charges) * this.state.rate
+        let bal
+        if(this.state.rate_type==1){
+          bal = (this.state.amount - this.state.charges)* (this.state.rate)
+        }else {
+          bal = (this.state.amount - this.state.charges)/ (this.state.rate)
+        }
+         
        
         return (
             <View style={{ flex: 1, backgroundColor: Theme.bgcolor }}>
