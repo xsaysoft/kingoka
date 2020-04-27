@@ -1,7 +1,7 @@
 
 
-const URL = "http://192.168.43.165/king/portal/";
-//const URL = "http://kingokagroup.com/";
+//const URL = "http://172.20.10.8/king/portal/";
+const URL = "http://kingokagroup.com/";
 const LOGIN = "MobileApi/m_login";
 const getCOUNTRY ="MobileApi/getCountry";
 const getRATE = "MobileApi/getRate";
@@ -16,10 +16,10 @@ const getBEN ="MobileApi/getBen";
 const getBENID ="MobileApi/getBenID";
 const getAGENT="MobileApi/getAgent";
 const addTRANSFER="MobileApi/addTransfer"
-const getTRANSFER="MobileApi/getAgentT"
-const CPAYOUT="MobileApi/Cpayout"
-const RPAYOUT="MobileApi/Rpayout"
-const getBANKS="MobileApi/getBanks"
+const getTRANSFER="MobileApi/getAgentT";
+const CPAYOUT="MobileApi/Cpayout";
+const RPAYOUT="MobileApi/Rpayout";
+const getBANKS="MobileApi/getBanks";
 export default {
   URL,
   LOGIN,
@@ -39,6 +39,10 @@ export default {
   CPAYOUT,
   RPAYOUT,
   getBANKS,
-  getAgBal 
+  getAgBal ,
+
+  numberFormate(x) {
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  }
   
 };

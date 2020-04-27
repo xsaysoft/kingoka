@@ -14,6 +14,7 @@ export default class SendContacts extends Component {
             AgentList: [ ],
             spinner: true,
             personal_info_id:"",
+            history : this.props.navigation.getParam('history', '0'),
             cus_img: "../assets/img/boy.png"
         }
     }
@@ -21,8 +22,8 @@ export default class SendContacts extends Component {
     async componentDidMount() {
         this.setState({ personal_info_id: await AsyncStorage.getItem('@personal_info_id')}); 
         try {
-   
-            const CustomerApiCall = await fetch(Constant.URL+Constant.getTRANSFER+"/"+this.state.personal_info_id);
+        
+            const CustomerApiCall = await fetch(Constant.URL+Constant.getTRANSFER+"/"+this.state.personal_info_id+"/"+this.state.history);
             const getCustomer = await CustomerApiCall.json();
         
             this.setState({AgentList: getCustomer, spinner: false});
@@ -86,7 +87,8 @@ export default class SendContacts extends Component {
                     <TouchableOpacity onPress={() => this.props.navigation.goBack()}>
                         <Icon family="MaterialIcons" name="arrow-back" size={25} color="#FFF" />
                     </TouchableOpacity>
-            <Text style={styles.headTxt}>Payout Center</Text>
+                    {this.state.history ==0 ? (<Text style={styles.headTxt}> Payout Center </Text>    ): null }
+                    {this.state.history ==1 ? (<Text style={styles.headTxt}> Payout Reversal Center </Text>    ): null }
                 </View>
                 <View style={{ flexDirection: 'row', alignItems: 'center', borderWidth: 1, margin: 15, paddingHorizontal: 15 }}>
                         <Icon family="Feather" name="search" size={25} />

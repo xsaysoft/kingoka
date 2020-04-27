@@ -31,6 +31,7 @@ import Payout from '../screens/Payout';
 import PayoutDone from '../screens/PayoutDone';
 import Credit from '../screens/Credit';
 import CreditSend from '../screens/CreditSend';
+import PayoutConfirm from '../screens/PayoutConfirm';
 
 
 
@@ -252,6 +253,13 @@ const Routes = {
       header: null
     },
   },
+  PayoutConfirm: {
+    screen: PayoutConfirm,
+    navigationOptions: {
+      header: null
+    },
+  },
+
 
 }
 export default Routes;

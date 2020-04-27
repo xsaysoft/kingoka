@@ -70,15 +70,7 @@ export default class Send extends Component {
             console.log("Error fetching data-----------", err);
         }
 
-           //gET Bank
-           try {
-       
-            const BankApiCall = await fetch(Constant.URL+Constant.getBANKS);
-            const getBank = await BankApiCall.json();
-            this.setState({BankList: getBank, spinner: false});
-        } catch(err) {
-            console.log("Error fetching data-----------", err);
-        }
+    
     
     }
 
@@ -113,7 +105,7 @@ export default class Send extends Component {
         else {
             this.setState({spinner: true});
         //Get rate
-        console.log("KPAK",this.state.r_bal )
+       
         fetch(Constant.URL+Constant.getRATE,{
             method: 'POST',
             body: JSON.stringify({ 
@@ -204,21 +196,6 @@ export default class Send extends Component {
                         </View>
                     </TouchableOpacity>
 
-                    {this.state.cc_type ==2 ? (
-                    <View style={{ flexDirection: 'row', alignItems: 'center', borderWidth: 1, margin: 15,marginTop:2, paddingHorizontal: 15 }}>
-                            <Text  style={{ flex: 0.1, paddingLeft: 1 }} ></Text> 
-                            <Picker  style={{ flex: 0.9, paddingLeft: 150 }}  
-                            selectedValue={this.state.bank_id}  
-                            onValueChange={(itemValue, itemPosition) => this.setState({bank_id: itemValue, toIndex: itemPosition})}   >  
-                             <Picker.Item label="SELECT BANK" value="0" /> 
-                             {
-                                this.state.BankList.map( (v)=>{
-                                return <Picker.Item label={v.bank_name  }  value={v.bank_id} />
-                                })
-                                } 
-                            </Picker> 
-                        </View>
-                     ): null }
 
                     <View style={{ flexDirection: 'row', alignItems: 'center', borderWidth: 1, margin: 15, paddingHorizontal: 15 }}>
                         

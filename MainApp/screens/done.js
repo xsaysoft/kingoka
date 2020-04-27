@@ -149,7 +149,7 @@ onPressTransfer = async() => {
                         <Text style={styles.valTxt}>Value To Transfer between currency</Text>
                         <View style={styles.rowcenter}>
                            {this.state. getCurrency}
-                            <Text style={{ color: "#FFF", fontSize: 40, paddingLeft: 5 }}>{bal.toFixed(2)}</Text>
+                            <Text style={{ color: "#FFF", fontSize: 40, paddingLeft: 5 }}>{Constant.numberFormate(bal.toFixed(2))}</Text>
                             
                         </View>
                         <Text style={styles.updateSty}>{this.state.from} > {this.state.to}</Text>
