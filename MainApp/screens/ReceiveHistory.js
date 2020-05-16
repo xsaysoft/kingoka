@@ -3,12 +3,12 @@ import { View, Text, TextInput, StyleSheet, TouchableOpacity, ScrollView, Image,
 import LinearGradient from 'react-native-linear-gradient';
 import Icon from '../common/icons';
 import Theme from "../styles/Theme";
-import AsyncStorage from '@react-native-community/async-storage';
+
 import Spinner from 'react-native-loading-spinner-overlay';
 import Constant from "../components/Constant";
-const Credited = <Text style={{ color: 'blue', fontSize: 10 ,fontFamily:'Poppins-Regular',  textAlign: 'center',}}>Credited</Text>
-const Success = <Text style={{ color: '#8d44ad', fontSize: 10 ,fontFamily:'Poppins-Regular',  textAlign: 'center',}}>Success</Text>
-const Debit = <Text style={{ color: 'red', fontSize: 10,fontFamily:'Poppins-Regular',  textAlign: 'center', }}>Debit</Text>
+import AsyncStorage from '@react-native-community/async-storage';
+
+
 export default class ReceiveHistory extends Component {
     constructor(props) {
         super(props)

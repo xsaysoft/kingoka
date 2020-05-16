@@ -2,8 +2,9 @@ import React, { Component } from 'react';
 import { View, Text, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
 import Icon from '../../common/icons';
 import Theme from '../../styles/Theme';
+import Constant from "../../components/Constant";
 import LinearGradient from 'react-native-linear-gradient';
-import AsyncStorage from '@react-native-community/async-storage';
+
 
 export default class ProfileScreen extends Component {
     constructor(props) {
@@ -14,28 +15,24 @@ export default class ProfileScreen extends Component {
         }
     }
     
-    async componentDidMount() {
 
-            this.setState({ wallet: await AsyncStorage.getItem('@wallet') ,
-            getCurrency: await AsyncStorage.getItem('@getCurrency'), });
-
-    }
-   
     logout= async () => {
-        await AsyncStorage.removeItem("@isLoggedIn");
-        AsyncStorage.removeItem();
-        await AsyncStorage.removeItem('@isLoggedIn'),
-await AsyncStorage.removeItem('@email'),
-await AsyncStorage.removeItem('@first_name'),
-await AsyncStorage.removeItem('@last_name'),
-await AsyncStorage.removeItem('@phone'),
-await AsyncStorage.removeItem('@country'),
-await AsyncStorage.removeItem('@personal_info_id'),
-await AsyncStorage.removeItem('@store_vid'),
-await AsyncStorage.removeItem('@getCurrency')
-await AsyncStorage.removeItem('@getFrom')
-await AsyncStorage.removeItem('@wallet')
+       if(
+Constant.removeAsyncValue('@isLoggedIn')&&
+Constant.removeAsyncValue('@email')&&
+Constant.removeAsyncValue('@first_name')&&
+Constant.removeAsyncValue('@last_name')&&
+Constant.removeAsyncValue('@phone')&&
+Constant.removeAsyncValue('@country')&&
+Constant.removeAsyncValue('@personal_info_id')&&
+Constant.removeAsyncValue('@store_vid')&&
+Constant.removeAsyncValue('@getCurrency')&&
+Constant.removeAsyncValue('@getFrom')&&
+Constant.removeAsyncValue('@wallet')
+       ){
         this.props.navigation.navigate("LoginScreen")
+       }
+        
 
       };
 
@@ -47,29 +44,10 @@ await AsyncStorage.removeItem('@wallet')
                     <LinearGradient colors={['#fc0f84', '#020cab']}
                         start={{ x: 1, y: 0 }} end={{ x: 0, y: 1 }} style={styles.BGsty}>
                         <Text style={styles.myAc}>My Account</Text>
-                            <View style={styles.balancesty}>
-                                <Text style={{ fontFamily: 'Poppins-Medium', color: '#000' }}>Balance </Text>
-        <Text style={styles.coststy}>{this.state.getCurrency} {this.state.wallet} </Text>
-                            </View>
+                           
                     </LinearGradient>
 
-                    <View style={styles.tablistContainer}>
-                        <TouchableOpacity style={styles.tabBox}  onPress={() => this.props.navigation.navigate("Topup")}>
-                            <View style={styles.tabIconSty}>
-                                <Icon family="MaterialCommunityIcons" name="briefcase-upload-outline" size={25} color="#FFF" />
-                            </View>
-                            <Text style={styles.tabName}>TopUp</Text>
-                        </TouchableOpacity>
-
-                    
-
-                        <TouchableOpacity style={styles.tabBox} onPress={() => this.props.navigation.navigate("Wallet")}>
-                            <View style={styles.tabIconSty}>
-                                <Icon family="SimpleLineIcons" name="wallet" size={25} color="#FFF" />
-                            </View>
-                            <Text style={styles.tabName}>Wallet</Text>
-                        </TouchableOpacity>
-                    </View>
+                  
 
 
                     <View>
@@ -84,7 +62,17 @@ await AsyncStorage.removeItem('@wallet')
                                 </View>
                             </TouchableOpacity>
                         </View>
-
+                        <View style={{ paddingLeft: 35, paddingVertical: 10, }}>
+                            <TouchableOpacity onPress={() => this.props.navigation.navigate("SwitchWallet")}>
+                                <View style={styles.settingLayout}>
+                                    <View style={styles.settingNamesty}>
+                                        <Icon family="FontAwesome" name="money" size={30} color={Theme.mainColor} />
+                                        <Text style={styles.meunSty}>Switch Wallet </Text>
+                                    </View>
+                                    <Icon family="MaterialIcons" name="keyboard-arrow-right" size={30} color="black" />
+                                </View>
+                            </TouchableOpacity>
+                        </View>
                       
                         <View style={{ paddingLeft: 35, paddingVertical: 10, }}>
                             <TouchableOpacity onPress={() => this.props.navigation.navigate("About")}>

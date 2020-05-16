@@ -3,9 +3,11 @@ import { View, Text, TextInput, StyleSheet, TouchableOpacity, ScrollView, Image,
 import LinearGradient from 'react-native-linear-gradient';
 import Icon from '../common/icons';
 import Theme from "../styles/Theme";
-import AsyncStorage from '@react-native-community/async-storage';
+
 import Spinner from 'react-native-loading-spinner-overlay';
 import Constant from "../components/Constant";
+import AsyncStorage from '@react-native-community/async-storage';
+
 
 export default class ReceiveContacts extends Component {
     constructor(props) {
@@ -20,11 +22,13 @@ export default class ReceiveContacts extends Component {
     }
 
     async componentDidMount() {
-        this.setState({ personal_info_id: await AsyncStorage.getItem('@personal_info_id')}); 
+        this.setState({ personal_info_id: await AsyncStorage.getItem('@personal_info_id'),
+        getFrom: await AsyncStorage.getItem('@getFrom'),
+    }); 
        
         try {
    
-            const CustomerApiCall = await fetch(Constant.URL+Constant.getCUSTOMERS+"/"+this.state.personal_info_id);
+            const CustomerApiCall = await fetch(Constant.URL+Constant.getCUSTOMERS+"/"+this.state.personal_info_id+"/"+this.state.getFrom);
             const getCustomer = await CustomerApiCall.json();
            
             this.setState({customerList: getCustomer, spinner: false});

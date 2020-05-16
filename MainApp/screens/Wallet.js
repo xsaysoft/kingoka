@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { View, Text, ScrollView, StyleSheet, Image, TouchableOpacity, TextInput, StatusBar } from 'react-native';
 import Theme from '../styles/Theme';
 import Icon from '../common/icons';
-import AsyncStorage from '@react-native-community/async-storage';
+
 export default class Wallet extends Component {
     constructor(props) {
         super(props)

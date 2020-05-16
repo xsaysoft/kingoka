@@ -1,22 +1,26 @@
 import React, { Component } from "react";
 import { View, Text, TextInput, StyleSheet, TouchableOpacity, ScrollView, Image, Alert } from "react-native";
 import LinearGradient from 'react-native-linear-gradient';
-import AsyncStorage from '@react-native-community/async-storage';
 import Spinner from 'react-native-loading-spinner-overlay';
 import Constant from "../components/Constant";
+import {connect} from "react-redux";
+import AsyncStorage from '@react-native-community/async-storage';
+
 import Icon from '../common/icons';
 
-export default class LoginScreen extends Component {
+class LoginScreen extends Component {
  // constructor to  work with state 
   constructor(props) {
     super(props)
     this.state = {
       spinner: false,
-      dataSource:'',
+      dataSource:[],
       email:'',
       Password:''
     }
 } 
+
+
 
 
   onPressSignIn = async() => {
@@ -46,16 +50,31 @@ fetch(Constant.URL+Constant.LOGIN,{
     console.log("personal",this.state.dataSource.data.personal_info_id);
     if(this.state.dataSource.code==200){
       (async () => {
-        await AsyncStorage.setItem('@isLoggedIn', '1'),
-        await AsyncStorage.setItem('@email', this.state.dataSource.data.email),
-        await AsyncStorage.setItem('@first_name', this.state.dataSource.data.first_name),
-        await AsyncStorage.setItem('@last_name', this.state.dataSource.data.last_name),
-        await AsyncStorage.setItem('@phone', this.state.dataSource.data.phone),
-        await AsyncStorage.setItem('@country', this.state.dataSource.data.country),
-        await AsyncStorage.setItem('@personal_info_id', this.state.dataSource.data.personal_info_id),
-        await AsyncStorage.setItem('@store_vid', this.state.dataSource.data.store_vid),
-        await AsyncStorage.setItem('@getCurrency', this.state.dataSource.data.currency)
-        await AsyncStorage.setItem('@getFrom', this.state.dataSource.data.country_id)
+        Constant.SetAsyncValue('@isLoggedIn', '1'),
+         Constant.SetAsyncValue('@email', this.state.dataSource.data.email),
+         Constant.SetAsyncValue('@first_name', this.state.dataSource.data.first_name),
+         Constant.SetAsyncValue('@last_name', this.state.dataSource.data.last_name),
+         Constant.SetAsyncValue('@phone', this.state.dataSource.data.phone),
+         Constant.SetAsyncValue('@country', this.state.dataSource.data.country),
+         Constant.SetAsyncValue('@personal_info_id', this.state.dataSource.data.personal_info_id),
+         Constant.SetAsyncValue('@store_vid', this.state.dataSource.data.store_vid),
+         Constant.SetAsyncValue('@getCurrency', this.state.dataSource.data.currency)
+         Constant.SetAsyncValue('@getFrom', this.state.dataSource.data.country_id)
+         //Get HOME DETAILS
+         try {
+
+          const BalApiCall = await fetch(Constant.URL + Constant.getAgBal + "/" + this.state.dataSource.data.personal_info_id+"/"+this.state.dataSource.data.country_id);
+          const dataSource = await BalApiCall.json();
+          await AsyncStorage.setItem('@wallet', dataSource.bal)
+          
+          this.props.getCustomerWallet(dataSource.c_bal)
+          this.props.getAgentWallet(dataSource.bal)
+          this.props.getAgentCurrency(this.state.dataSource.data.currency)
+          this.setState({ wallet: dataSource.bal, c_wallet: dataSource.c_bal, spinner: false });
+      } catch (err) {
+          console.log("Error fetching kdata-----------", err);
+          this.setState({ spinner: false });
+      }
       
     })();
 
@@ -69,6 +88,8 @@ fetch(Constant.URL+Constant.LOGIN,{
       phone: this.state.dataSource.data.phone,
       userInfo: this.state.dataSource.data,
       personal_info_id: this.state.dataSource.data.personal_info_id,
+      getFrom: this.state.dataSource.data.country_id,
+      
       
     });
     
@@ -243,3 +264,32 @@ const styles = StyleSheet.create({
 
 })
 
+function  mapStateProps(state){
+  return{
+      userW:state.userW,
+      agentW:state.agentW,
+      agentC:state.agentC
+  }
+}
+
+function mapDispatchProps(dispatch){
+  
+  return{
+   getCustomerWallet: (response) => dispatch({
+      type: 'CUSTOMER_WALLET',
+      payload: response
+   }),
+   getAgentWallet: (response) => dispatch({
+       type: 'AGENT_WALLET',
+       payload: response
+      }),
+  
+  getAgentCurrency: (response) => dispatch({
+      type: 'AGENT_CURRENCY',
+      payload: response
+      }),
+  }
+}
+
+
+export default connect(mapStateProps,mapDispatchProps)(LoginScreen)

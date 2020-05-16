@@ -3,8 +3,9 @@ import { View, Text, Image, StyleSheet } from 'react-native';
 import ThemeStyle from '../styles/Theme';
 import { NavigationActions, StackActions } from 'react-navigation';
 import LinearGradient from 'react-native-linear-gradient';
-import AsyncStorage from '@react-native-community/async-storage';
 import Constant from "../components/Constant";
+import AsyncStorage from '@react-native-community/async-storage';
+
 import NetInfo from "@react-native-community/netinfo";
 
 // Subscribe
@@ -15,7 +16,7 @@ export default class SplashScreen extends Component {
         this.state = {
             visible: false,
             isLoggedIn : 0,
-            dataSource:'',
+            dataSource:[],
         };
     
     }
@@ -77,25 +78,28 @@ export default class SplashScreen extends Component {
                 }
                
                 if(this.state.dataSource.code==200){
-                    await AsyncStorage.setItem('@isLoggedIn', '1'),
-                    await AsyncStorage.setItem('@email', this.state.dataSource.data.email),
-                    await AsyncStorage.setItem('@first_name', this.state.dataSource.data.first_name),
-                    await AsyncStorage.setItem('@last_name', this.state.dataSource.data.last_name),
-                    await AsyncStorage.setItem('@phone', this.state.dataSource.data.phone),
-                    await AsyncStorage.setItem('@country', this.state.dataSource.data.country),
-                    await AsyncStorage.setItem('@personal_info_id', this.state.dataSource.data.personal_info_id),
-                    await AsyncStorage.setItem('@store_vid', this.state.dataSource.data.store_vid),
-                    await AsyncStorage.setItem('@getCurrency', this.state.dataSource.data.currency) 
-                    await AsyncStorage.setItem('@getFrom', this.state.dataSource.data.country_id)
+                     Constant.SetAsyncValue('@isLoggedIn', '1'),
+                     Constant.SetAsyncValue('@email', this.state.dataSource.data.email),
+                     Constant.SetAsyncValue('@first_name', this.state.dataSource.data.first_name),
+                     Constant.SetAsyncValue('@last_name', this.state.dataSource.data.last_name),
+                     Constant.SetAsyncValue('@phone', this.state.dataSource.data.phone),
+                     Constant.SetAsyncValue('@country', this.state.dataSource.data.country),
+                     Constant.SetAsyncValue('@personal_info_id', this.state.dataSource.data.personal_info_id),
+                     Constant.SetAsyncValue('@store_vid', this.state.dataSource.data.store_vid),
+                     Constant.SetAsyncValue('@getCurrency', this.state.dataSource.data.currency) 
+                     Constant.SetAsyncValue('@getFrom', this.state.dataSource.data.country_id)
                    
                     //Local Store
                   
                 this.props.navigation.navigate("TabNav", {
-                    first_name: await AsyncStorage.getItem('@first_name'),
-                    last_name: await AsyncStorage.getItem('@last_name'),
-                    email: await AsyncStorage.getItem('@email'),
-                    getCurrency: await AsyncStorage.getItem('@getCurrency'),
-                    phone: await AsyncStorage.getItem('@phone'),
+                    first_name: this.state.dataSource.data.first_name,
+                    last_name: this.state.dataSource.data.last_name,
+                    email: this.state.dataSource.data.email,
+                    getCurrency: this.state.dataSource.data.currency,
+                    phone: this.state.dataSource.data.phone,
+                    userInfo: this.state.dataSource.data,
+                    personal_info_id: this.state.dataSource.data.personal_info_id,
+                    getFrom: this.state.dataSource.data.country_id,
                 });
             }else{
                 this.props.navigation.navigate("LoginScreen") 

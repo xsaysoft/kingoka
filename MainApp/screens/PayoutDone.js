@@ -5,6 +5,8 @@ import Icon from '../common/icons';
 import Spinner from 'react-native-loading-spinner-overlay';
 import { Table, TableWrapper, Row, Rows, Col } from 'react-native-table-component';
 import Constant from "../components/Constant";
+import AsyncStorage from '@react-native-community/async-storage';
+
 import {SCLAlert,SCLAlertButton} from 'react-native-scl-alert'
 export default class PayoutDone extends Component {
     constructor(props) {
@@ -33,6 +35,7 @@ export default class PayoutDone extends Component {
             agent_acct_id: this.props.navigation.getParam('agent_acct_id', '0'),
             c_ref: this.props.navigation.getParam('c_ref', '0'),
             status: this.props.navigation.getParam('status', '0'),
+            due_amount: this.props.navigation.getParam('due_amount','0'),
             
             pin:"",
             spinner: false,
@@ -50,7 +53,7 @@ export default class PayoutDone extends Component {
       ],
       RRtableHead: ['Amount', 'Charges', 'Rate'],
       RRtableData: [
-        [this.props.navigation.getParam('amount', '0'), this.props.navigation.getParam('charges', '0'), this.props.navigation.getParam('rate', '0')],
+        [this.props.navigation.getParam('due_amount', '0'), this.props.navigation.getParam('charges', '0'), this.props.navigation.getParam('rate', '0')],
        
       ]
  
@@ -75,6 +78,7 @@ onPressTransfer = async() => {
    from:this.state.from,
    to:this.state.to,
    status:this.state.status,
+   due_amount: this.state.due_amount,
   
   })
     }
@@ -126,12 +130,12 @@ onPressTransfer = async() => {
         }
     }
     render() {
-        let bal
-        if(this.state.rate_type==1){
-          bal = (this.state.amount - this.state.charges)* (this.state.rate)
-        }else {
-          bal = (this.state.amount - this.state.charges)/ (this.state.rate)
-        }
+      let bal
+      if (this.state.rate_type == 1) {
+          bal = (this.state.due_amount) * (this.state.rate)
+      } else {
+        bal = (this.state.due_amount) / (this.state.rate)
+      }
          
        
         return (
@@ -145,14 +149,14 @@ onPressTransfer = async() => {
                     <TouchableOpacity onPress={() => this.props.navigation.goBack()}>
                         <Icon family="MaterialIcons" name="arrow-back" size={25} color="#FFF" />
                     </TouchableOpacity>
-        <Text style={styles.logintxt}>Approve Payout  </Text>
+        <Text style={styles.logintxt}>Approve Payout</Text>
                 </View>
                 <ScrollView>
                     <View style={styles.AmountCon}>
                         <Text style={styles.valTxt}>Value To Transfer between currency</Text>
                         <View style={styles.rowcenter}>
                            {this.state. getCurrency}
-                            <Text style={{ color: "#FFF", fontSize: 40, paddingLeft: 5 }}>{Constant.numberFormate(bal.toFixed(2))}</Text>
+                            <Text style={{ color: "#FFF", fontSize: 40, paddingLeft: 5 }}>{Constant.numberFormate(bal.toFixed(4))}</Text>
                      
                         </View>
                         <Text style={styles.updateSty}>{this.state.from} > {this.state.to}</Text>

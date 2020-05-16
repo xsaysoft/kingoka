@@ -7,11 +7,13 @@ import AppReducer from "./reducres";
 import AppWithNavigationState from "./navigators/AppNavigator";
 
 
+
+
 const store = createStore(
   AppReducer,
-
   applyMiddleware(thunk),
 );
+
 
 class App extends Component {
   constructor(props) {

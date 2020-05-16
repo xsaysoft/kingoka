@@ -2,9 +2,10 @@ import React, { Component } from 'react';
 import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Image, TextInput,StatusBar,Picker ,Alert} from 'react-native';
 import Icon from '../common/icons';
 import Theme from '../styles/Theme';
-import AsyncStorage from '@react-native-community/async-storage';
 import Spinner from 'react-native-loading-spinner-overlay';
 import Constant from "../components/Constant";
+import AsyncStorage from '@react-native-community/async-storage';
+
 
 
 
@@ -24,7 +25,9 @@ export default class Send extends Component {
             from: this.props.navigation.getParam('from', '0'),
             fromAgent: this.props.navigation.getParam('fromAgent', '0'),
             bank_id:this.props.navigation.getParam('bank_id', '0'),
-
+            ch_type: this.props.navigation.getParam('ch_type','0'),
+            due_amount: this.props.navigation.getParam('due_amount','0'),
+            getCountry_id:this.props.navigation.getParam('getCountry_id','0'),
             ben_name:"",
             message:"",
             ben_id:"",
@@ -118,6 +121,9 @@ export default class Send extends Component {
             fromAgent:this.state.fromAgent,
             rate_type:this.state.rate_type,
             bank_id:this.state.bank_id,
+            ch_type: this.state.ch_type,
+            due_amount: this.state.due_amount,
+            getCountry_id:this.state.getCountry_id,
             
          })
     
@@ -132,7 +138,7 @@ export default class Send extends Component {
             <View style={{ flex: 1, backgroundColor: Theme.bgcolor }}>
                  <Spinner
                 visible={this.state.spinner}
-                overlayColor={'rgba(0, 0, 0, 0.25)'}
+                overlayColor={'rgba(0, 0, 0, 0.50)'}
                 />
             <StatusBar backgroundColor="#020cab" barStyle="light-content" />
                 <View style={styles.headContainer}>

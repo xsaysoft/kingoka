@@ -3,9 +3,10 @@ import { View, Text, TextInput, StyleSheet, TouchableOpacity, ScrollView, Image,
 import LinearGradient from 'react-native-linear-gradient';
 import Icon from '../common/icons';
 import Theme from "../styles/Theme";
-import AsyncStorage from '@react-native-community/async-storage';
 import Spinner from 'react-native-loading-spinner-overlay';
 import Constant from "../components/Constant";
+import AsyncStorage from '@react-native-community/async-storage';
+
 
 export default class SendContacts extends Component {
     constructor(props) {
@@ -57,6 +58,7 @@ export default class SendContacts extends Component {
                 ben_phone: rowdata.item.ben_phone,
                 c_ref: rowdata.item.c_ref,
                 status: rowdata.item.status,
+                due_amount: rowdata.item.due_amount,
 
               
               })} >

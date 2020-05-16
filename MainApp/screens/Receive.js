@@ -2,15 +2,17 @@ import React, { Component } from 'react';
 import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Image, TextInput,StatusBar ,Alert,Picker} from 'react-native';
 import Icon from '../common/icons';
 import Theme from '../styles/Theme';
-import AsyncStorage from '@react-native-community/async-storage';
 import Spinner from 'react-native-loading-spinner-overlay';
 import Constant from "../components/Constant";
+import AsyncStorage from '@react-native-community/async-storage';
+
 import {SCLAlert,SCLAlertButton} from 'react-native-scl-alert'
+import {connect} from "react-redux";
 
 
 
 
-export default class Receive extends Component {
+     class Receive extends Component {
     constructor(props) {
    
         super(props)
@@ -38,7 +40,8 @@ export default class Receive extends Component {
         this.setState({ spinner: true });
         this.setState({ 
         personal_info_id: await AsyncStorage.getItem('@personal_info_id') ,
-        getCurrency: await AsyncStorage.getItem('@getCurrency'), });
+        getCurrency: await AsyncStorage.getItem('@getCurrency'),
+        getFrom: await AsyncStorage.getItem('@getFrom'), });
         try {
    
         const BalApiCall = await fetch(Constant.URL+Constant.getCusBal+"/"+this.state.customer_id);
@@ -60,6 +63,25 @@ export default class Receive extends Component {
     
     }
 
+    async bal() {
+
+        this.setState({ spinner: true });
+        try {
+
+            const BalApiCall = await fetch(Constant.URL + Constant.getAgBal + "/" + this.state.personal_info_id+"/"+this.state.getFrom);
+            const dataSource = await BalApiCall.json();
+            Constant.SetAsyncValue('@wallet', dataSource.bal)
+            this.props.getCustomerWallet(dataSource.c_bal)
+            this.props.getAgentWallet(dataSource.bal)
+          
+        } catch (err) {
+            console.log("Error fetching data-----------", err);
+            this.setState({ spinner: false });
+        }
+    }
+
+
+  
     handleOpen = () => {
         const { amount } = this.state;
         if (amount.length <= 0) {
@@ -91,6 +113,7 @@ export default class Receive extends Component {
             msg: this.state.msg,
             pin: this.state.pin,
             bank_id:this.state.bank_id,
+            getCountry_id:this.state.getFrom,
             amount: this.state.amount})
           })
           .then((response) => response.json())
@@ -103,8 +126,8 @@ export default class Receive extends Component {
       
           console.log(this.state.dataSource.data);
           if(this.state.dataSource.code==200){
-
-          this.setState({ spinner: false,Sshow: true ,Smessage:this.state.dataSource.data.message });
+         this.bal()
+        this.setState({ spinner: false,Sshow: true ,Smessage:this.state.dataSource.data.message });
         this.setState({
             amount:'',
             pin:"",
@@ -321,3 +344,26 @@ const styles = StyleSheet.create({
         margin: 10,
     },
 });
+
+function  mapStateProps(state){
+    return{
+        userW:state.userW,
+        agentW:state.agentW
+    }
+ }
+function mapDispatchProps(dispatch){
+    
+    return{
+     getCustomerWallet: (response) => dispatch({
+        type: 'CUSTOMER_WALLET',
+        payload: response
+     }),
+     getAgentWallet: (response) => dispatch({
+         type: 'AGENT_WALLET',
+         payload: response
+        })
+    }
+ }
+
+
+export default connect(mapStateProps,mapDispatchProps)(Receive)

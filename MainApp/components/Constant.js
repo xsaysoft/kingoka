@@ -1,7 +1,7 @@
-
-
-//const URL = "http://172.20.10.8/king/portal/";
-const URL = "http://kingokagroup.com/";
+import AsyncStorage from '@react-native-community/async-storage';
+//const URL = "http://192.168.88.66/king/portal/";
+const URL = "http://192.168.88.34/king/portal/";
+//const URL = "http://kingokagroup.com/";
 const LOGIN = "MobileApi/m_login";
 const getCOUNTRY ="MobileApi/getCountry";
 const getRATE = "MobileApi/getRate";
@@ -20,6 +20,8 @@ const getTRANSFER="MobileApi/getAgentT";
 const CPAYOUT="MobileApi/Cpayout";
 const RPAYOUT="MobileApi/Rpayout";
 const getBANKS="MobileApi/getBanks";
+const getPERCENT="MobileApi/getPercent";
+const getOTHERWALLET ="MobileApi/OtherWallet";
 export default {
   URL,
   LOGIN,
@@ -40,9 +42,34 @@ export default {
   RPAYOUT,
   getBANKS,
   getAgBal ,
+  getPERCENT,
+  getOTHERWALLET,
 
   numberFormate(x) {
-    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    return '' + x.replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
+  },
+  
+rawNumber(x)
+{
+  return parseFloat(x.replace(/,/g, ''))
+},
+async removeAsyncValue(key) {
+  try {
+      await AsyncStorage.removeItem(key);
+      return true;
   }
+  catch(exception) {
+      return false;
+  }
+},
+async SetAsyncValue(key,value) {
+  try {
+    await AsyncStorage.setItem(key,value);
+  }
+  catch(e) {
+      return false;
+  }
+},
+
   
 };

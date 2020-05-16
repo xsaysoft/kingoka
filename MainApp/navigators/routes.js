@@ -32,6 +32,10 @@ import PayoutDone from '../screens/PayoutDone';
 import Credit from '../screens/Credit';
 import CreditSend from '../screens/CreditSend';
 import PayoutConfirm from '../screens/PayoutConfirm';
+import WalletHistory from '../screens/WalletHistory';
+import SwitchWallet from '../screens/SwitchWallet';
+import SwitchWalletConfirm from '../screens/SwitchWalletConfirm';
+
 
 
 
@@ -259,7 +263,24 @@ const Routes = {
       header: null
     },
   },
-
+  WalletHistory: {
+    screen:   WalletHistory,
+    navigationOptions: {
+      header: null
+    },
+  },
+  SwitchWallet: {
+    screen:   SwitchWallet,
+    navigationOptions: {
+      header: null
+    },
+  },
+  SwitchWalletConfirm: {
+    screen:   SwitchWalletConfirm,
+    navigationOptions: {
+      header: null
+    },
+  },
 
 }
 export default Routes;

@@ -3,8 +3,9 @@ import { View, Text, ScrollView, StyleSheet, TouchableOpacity } from 'react-nati
 import Icon from '../common/icons';
 import Theme from '../styles/Theme';
 import LinearGradient from 'react-native-linear-gradient';
-
+import Constant from "../components/Constant";
 import AsyncStorage from '@react-native-community/async-storage';
+
 
 export default class CreditSend extends Component {
     constructor(props) {
@@ -22,23 +23,7 @@ export default class CreditSend extends Component {
 
     }
    
-    logout= async () => {
-        await AsyncStorage.removeItem("@isLoggedIn");
-        AsyncStorage.removeItem();
-        await AsyncStorage.removeItem('@isLoggedIn'),
-await AsyncStorage.removeItem('@email'),
-await AsyncStorage.removeItem('@first_name'),
-await AsyncStorage.removeItem('@last_name'),
-await AsyncStorage.removeItem('@phone'),
-await AsyncStorage.removeItem('@country'),
-await AsyncStorage.removeItem('@personal_info_id'),
-await AsyncStorage.removeItem('@store_vid'),
-await AsyncStorage.removeItem('@getCurrency')
-await AsyncStorage.removeItem('@getFrom')
-await AsyncStorage.removeItem('@wallet')
-        this.props.navigation.navigate("LoginScreen")
 
-      };
 
     render() {
         return (

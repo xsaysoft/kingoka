@@ -3,9 +3,10 @@ import { View, Text, TextInput, StyleSheet, TouchableOpacity, ScrollView, Alert,
 import LinearGradient from 'react-native-linear-gradient';
 import Icon from '../common/icons';
 import Theme from "../styles/Theme";
-import AsyncStorage from '@react-native-community/async-storage';
 import Spinner from 'react-native-loading-spinner-overlay';
 import Constant from "../components/Constant";
+import AsyncStorage from '@react-native-community/async-storage';
+
 import {SCLAlert,SCLAlertButton} from 'react-native-scl-alert'
 
 export default class Users extends Component {
@@ -26,6 +27,7 @@ export default class Users extends Component {
 
     async componentDidMount() {
         this.setState({ personal_info_id: await AsyncStorage.getItem('@personal_info_id') ,
+        getFrom: await AsyncStorage.getItem('@getFrom'),
         });
     
     }
@@ -45,6 +47,7 @@ export default class Users extends Component {
               cus_name: this.state.cus_name,
               cus_phone: this.state.cus_phone,
               personal_info_id: this.state.personal_info_id,
+              getCountry_id:this.state.getFrom,
               cus_adr: this.state.cus_adr})
           })
           .then((response) => response.json())
