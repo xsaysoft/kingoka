@@ -86,7 +86,7 @@ class HomeScreen extends Component {
                 />
                 <NavigationEvents
               onWillFocus={() => {
-                console.log("something plas happen")
+              
               }}
               />
 
@@ -112,7 +112,7 @@ class HomeScreen extends Component {
                         </View>
                     </LinearGradient>
                     <View style={[styles.transferbox, { marginTop: -75 }]}>
-                        <TouchableOpacity onPress={this.ReloadScreen}>
+                        <TouchableOpacity onPress={() => this.props.navigation.navigate("WalletHistory")} >
                             <View style={styles.balance}>
                                 <Text style={{ fontSize: 15, fontWeight: "bold", color: '#000' }}>Current Bal:</Text>
                                 <Text style={{ fontSize: 20, fontWeight: "bold", color: '#000' }}>{this.props.agentC} {this.props.agentW}</Text>
@@ -212,7 +212,9 @@ class HomeScreen extends Component {
                                 </TouchableOpacity>
                             </View>
                             <View style={{ flex: 0.5, margin: 10 }}>
-                                <TouchableOpacity onPress={() => this.props.navigation.navigate("WalletHistory")} >
+                                <TouchableOpacity onPress={() => this.props.navigation.navigate("Customers",{
+                                 transaction:"DebtorAction"
+                                })} >
                                     <LinearGradient colors={['#fc0f84', '#020cab']}
                                         start={{ x: 1, y: 0 }} end={{ x: 0, y: 1 }} style={styles.gradsty}>
                                         <View style={{ padding: 5, alignItems: 'center', }}>
@@ -221,72 +223,13 @@ class HomeScreen extends Component {
                                             </View>
                                         </View>
                                     </LinearGradient>
-                                    <Text style={styles.paytypesty}>Wallet</Text>
-                                </TouchableOpacity>
-                            </View>
-                            <View style={{ flex: 0.5, margin: 10 }}>
-                                <TouchableOpacity onPress={() => this.props.navigation.navigate("")}>
-                                    <LinearGradient colors={['#fc0f84', '#020cab']}
-                                        start={{ x: 1, y: 0 }} end={{ x: 0, y: 1 }} style={styles.gradsty}>
-                                        <View style={{ padding: 5, alignItems: 'center', }}>
-                                            <View style={styles.transfer}>
-                                                <Icon family="Feather" name="briefcase" size={20} />
-                                            </View>
-                                        </View>
-                                    </LinearGradient>
-                                    <Text style={styles.paytypesty}>Transfer</Text>
-                                </TouchableOpacity>
-                            </View>
-
-                        </View>
-                    </View>
-
-                    <View style={[styles.transferbox2, { marginTop: -2 }]}>
-
-                        <View style={{ flex: 1, flexDirection: "row" }}>
-                            <View style={{ flex: 0.5, margin: 10 }}>
-                                <TouchableOpacity onPress={() => this.props.navigation.navigate("")}>
-                                    <LinearGradient colors={['#fc0f84', '#020cab']}
-                                        start={{ x: 1, y: 0 }} end={{ x: 0, y: 1 }} style={styles.gradsty}>
-                                        <View style={{ padding: 5, alignItems: 'center', }}>
-                                            <View style={styles.transfer}>
-                                                <Icon family="FontAwesome" name="compass" size={20} />
-                                            </View>
-                                        </View>
-                                    </LinearGradient>
                                     <Text style={styles.paytypesty}>Debtor</Text>
                                 </TouchableOpacity>
                             </View>
                             <View style={{ flex: 0.5, margin: 10 }}>
-                                <TouchableOpacity onPress={() => this.props.navigation.navigate("", {
-                                    history: 1,
-                                })}>
-                                    <LinearGradient colors={['#fc0f84', '#020cab']}
-                                        start={{ x: 1, y: 0 }} end={{ x: 0, y: 1 }} style={styles.gradsty} >
-                                        <View style={{ padding: 5, alignItems: 'center', }}>
-                                            <View style={styles.transfer}>
-                                                <Icon family="Feather" name="link" size={23} />
-                                            </View>
-                                        </View>
-                                    </LinearGradient>
-                                    <Text style={styles.paytypesty}>Withdrawal</Text>
-                                </TouchableOpacity>
-                            </View>
-                            <View style={{ flex: 0.5, margin: 10 }}>
-                                <TouchableOpacity onPress={() => this.props.navigation.navigate("")} >
-                                    <LinearGradient colors={['#fc0f84', '#020cab']}
-                                        start={{ x: 1, y: 0 }} end={{ x: 0, y: 1 }} style={styles.gradsty}>
-                                        <View style={{ padding: 5, alignItems: 'center', }}>
-                                            <View style={styles.transfer}>
-                                                <Icon family="Feather" name="shuffle" size={22} />
-                                            </View>
-                                        </View>
-                                    </LinearGradient>
-                                    <Text style={styles.paytypesty}>Profit/Loss</Text>
-                                </TouchableOpacity>
-                            </View>
-                            <View style={{ flex: 0.5, margin: 10 }}>
-                                <TouchableOpacity onPress={() => this.props.navigation.navigate("")}>
+                            <TouchableOpacity onPress={() => this.props.navigation.navigate("Credit", {
+                        income:1,
+                        })}>
                                     <LinearGradient colors={['#fc0f84', '#020cab']}
                                         start={{ x: 1, y: 0 }} end={{ x: 0, y: 1 }} style={styles.gradsty}>
                                         <View style={{ padding: 5, alignItems: 'center', }}>
@@ -296,6 +239,70 @@ class HomeScreen extends Component {
                                         </View>
                                     </LinearGradient>
                                     <Text style={styles.paytypesty}>Income</Text>
+                                </TouchableOpacity>
+                               
+                            </View>
+
+                        </View>
+                    </View>
+
+                    <View style={[styles.transferbox2, { marginTop: -2 }]}>
+
+                        <View style={{ flex: 1, flexDirection: "row" }}>
+                            <View style={{ flex: 0.5, margin: 10 }}>
+                            <TouchableOpacity onPress={() => this.props.navigation.navigate("ExpenseType")}>
+                                    <LinearGradient colors={['#fc0f84', '#020cab']}
+                                        start={{ x: 1, y: 0 }} end={{ x: 0, y: 1 }} style={styles.gradsty}>
+                                        <View style={{ padding: 5, alignItems: 'center', }}>
+                                            <View style={styles.transfer}>
+                                                <Icon family="FontAwesome" name="compass" size={20} />
+                                            </View>
+                                        </View>
+                                    </LinearGradient>
+                                    <Text style={styles.paytypesty}>Expenses</Text>
+                                </TouchableOpacity>
+                            </View>
+                            <View style={{ flex: 0.5, margin: 10 }}>
+                                <TouchableOpacity onPress={() => this.props.navigation.navigate("ExpenseType", {
+                                    transfer: 1,
+                                })}>
+                                    <LinearGradient colors={['#fc0f84', '#020cab']}
+                                        start={{ x: 1, y: 0 }} end={{ x: 0, y: 1 }} style={styles.gradsty} >
+                                        <View style={{ padding: 5, alignItems: 'center', }}>
+                                            <View style={styles.transfer}>
+                                                <Icon family="Feather" name="link" size={23} />
+                                            </View>
+                                        </View>
+                                    </LinearGradient>
+                                    <Text style={styles.paytypesty}>Transfer</Text>
+                                </TouchableOpacity>
+                            </View>
+                            <View style={{ flex: 0.5, margin: 10 }}>
+                                <TouchableOpacity onPress={() => this.props.navigation.navigate("TransferReceive")} >
+                                    <LinearGradient colors={['#fc0f84', '#020cab']}
+                                        start={{ x: 1, y: 0 }} end={{ x: 0, y: 1 }} style={styles.gradsty}>
+                                        <View style={{ padding: 5, alignItems: 'center', }}>
+                                            <View style={styles.transfer}>
+                                                <Icon family="Feather" name="shuffle" size={22} />
+                                            </View>
+                                        </View>
+                                    </LinearGradient>
+                                    <Text style={styles.paytypesty}>Received</Text>
+                                </TouchableOpacity>
+                            </View>
+                            <View style={{ flex: 0.5, margin: 10 }}>
+                            <TouchableOpacity onPress={() => this.props.navigation.navigate("Customers",{
+                                 transaction:"CustomerAction"
+                                })}>
+                                    <LinearGradient colors={['#fc0f84', '#020cab']}
+                                        start={{ x: 1, y: 0 }} end={{ x: 0, y: 1 }} style={styles.gradsty}>
+                                        <View style={{ padding: 5, alignItems: 'center', }}>
+                                            <View style={styles.transfer}>
+                                                <Icon family="Feather" name="briefcase" size={20} />
+                                            </View>
+                                        </View>
+                                    </LinearGradient>
+                                    <Text style={styles.paytypesty}>Cash Return</Text>
                                 </TouchableOpacity>
                             </View>
 

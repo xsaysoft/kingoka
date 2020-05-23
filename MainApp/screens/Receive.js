@@ -5,7 +5,7 @@ import Theme from '../styles/Theme';
 import Spinner from 'react-native-loading-spinner-overlay';
 import Constant from "../components/Constant";
 import AsyncStorage from '@react-native-community/async-storage';
-
+import { TextInputMask } from 'react-native-masked-text'
 import {SCLAlert,SCLAlertButton} from 'react-native-scl-alert'
 import {connect} from "react-redux";
 
@@ -21,6 +21,8 @@ import {connect} from "react-redux";
             cus_phone: this.props.navigation.getParam('cus_phone', 'phone'),
             customer_id: this.props.navigation.getParam('customer_id', '0'),
             c_type: this.props.navigation.getParam('c_type', '0'),
+            income_type: this.props.navigation.getParam('income_type', '0'),
+            income: this.props.navigation.getParam('income', '0'),
             BankList:[],
             bank_id:"",
             amount:'',
@@ -29,6 +31,7 @@ import {connect} from "react-redux";
             spinner: false,
             bal:"0.00",
             show: false,
+            income_bal:0,
             pin:"",
             Amessage:"",
             Smessage:"",
@@ -41,7 +44,8 @@ import {connect} from "react-redux";
         this.setState({ 
         personal_info_id: await AsyncStorage.getItem('@personal_info_id') ,
         getCurrency: await AsyncStorage.getItem('@getCurrency'),
-        getFrom: await AsyncStorage.getItem('@getFrom'), });
+        getFrom: await AsyncStorage.getItem('@getFrom'),
+        getProfit: await AsyncStorage.getItem('@profit_rate'),  });
         try {
    
         const BalApiCall = await fetch(Constant.URL+Constant.getCusBal+"/"+this.state.customer_id);
@@ -148,6 +152,60 @@ import {connect} from "react-redux";
         }
     }
 
+    onPressDebit = async() => {
+
+        this.setState({ spinner: true });
+       var due_amount = this.state.amount * Constant.rawNumber(this.state.getProfit)
+     
+        if (due_amount > Constant.rawNumber(this.state.bal)) {
+           
+            this.setState({ spinner: false,Ashow: true ,show: false,Amessage:"Insufficient Please try Again" });
+        }else {
+             // post method
+    fetch(Constant.URL+Constant.addINCOME,{
+        method: 'POST',
+        body: JSON.stringify({ 
+            customer_id: this.state.customer_id,
+            personal_info_id: this.state.personal_info_id,
+            msg: this.state.msg,
+            pin: this.state.pin,
+            bank_id:this.state.income_type,
+            getCountry_id:this.state.getFrom,
+            getProfit: Constant.rawNumber(this.state.getProfit),
+            amount: this.state.amount})
+          })
+          .then((response) => response.json())
+          .then((result) => {
+     
+        this.setState({
+                spinner: false,
+             dataSource: result, 
+          });
+      
+          console.log(this.state.dataSource.data);
+          if(this.state.dataSource.code==200){
+         this.bal()
+        this.setState({ spinner: false,Sshow: true ,Smessage:this.state.dataSource.data.message });
+        this.setState({
+            amount:'',
+            pin:"",
+           show: false 
+        });
+          
+          }else{
+            this.setState({ spinner: false,Ashow: true ,show: false,Amessage:this.state.dataSource.data.message });
+          }
+          
+         }).catch(function (error) {
+          this.setState({ spinner: false });
+         console.log("-------- error ------- "+error);
+         alert("result:"+error)
+         });
+      
+      //end post method
+        }
+    }
+
     render() {
         return (
             <View style={{ flex: 1, backgroundColor: Theme.bgcolor }} >
@@ -161,7 +219,12 @@ import {connect} from "react-redux";
                     <TouchableOpacity onPress={() => this.props.navigation.goBack()}>
                         <Icon family="MaterialIcons" name="arrow-back" size={25} color="#FFF" />
                     </TouchableOpacity>
-                    <Text style={styles.headTxt}>Credit  {this.state.cus_name} </Text>
+                    {this.state.income==1? (
+                        <Text style={styles.headTxt}> Debit Income  {this.state.cus_name} </Text>
+                    ): null }
+                     {this.state.income==0? (
+                    <Text style={styles.headTxt}> Credit Wallet  {this.state.cus_name} </Text>
+                    ): null }
                 </View>
                 <ScrollView>
                     <View style={{ flexDirection: 'row', borderBottomWidth: 1, borderColor: 'lightgray', alignItems: 'center' }}>
@@ -186,7 +249,20 @@ import {connect} from "react-redux";
                             <Text style={{ fontFamily: 'Poppins-Regular' }}>Wallet Balance :</Text>
                             <Text style={{ fontSize: 20, color: '#000', fontFamily: 'Poppins-ExtraLight' }}> {this.state.getCurrency} {this.state.bal}</Text>
                         </View>
+                        
                     </TouchableOpacity>
+                    {this.state.income==1? (
+                    <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center', paddingLeft: 20 , paddingTop:10}}  >
+                        <Icon style={{ padding: 5 }} family="Feather" name="trending-up" size={30} color="#020cab" />
+                        <View>
+                            <Text style={{ fontFamily: 'Poppins-Regular' }}>Total Income  :</Text>
+                            <Text style={{ fontSize: 14, color: '#000', fontFamily: 'Poppins-ExtraLight' }}> {this.state.getCurrency} {this.state.income_bal }</Text>
+                        </View>
+                        
+                    </TouchableOpacity>
+                     ): null }
+            {this.state.income==0? (
+            <View>
                     {this.state.c_type==2? (
                     <View style={{ flexDirection: 'row', alignItems: 'center', borderWidth: 1, margin: 15,marginTop:2, paddingHorizontal: 15 }}>
                             <Text  style={{ flex: 0.1, paddingLeft: 1 }} ></Text> 
@@ -207,8 +283,8 @@ import {connect} from "react-redux";
                         <TextInput style={{ paddingLeft: 10, fontSize: 16 }}
                             keyboardType='number-pad'
                             placeholder="Enter Amount"
-                            onChangeText={(amount)=>this.setState({amount})}
                             value={this.state.amount}
+                            onChangeText={(amount)=>{this.setState({amount})}}
                         />
                     </View>
                    
@@ -219,7 +295,7 @@ import {connect} from "react-redux";
                     <View style={{ flexDirection: 'row', alignItems: 'center', borderBottomWidth: 1, margin: 15, paddingHorizontal: 15 }}>
                         <TextInput style={{ flex: 1, paddingLeft: 10, fontSize: 16, fontFamily:'Poppins-ExtraLightItalic' }}
                             keyboardType='email-address'
-                            placeholder="Add a message (Optioncal)"
+                            placeholder="Add a message (Optional)"
                             onChangeText={(msg)=>this.setState({msg})}
                             value={this.state.msg}
                         />
@@ -227,6 +303,41 @@ import {connect} from "react-redux";
                     <TouchableOpacity style={{ paddingVertical: 10, backgroundColor: '#020cab', marginTop: 30, borderRadius: 50, marginHorizontal: 30 }} onPress={this.handleOpen}  >
                         <Text style={{ color: '#FFF', textAlign: 'center', fontSize: 16 ,  fontFamily: 'Poppins-Bold',}}>CREDIT</Text>
                     </TouchableOpacity>
+            </View>
+            ): null }
+
+            {/* INCOME DEBIT CODE */}
+            {this.state.income==1? (
+            <View>
+                     <View style={{ flexDirection: 'row', alignItems: 'center', borderWidth: 1, margin: 15, paddingHorizontal: 15 }}>
+                        <Icon family="FontAwesome" name="money" size={25} />
+                        <TextInput style={{ paddingLeft: 10, fontSize: 16 }}
+                            keyboardType='number-pad'
+                            placeholder="Enter Amount"
+                            value={this.state.amount}
+                            onChangeText={(amount)=>{this.setState({amount,income_bal:amount*Constant.rawNumber(this.state.getProfit)})
+                           
+                        }}
+                            
+                        />
+                    </View>
+                          
+              
+
+                    <View style={{ flexDirection: 'row', alignItems: 'center', borderBottomWidth: 1, margin: 15, paddingHorizontal: 15 }}>
+                        <TextInput style={{ flex: 1, paddingLeft: 10, fontSize: 16, fontFamily:'Poppins-ExtraLightItalic' }}
+                            keyboardType='email-address'
+                            placeholder="Add a message (Optional)"
+                            onChangeText={(msg)=>this.setState({msg})}
+                            value={this.state.msg}
+                        />
+                    </View>
+                    <TouchableOpacity style={{ paddingVertical: 10, backgroundColor: '#020cab', marginTop: 30, borderRadius: 50, marginHorizontal: 30 }} onPress={this.handleOpen}  >
+                        <Text style={{ color: '#FFF', textAlign: 'center', fontSize: 16 ,  fontFamily: 'Poppins-Bold',}}>Debit Income</Text>
+                    </TouchableOpacity>
+                </View>
+                    ): null }
+
                     <View style={{margin: 20}}></View>
 
                     <SCLAlert
@@ -248,7 +359,12 @@ import {connect} from "react-redux";
                             secureTextEntry={true}
                             maxLength={4}
                         />
+         {this.state.income==0? (
           <SCLAlertButton theme="info" onPress={this.onPressCredit} >CREDIT</SCLAlertButton>
+          ): null }
+           {this.state.income==1? (
+          <SCLAlertButton theme="info" onPress={this.onPressDebit} >SEND</SCLAlertButton>
+          ): null }
         </SCLAlert>
 
         <SCLAlert

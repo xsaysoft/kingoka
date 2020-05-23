@@ -18,6 +18,8 @@ export default class ReceiveContacts extends Component {
             personal_info_id:"",
             cus_img: "../assets/img/boy.png",
             c_type : this.props.navigation.getParam('c_type', '0'),
+            income_type : this.props.navigation.getParam('income_type', '0'),
+            income : this.props.navigation.getParam('income', '0'),
         }
     }
 
@@ -43,7 +45,9 @@ export default class ReceiveContacts extends Component {
                 cus_name: rowdata.item.cus_name,
                 cus_phone: rowdata.item.cus_phone,
                 customer_id: rowdata.item.customer_id,
-                c_type:this.state.c_type
+                c_type:this.state.c_type,
+                income_type:this.state.income_type,
+                income:this.state.income,
               
               })} >
                 <View style={{ flex: 1 }}>
@@ -73,7 +77,7 @@ export default class ReceiveContacts extends Component {
                     <TouchableOpacity onPress={() => this.props.navigation.goBack()}>
                         <Icon family="MaterialIcons" name="arrow-back" size={25} color="#FFF" />
                     </TouchableOpacity>
-        <Text style={styles.headTxt}>Credit Customers </Text>
+        <Text style={styles.headTxt}> Customers Details </Text>
                 </View>
                 <View style={{ flexDirection: 'row', alignItems: 'center', borderWidth: 1, margin: 15, paddingHorizontal: 15 }}>
                         <Icon family="Feather" name="search" size={25} />

@@ -114,7 +114,7 @@ export default class ActiveScreen extends Component {
 
                     <View style={styles.transferbox}>
                         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-around' }} >
-        <Text style={styles.paidTxt}> Rate Center Convertion </Text>
+        <Text style={styles.paidTxt}> Rate Center Conversation </Text>
                             
                         </View>
                     

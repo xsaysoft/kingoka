@@ -90,7 +90,7 @@ import {connect} from "react-redux";
                     <TouchableOpacity onPress={() => this.props.navigation.goBack()}>
                         <Icon family="MaterialIcons" name="arrow-back" size={25} color="#FFF" />
                     </TouchableOpacity>
-                    <Text style={styles.headTxt}>Confirm Switch Wallet To {this.state.personal_info_id} {this.state.currency} </Text>
+                    <Text style={styles.headTxt}>Confirm Switch Wallet To  {this.state.currency} </Text>
                 </View>
                 <ScrollView>
                     <View style={{ flexDirection: 'row', borderBottomWidth: 1, borderColor: 'lightgray', alignItems: 'center' }}>
@@ -119,7 +119,7 @@ import {connect} from "react-redux";
 
                  
                     <TouchableOpacity style={{ paddingVertical: 10, backgroundColor: '#020cab', marginTop: 30, borderRadius: 50, marginHorizontal: 30 }} onPress={this.handleOpen}  >
-                        <Text style={{ color: '#FFF', textAlign: 'center', fontSize: 16 ,  fontFamily: 'Poppins-Bold',}}>CONFIRM WALLET SWUTCH</Text>
+                        <Text style={{ color: '#FFF', textAlign: 'center', fontSize: 16 ,  fontFamily: 'Poppins-Bold',}}>CONFIRM WALLET SWITCH</Text>
                     </TouchableOpacity>
                     <View style={{margin: 20}}></View>
 

@@ -45,6 +45,7 @@ export default class SendContacts extends Component {
                 cus_phone: rowdata.item.cus_phone,
                 customer_id: rowdata.item.customer_id,
                 cc_type:this.state.c_type,
+            
               
               })} >
                 <View style={{ flex: 1 }}>
@@ -74,7 +75,7 @@ export default class SendContacts extends Component {
                     <TouchableOpacity onPress={() => this.props.navigation.goBack()}>
                         <Icon family="MaterialIcons" name="arrow-back" size={25} color="#FFF" />
                     </TouchableOpacity>
-        <Text style={styles.headTxt}>Send Customers </Text>
+        <Text style={styles.headTxt}>Customers </Text>
                 </View>
                 <View style={{ flexDirection: 'row', alignItems: 'center', borderWidth: 1, margin: 15, paddingHorizontal: 15 }}>
                         <Icon family="Feather" name="search" size={25} />

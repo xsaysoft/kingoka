@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, ScrollView, StyleSheet, Image, TouchableOpacity, FlatList, TextInput, StatusBar,Alert } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, Image, TouchableOpacity, FlatList, TextInput, StatusBar, Alert } from 'react-native';
 import Theme from '../styles/Theme';
 import Icon from '../common/icons';
 import Spinner from 'react-native-loading-spinner-overlay';
@@ -7,12 +7,12 @@ import { Table, TableWrapper, Row, Rows, Col } from 'react-native-table-componen
 import Constant from "../components/Constant";
 import AsyncStorage from '@react-native-community/async-storage';
 
-import {SCLAlert,SCLAlertButton} from 'react-native-scl-alert'
+import { SCLAlert, SCLAlertButton } from 'react-native-scl-alert'
 export default class PayoutDone extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            cus_name : this.props.navigation.getParam('cus_name', 'Name'),
+            cus_name: this.props.navigation.getParam('cus_name', 'Name'),
             cus_phone: this.props.navigation.getParam('cus_phone', 'phone'),
             customer_id: this.props.navigation.getParam('customer_id', '0'),
             amount: this.props.navigation.getParam('amount', '0'),
@@ -21,213 +21,219 @@ export default class PayoutDone extends Component {
             charges: this.props.navigation.getParam('charges', '0'),
             to: this.props.navigation.getParam('to', '0'),
             from: this.props.navigation.getParam('from', '0'),
-            ben_name:this.props.navigation.getParam('ben_name', '0'),
-            ben_id:this.props.navigation.getParam('ben_id', '0'),
-            ben_bank:this.props.navigation.getParam('ben_bank', '0'),
-            ben_acct:this.props.navigation.getParam('ben_acct', '0'),
-            ben_phone:this.props.navigation.getParam('ben_phone', '0'),
-            message:this.props.navigation.getParam('message', '0'),
+            ben_name: this.props.navigation.getParam('ben_name', '0'),
+            ben_id: this.props.navigation.getParam('ben_id', '0'),
+            ben_bank: this.props.navigation.getParam('ben_bank', '0'),
+            ben_acct: this.props.navigation.getParam('ben_acct', '0'),
+            ben_phone: this.props.navigation.getParam('ben_phone', '0'),
+            message: this.props.navigation.getParam('message', '0'),
             toAgent: this.props.navigation.getParam('toAgent', '0'),
-            first_name:this.props.navigation.getParam('first_name', '0'),
+            first_name: this.props.navigation.getParam('first_name', '0'),
             last_name: this.props.navigation.getParam('last_name', '0'),
             phone: this.props.navigation.getParam('phone', '0'),
             agent_to: this.props.navigation.getParam('agent_to', '0'),
             agent_acct_id: this.props.navigation.getParam('agent_acct_id', '0'),
             c_ref: this.props.navigation.getParam('c_ref', '0'),
             status: this.props.navigation.getParam('status', '0'),
-            due_amount: this.props.navigation.getParam('due_amount','0'),
-            
-            pin:"",
+            due_amount: this.props.navigation.getParam('due_amount', '0'),
+            payout_bal: this.props.navigation.getParam('payout_bal', '0'),
+            bank_id_pay: this.props.navigation.getParam('bank_id_pay', '0'),
+            payout_due: this.props.navigation.getParam('payout_due', '0'),
+
+            pin: "",
             spinner: false,
-            Amessage:"",
-            Smessage:"",
-      tableHead: [,'Agent', 'Sender', 'Beneficiary'],
-      tableData: [
-        [props.navigation.getParam('first_name', '') +" "+ this.props.navigation.getParam('last_name',''), this.props.navigation.getParam('cus_name', ''), this.props.navigation.getParam('ben_name', '')],
-        [this.props.navigation.getParam('phone', '0'), this.props.navigation.getParam('cus_phone', 'phone'), this.props.navigation.getParam('ben_phone', '')],
-      ],
-      RtableHead: ['Bank', 'Account', 'Message'],
-      RtableData: [
-        [this.props.navigation.getParam('ben_bank', '0'), this.props.navigation.getParam('ben_acct', '0'), this.props.navigation.getParam('message', '0')],
-       
-      ],
-      RRtableHead: ['Amount', 'Charges', 'Rate'],
-      RRtableData: [
-        [this.props.navigation.getParam('due_amount', '0'), this.props.navigation.getParam('charges', '0'), this.props.navigation.getParam('rate', '0')],
-       
-      ]
- 
+            Amessage: "",
+            Smessage: "",
+            tableHead: [, 'Agent', 'Sender', 'Beneficiary'],
+            tableData: [
+                [props.navigation.getParam('first_name', '') + " " + this.props.navigation.getParam('last_name', ''), this.props.navigation.getParam('cus_name', ''), this.props.navigation.getParam('ben_name', '')],
+                [this.props.navigation.getParam('phone', '0'), this.props.navigation.getParam('cus_phone', 'phone'), this.props.navigation.getParam('ben_phone', '')],
+            ],
+            RtableHead: ['Bank', 'Account', 'Message'],
+            RtableData: [
+                [this.props.navigation.getParam('ben_bank', '0'), this.props.navigation.getParam('ben_acct', '0'), this.props.navigation.getParam('message', '0')],
+
+            ],
+            RRtableHead: ['Amount', 'Charges', 'Rate'],
+            RRtableData: [
+                [this.props.navigation.getParam('due_amount', '0'), this.props.navigation.getParam('charges', '0'), this.props.navigation.getParam('rate', '0')],
+
+            ]
+
         }
     }
 
-   
+
     async componentDidMount() {
-     
+
 
     }
-    
-onPressTransfer = async() => {
-  this.props.navigation.navigate("PayoutConfirm", {
-    agent_acct_id: this.state.agent_acct_id,
-    agent_to: this.state.agent_to,
-    c_ref: this.state.c_ref,
-    amount: this.state.amount,
-    rate: this.state.rate,
-    rate_type: this.state.rate_type,
-    charges: this.state.charges,
-   from:this.state.from,
-   to:this.state.to,
-   status:this.state.status,
-   due_amount: this.state.due_amount,
-  
-  })
+
+    onPressTransfer = async () => {
+        this.props.navigation.navigate("PayoutConfirm", {
+            agent_acct_id: this.state.agent_acct_id,
+            agent_to: this.state.agent_to,
+            c_ref: this.state.c_ref,
+            amount: this.state.amount,
+            rate: this.state.rate,
+            rate_type: this.state.rate_type,
+            charges: this.state.charges,
+            from: this.state.from,
+            to: this.state.to,
+            status: this.state.status,
+            due_amount: this.state.due_amount,
+            payout_bal: this.state.payout_bal,
+            bank_id_pay: this.state.bank_id_pay,
+            payout_due: this.state.payout_due
+
+        })
     }
 
-    onPressRV = async() => {
+    onPressRV = async () => {
 
-      
+
         const { pin } = this.state;
         if (pin.length <= 0) {
-          Alert.alert("Please Enter Your Pin.");
-        }else {
-      this.setState({ spinner: true });
-             // post method
-    fetch(Constant.URL+Constant.RPAYOUT,{
-        method: 'POST',
-        body: JSON.stringify({ 
-            agent_to: this.state.agent_to,
-            agent_acct_id: this.state.agent_acct_id,
-            pin: this.state.pin,
-            c_ref: this.state.c_ref,
-        })
-          })
-          .then((response) => response.json())
-          .then((result) => {
-     
-        this.setState({
-                spinner: false,
-             dataSource: result, 
-          });
-      
-          console.log(this.state.dataSource.data);
-          if(this.state.dataSource.code==200){
+            Alert.alert("Please Enter Your Pin.");
+        } else {
+            this.setState({ spinner: true });
+            // post method
+            fetch(Constant.URL + Constant.RPAYOUT, {
+                method: 'POST',
+                body: JSON.stringify({
+                    agent_to: this.state.agent_to,
+                    agent_acct_id: this.state.agent_acct_id,
+                    pin: this.state.pin,
+                    c_ref: this.state.c_ref,
+                })
+            })
+                .then((response) => response.json())
+                .then((result) => {
 
-          this.setState({ spinner: false,Sshow: true ,Smessage:this.state.dataSource.data.message });
-          
-          }else{
-             
-            this.setState({ spinner: false,show: true ,Amessage:this.state.dataSource.data.message });
-            
-          }
-          
-         }).catch(function (error) {
-          this.setState({ spinner: false });
-         console.log("-------- error ------- "+error);
-         alert("result:"+error)
-         });
-      
-      //end post method
+                    this.setState({
+                        spinner: false,
+                        dataSource: result,
+                    });
+
+                    console.log(this.state.dataSource.data);
+                    if (this.state.dataSource.code == 200) {
+
+                        this.setState({ spinner: false, Sshow: true, Smessage: this.state.dataSource.data.message });
+
+                    } else {
+
+                        this.setState({ spinner: false, show: true, Amessage: this.state.dataSource.data.message });
+
+                    }
+
+                }).catch(function (error) {
+                    this.setState({ spinner: false });
+                    console.log("-------- error ------- " + error);
+                    alert("result:" + error)
+                });
+
+            //end post method
         }
     }
     render() {
-      let bal
-      if (this.state.rate_type == 1) {
-          bal = (this.state.due_amount) * (this.state.rate)
-      } else {
-        bal = (this.state.due_amount) / (this.state.rate)
-      }
-         
-       
+        let bal
+        if (this.state.rate_type == 1) {
+            bal = (this.state.due_amount) * (this.state.rate)
+        } else {
+            bal = (this.state.due_amount) / (this.state.rate)
+        }
+
+
         return (
             <View style={{ flex: 1, backgroundColor: Theme.bgcolor }}>
-                  <Spinner
-                visible={this.state.spinner}
-                overlayColor={'rgba(0, 0, 0, 0.30)'}
+                <Spinner
+                    visible={this.state.spinner}
+                    overlayColor={'rgba(0, 0, 0, 0.30)'}
                 />
                 <StatusBar backgroundColor="#020cab" barStyle="light-content" />
                 <View style={styles.logContainer}>
                     <TouchableOpacity onPress={() => this.props.navigation.goBack()}>
                         <Icon family="MaterialIcons" name="arrow-back" size={25} color="#FFF" />
                     </TouchableOpacity>
-        <Text style={styles.logintxt}>Approve Payout</Text>
+                    <Text style={styles.logintxt}>Approve Payout</Text>
                 </View>
                 <ScrollView>
                     <View style={styles.AmountCon}>
                         <Text style={styles.valTxt}>Value To Transfer between currency</Text>
                         <View style={styles.rowcenter}>
-                           {this.state. getCurrency}
-                            <Text style={{ color: "#FFF", fontSize: 40, paddingLeft: 5 }}>{Constant.numberFormate(bal.toFixed(4))}</Text>
-                     
+                            {this.state.getCurrency}
+                            <Text style={{ color: "#FFF", fontSize: 40, paddingLeft: 5 }}>{Constant.numberFormate(bal.toFixed(2))}</Text>
+
                         </View>
                         <Text style={styles.updateSty}>{this.state.from} > {this.state.to}</Text>
                     </View>
-                   
-    
-                        <View style={styles.container}>
-                            <Table borderStyle={{borderWidth: 1}}>
-                            <Row data={this.state.tableHead} flexArr={[ 1, 1, 1]} style={styles.head} textStyle={styles.text}/>
+
+
+                    <View style={styles.container}>
+                        <Table borderStyle={{ borderWidth: 1 }}>
+                            <Row data={this.state.tableHead} flexArr={[1, 1, 1]} style={styles.head} textStyle={styles.text} />
                             <TableWrapper style={styles.wrapper}>
-                                <Rows data={this.state.tableData} flexArr={[1, 1, 1]} style={styles.row} textStyle={styles.text}/>
+                                <Rows data={this.state.tableData} flexArr={[1, 1, 1]} style={styles.row} textStyle={styles.text} />
                             </TableWrapper>
-                            </Table>
-                        </View>
-                       
-                        <View style={styles.container}>
-                            <Table borderStyle={{borderWidth: 1}}>
-                            <Row data={this.state.RtableHead} flexArr={[ 1, 1, 1]} style={styles.head} textStyle={styles.text}/>
-                            <TableWrapper style={styles.wrapper}>
-                                <Rows data={this.state.RtableData} flexArr={[1, 1, 1]} style={styles.row} textStyle={styles.text}/>
-                            </TableWrapper>
-                            </Table>
-                        </View>
-
-                        <View style={styles.container}>
-                            <Table borderStyle={{borderWidth: 1}}>
-                            <Row data={this.state.RRtableHead} flexArr={[ 1, 1, 1]} style={styles.head} textStyle={styles.text}/>
-                            <TableWrapper style={styles.wrapper}>
-                                <Rows data={this.state.RRtableData} flexArr={[1, 1, 1]} style={styles.row} textStyle={styles.text}/>
-                            </TableWrapper>
-                            </Table>
-                        </View>
-                    
-                      {this.state.status==0 ? ( 
-
-                      <View>
-                          <TouchableOpacity style={{ paddingVertical: 10, backgroundColor: '#020cab', marginTop: 30, borderRadius: 50, marginHorizontal: 30 }} onPress={this.onPressTransfer}> 
-                        <Text style={{ color: '#FFF', textAlign: 'center', fontSize: 16 ,  fontFamily: 'Poppins-Bold',}}>Continue To Process Payout</Text>
-                        </TouchableOpacity>
-
-                        
-
-                      </View>
-          
-                 ): null}
-
-                    {this.state.status==1 ? ( 
-                      <View>
-                            <View style={{ flexDirection: 'row', alignItems: 'center', borderWidth: 1, margin: 15, paddingHorizontal: 15 }}>
-                            <Icon family="Feather" name="key" size={25} />
-                            <TextInput style={{ paddingLeft: 10, fontSize: 16 }}
-                                
-                                placeholder="ENTER YOUR PIN"
-                                
-                                keyboardType="number-pad"
-                                secureTextEntry={true}
-                                maxLength={4}
-                                onChangeText={(pin)=>this.setState({pin})}
-                                value={this.state.pin}
-                            />
-                        
-                          </View>
-
-                        <TouchableOpacity style={{ paddingVertical: 10, backgroundColor: 'red', marginTop: 30, borderRadius: 50, marginHorizontal: 30 }} onPress={this.onPressRV}> 
-                        <Text style={{ color: '#FFF', textAlign: 'center', fontSize: 16 ,  fontFamily: 'Poppins-Bold',}}>Reverse Payment</Text>
-                        </TouchableOpacity>
+                        </Table>
                     </View>
-                    ): null}
 
-                    <View style={{margin: 20}}></View>
-         
+                    <View style={styles.container}>
+                        <Table borderStyle={{ borderWidth: 1 }}>
+                            <Row data={this.state.RtableHead} flexArr={[1, 1, 1]} style={styles.head} textStyle={styles.text} />
+                            <TableWrapper style={styles.wrapper}>
+                                <Rows data={this.state.RtableData} flexArr={[1, 1, 1]} style={styles.row} textStyle={styles.text} />
+                            </TableWrapper>
+                        </Table>
+                    </View>
+
+                    <View style={styles.container}>
+                        <Table borderStyle={{ borderWidth: 1 }}>
+                            <Row data={this.state.RRtableHead} flexArr={[1, 1, 1]} style={styles.head} textStyle={styles.text} />
+                            <TableWrapper style={styles.wrapper}>
+                                <Rows data={this.state.RRtableData} flexArr={[1, 1, 1]} style={styles.row} textStyle={styles.text} />
+                            </TableWrapper>
+                        </Table>
+                    </View>
+
+                    {this.state.status == 0 ? (
+
+                        <View>
+                            <TouchableOpacity style={{ paddingVertical: 10, backgroundColor: '#020cab', marginTop: 30, borderRadius: 50, marginHorizontal: 30 }} onPress={this.onPressTransfer}>
+                                <Text style={{ color: '#FFF', textAlign: 'center', fontSize: 16, fontFamily: 'Poppins-Bold', }}>Continue To Process Payout</Text>
+                            </TouchableOpacity>
+
+
+
+                        </View>
+
+                    ) : null}
+
+                    {this.state.status == 1 ? (
+                        <View>
+                            <View style={{ flexDirection: 'row', alignItems: 'center', borderWidth: 1, margin: 15, paddingHorizontal: 15 }}>
+                                <Icon family="Feather" name="key" size={25} />
+                                <TextInput style={{ paddingLeft: 10, fontSize: 16 }}
+
+                                    placeholder="ENTER YOUR PIN"
+
+                                    keyboardType="number-pad"
+                                    secureTextEntry={true}
+                                    maxLength={4}
+                                    onChangeText={(pin) => this.setState({ pin })}
+                                    value={this.state.pin}
+                                />
+
+                            </View>
+
+                            <TouchableOpacity style={{ paddingVertical: 10, backgroundColor: 'red', marginTop: 30, borderRadius: 50, marginHorizontal: 30 }} onPress={this.onPressRV}>
+                                <Text style={{ color: '#FFF', textAlign: 'center', fontSize: 16, fontFamily: 'Poppins-Bold', }}>Reverse Payment</Text>
+                            </TouchableOpacity>
+                        </View>
+                    ) : null}
+
+                    <View style={{ margin: 20 }}></View>
+
                     <SCLAlert
                         theme="danger"
                         show={this.state.show}
@@ -235,30 +241,30 @@ onPressTransfer = async() => {
                         subtitle={this.state.Amessage}
                         onRequestClose={() => {
                             this.setState({ show: false })
-                            }}
-                        >
-                            
-                 
-          <SCLAlertButton theme="danger" onPress={() => {
-                            this.setState({ show: false })
-                            }} >Close</SCLAlertButton>
-        </SCLAlert>
+                        }}
+                    >
 
-        <SCLAlert
+
+                        <SCLAlertButton theme="danger" onPress={() => {
+                            this.setState({ show: false })
+                        }} >Close</SCLAlertButton>
+                    </SCLAlert>
+
+                    <SCLAlert
                         theme="success"
                         show={this.state.Sshow}
                         title="Successful Message"
                         subtitle={this.state.Smessage}
                         onRequestClose={() => {
                             this.setState({ Sshow: false })
-                            }}
-                        >
-                            
-                 
-          <SCLAlertButton theme="success" onPress={() => {
+                        }}
+                    >
+
+
+                        <SCLAlertButton theme="success" onPress={() => {
                             this.props.navigation.navigate("TabNav")
-                            }} >Close</SCLAlertButton>
-        </SCLAlert>
+                        }} >Close</SCLAlertButton>
+                    </SCLAlert>
 
 
                 </ScrollView>
@@ -315,9 +321,9 @@ const styles = StyleSheet.create({
         color: '#000'
     },
     container: { flex: 1, padding: 16, paddingTop: 10, backgroundColor: '#fff' },
-  head: {  height: 40,  backgroundColor: '#f1f8ff',  },
-  wrapper: { flexDirection: 'row' },
-  title: { flex: 1, backgroundColor: '#f6f8fa' },
-  row: {  height: 28  },
-  text: { textAlign: 'center' }
+    head: { height: 40, backgroundColor: '#f1f8ff', },
+    wrapper: { flexDirection: 'row' },
+    title: { flex: 1, backgroundColor: '#f6f8fa' },
+    row: { height: 28 },
+    text: { textAlign: 'center' }
 });

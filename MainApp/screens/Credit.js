@@ -13,6 +13,7 @@ export default class Credit extends Component {
         super(props)
         this.state = {
             wallet:"0.00",
+            income : this.props.navigation.getParam('income', '0'),
         }
     }
     
@@ -35,7 +36,7 @@ export default class Credit extends Component {
 
                     <Icon style={{paddingLeft:10 , paddingTop:10}} family="MaterialIcons" name="arrow-back" size={25} color="#FFF" />
                 </TouchableOpacity>
-                        <Text style={styles.myAc}>Credit Account</Text>
+                        <Text style={styles.myAc}>Transaction Type</Text>
                             <View style={styles.balancesty}>
                                 <Text style={{ fontFamily: 'Poppins-Medium', color: '#000' }}>Balance </Text>
         <Text style={styles.coststy}>{this.state.getCurrency} {this.state.wallet} </Text>
@@ -46,7 +47,10 @@ export default class Credit extends Component {
                        
 
                         <TouchableOpacity style={styles.tabBox} onPress={() => this.props.navigation.navigate("ReceiveContacts",
-                        {c_type: 1}
+                        {c_type: 1,
+                        income_type:0,
+                        income:this.state.income,
+                        }
                         )}>
                             <View style={styles.tabIconSty}>
                                 <Icon family="SimpleLineIcons" name="wallet" size={25} color="#FFF" />
@@ -55,7 +59,10 @@ export default class Credit extends Component {
                         </TouchableOpacity>
 
                         <TouchableOpacity style={styles.tabBox}  onPress={() => this.props.navigation.navigate("ReceiveContacts",
-                         {c_type: 2}
+                         {c_type: 2,
+                        income_type:1,
+                        income:this.state.income,
+                        }
                         )}>
                             <View style={styles.tabIconSty}>
                                 <Icon family="MaterialCommunityIcons" name="briefcase-upload-outline" size={25} color="#FFF" />

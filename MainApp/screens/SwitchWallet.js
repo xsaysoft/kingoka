@@ -34,13 +34,7 @@ export default class SwitchWallet extends Component {
         }
     }
 
-    onPressWallet (country_id){
-        alert("ok")
-console.log("country_id",country_id)
-    //     this.setState({ spinner: true });
-   
- 
-    }
+
 
     _renderTransfer(rowdata) {
         return (

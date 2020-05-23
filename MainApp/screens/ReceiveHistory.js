@@ -37,7 +37,7 @@ export default class ReceiveHistory extends Component {
 
     _renderTransfer(rowdata) {
         return (
-            <TouchableOpacity onPress={()=>this.props.navigation.navigate("Receive")} >
+            <TouchableOpacity onPress={()=>this.props.navigation.navigate("")} >
                 <View style={styles.transferbox}>
                     <View style={styles.flexrow}>
                         <View style={styles.imgContainer}>
@@ -45,7 +45,8 @@ export default class ReceiveHistory extends Component {
                         </View>
                         <View style={styles.flexrow}>
                             <View style={styles.userdetails}>
-                                <Text style={{fontSize: 15,color: '#000',fontFamily: 'Poppins-Light'}}>{rowdata.item.msg}</Text>
+                            <Text style={{fontSize: 15,color: '#000',fontFamily: 'Poppins-Light'}}>{this.state.cus_name}</Text>
+                                <Text style={{fontSize: 10,color: '#000',fontFamily: 'Poppins-Light'}}>{rowdata.item.msg}</Text>
                                 <Text style={{ fontSize: 9, color: '#000', fontFamily: 'Poppins-Thin' }}>{rowdata.item.c_type} Transfer</Text>
                                 <Text style={{ fontSize: 9, color: '#000', fontFamily: 'Poppins-Thin' }}>{rowdata.item.s_date}</Text>
                             </View>

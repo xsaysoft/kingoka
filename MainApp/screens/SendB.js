@@ -70,6 +70,25 @@ export default class Send extends Component {
     
     }
 
+    onTextChange(text) {
+        var cleaned = ('' + text).replace(/\D/g, '')
+        var match = cleaned.match(/^(1|)?(\d{3})(\d{3})(\d{4})$/)
+        if (match) {
+            var intlCode = (match[1] ? '+1 ' : ''),
+                number = [intlCode, '(', match[2], ') ', match[3], '-', match[4]].join('');
+    
+            this.setState({
+                phoneNum: number
+            });
+    
+            return;
+        }
+    
+        this.setState({
+            phoneNum: text
+        });
+    }
+
     handleClose = () => {
 
         this.setState({ show: false })
@@ -191,7 +210,7 @@ export default class Send extends Component {
                                 style={{ flex: 0.9, paddingLeft: 20 }}
                                 placeholder="Beneficiary Phone"
                                 keyboardType="phone-pad"
-                                maxLength={14}
+                                maxLength={12}
                                 onChangeText={(ben_phone)=>this.setState({ben_phone})}
                                 value={this.state.ben_phone}
                             />

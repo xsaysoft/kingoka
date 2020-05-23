@@ -70,7 +70,7 @@ export default class WalletHistory extends Component {
                     <TouchableOpacity onPress={() => this.props.navigation.goBack()}>
                         <Icon family="MaterialIcons" name="arrow-back" size={25} color="#FFF" />
                     </TouchableOpacity>
-        <Text style={styles.headTxt}>Wallet Bals </Text>
+        <Text style={styles.headTxt}>Wallet Balance </Text>
                 </View>
          
                 <ScrollView>

@@ -35,6 +35,16 @@ import PayoutConfirm from '../screens/PayoutConfirm';
 import WalletHistory from '../screens/WalletHistory';
 import SwitchWallet from '../screens/SwitchWallet';
 import SwitchWalletConfirm from '../screens/SwitchWalletConfirm';
+import ExpenseType from '../screens/ExpenseType';
+import ExpenseCal from "../screens/ExpenseCal";
+import TransferCal from "../screens/TransferCal";
+import TransferReceive from "../screens/TransferReceive";
+import TransferConfirm from "../screens/TransferConfirm";
+import CustomerAction from "../screens/CustomerAction";
+import Customers from "../screens/Customers";
+import DebtorAction from "../screens/DebtorAction";
+
+
 
 
 
@@ -281,7 +291,56 @@ const Routes = {
       header: null
     },
   },
-
+  ExpenseType: {
+    screen:   ExpenseType,
+    navigationOptions: {
+      header: null
+    },
+  },
+  ExpenseCal: {
+    screen:   ExpenseCal,
+    navigationOptions: {
+      header: null
+    },
+  },
+  TransferCal: {
+    screen:   TransferCal,
+    navigationOptions: {
+      header: null
+    },
+  },
+  TransferReceive: {
+    screen:   TransferReceive,
+    navigationOptions: {
+      header: null
+    },
+  },  
+  TransferConfirm: {
+    screen:   TransferConfirm,
+    navigationOptions: {
+      header: null
+    },
+  }, 
+  CustomerAction: {
+    screen:   CustomerAction,
+    navigationOptions: {
+      header: null
+    },
+  }, 
+  Customers: {
+    screen:   Customers,
+    navigationOptions: {
+      header: null
+    },
+  }, 
+  DebtorAction: {
+    screen:   DebtorAction,
+    navigationOptions: {
+      header: null
+    },
+  },
+  
+  
 }
 export default Routes;
 

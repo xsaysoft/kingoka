@@ -140,7 +140,7 @@ export default class Send extends Component {
             })
                 .then((response) => response.json())
                 .then((result) => {
-                    console.log("allrest", result);
+                   
                     this.setState({
                         spinner: false,
                         dataSource: result,

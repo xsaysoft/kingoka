@@ -176,14 +176,14 @@ class done extends Component {
                     <TouchableOpacity onPress={() => this.props.navigation.goBack()}>
                         <Icon family="MaterialIcons" name="arrow-back" size={25} color="#FFF" />
                     </TouchableOpacity>
-                    <Text style={styles.logintxt}>Approve Transfer </Text>
+                    <Text style={styles.logintxt}>Approve Transfer {this.state.to} </Text>
                 </View>
                 <ScrollView>
                     <View style={styles.AmountCon}>
                         <Text style={styles.valTxt}>Recipient Gets</Text>
                         <View style={styles.rowcenter}>
                             {this.state.getCurrency}
-                            <Text style={{ color: "#FFF", fontSize: 40, paddingLeft: 5 }}>{Constant.numberFormate(bal.toFixed(4))}</Text>
+                            <Text style={{ color: "#FFF", fontSize: 40, paddingLeft: 5 }}>{Constant.numberFormate(bal.toFixed(2))}</Text>
 
                         </View>
          <Text style={styles.updateSty}>{this.state.from} > {this.state.to}</Text>

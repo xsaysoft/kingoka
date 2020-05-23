@@ -59,6 +59,9 @@ export default class SendContacts extends Component {
                 c_ref: rowdata.item.c_ref,
                 status: rowdata.item.status,
                 due_amount: rowdata.item.due_amount,
+                payout_bal:rowdata.item.payout_bal,
+                bank_id_pay:rowdata.item.payout_bal,
+                payout_due:rowdata.item.payout_due,
 
               
               })} >

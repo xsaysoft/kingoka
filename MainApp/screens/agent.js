@@ -13,7 +13,7 @@ export default class agent extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            CountryList: [ ],
+            CountryList: [ ],CountryPick:"",
             spinner: true,
             personal_info_id:"",
             cus_img: "../assets/img/boy.png",
@@ -46,7 +46,7 @@ export default class agent extends Component {
         this.setState({ personal_info_id: await AsyncStorage.getItem('@personal_info_id')}); 
         try {
        
-            const CountryApiCall = await fetch(Constant.URL+Constant.getAGENT+"/"+this.state.to_id);
+            const CountryApiCall = await fetch(Constant.URL+Constant.getAGENT+"/"+this.state.getCountry_id);
             const getCountry = await CountryApiCall .json();
             if(getCountry.length <= 0){
             this.setState({ spinner: false,show: true ,Amessage:"Not Agent Has Been Registered To Recieve " + this.state.to });
@@ -55,13 +55,24 @@ export default class agent extends Component {
         } catch(err) {
             console.log("Error fetching data-----------", err);
         }
+      
+        try {
+
+            const getCountryApiCall = await fetch(Constant.URL + Constant.getCountryMain + "/" +this.state.to_id);
+            const getC = await getCountryApiCall.json();
+       
+            this.setState({ CountryPick: getC.data.country, spinner: false });
+     
+        } catch (err) {
+            console.log("Error fetching data-----------", err);
+        }
     }
 
     _renderTransfer(rowdata) {
         return (
             <TouchableOpacity onPress={()=>this.props.navigation.navigate("done", {
                 toAgent: rowdata.item.personal_info_id,
-                country: rowdata.item.country,
+                country: this.state.CountryPick,
                 first_name: rowdata.item.first_name,
                 last_name: rowdata.item.last_name,
                 phone: rowdata.item.phone,
@@ -94,7 +105,7 @@ export default class agent extends Component {
                             <Image style={styles.userimg} source={require('../assets/img/profile.jpg')} />
                         </View>
                         <View style={styles.userdetails}>
-                            <Text style={{ fontSize: 18, color: '#000',fontFamily: 'Poppins-Light' }}>{rowdata.item.country}</Text>
+            <Text style={{ fontSize: 18, color: '#000',fontFamily: 'Poppins-Light' }}>{this.state.CountryPick}</Text>
             <Text style={{ color: '#000',fontFamily: 'Poppins-Thin' }}>{rowdata.item.first_name} {rowdata.item.last_name}</Text>
             <Text style={{ fontSize: 10, color: '#000',fontFamily: 'Poppins-Thin' }}> {rowdata.item.phone}</Text>
                         </View>

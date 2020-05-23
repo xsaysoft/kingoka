@@ -58,8 +58,9 @@ fetch(Constant.URL+Constant.LOGIN,{
          Constant.SetAsyncValue('@country', this.state.dataSource.data.country),
          Constant.SetAsyncValue('@personal_info_id', this.state.dataSource.data.personal_info_id),
          Constant.SetAsyncValue('@store_vid', this.state.dataSource.data.store_vid),
-         Constant.SetAsyncValue('@getCurrency', this.state.dataSource.data.currency)
-         Constant.SetAsyncValue('@getFrom', this.state.dataSource.data.country_id)
+         Constant.SetAsyncValue('@getCurrency', this.state.dataSource.data.currency),
+         Constant.SetAsyncValue('@getFrom', this.state.dataSource.data.country_id),
+         Constant.SetAsyncValue('@profit_rate', this.state.dataSource.data.profit_rate)
          //Get HOME DETAILS
          try {
 
