@@ -20,7 +20,10 @@ import {connect} from "react-redux";
             cus_name : this.props.navigation.getParam('cus_name', 'Name'),
             cus_phone: this.props.navigation.getParam('cus_phone', 'phone'),
             customer_id: this.props.navigation.getParam('customer_id', '0'),
+            c_type:this.props.navigation.getParam('c_type', '0'),
             amount:'',
+            bank_id:'',
+            ben_id:'',
             msg:"",
             personal_info_id:"",
             spinner: false,
@@ -29,6 +32,8 @@ import {connect} from "react-redux";
             pin:"",
             Amessage:"",
             Smessage:"",
+            BankList:[],
+            BenList:[],
   
  
         }
@@ -46,6 +51,25 @@ import {connect} from "react-redux";
             const dataSource = await BalApiCall.json();
            console.log("dataSource",dataSource)
             this.setState({bal: dataSource.bal, spinner: false});
+        } catch(err) {
+            console.log("Error fetching data-----------", err);
+        }
+         //gET Bank
+         try {
+       
+            const BankApiCall = await fetch(Constant.URL+Constant.getBANKS);
+            const getBank = await BankApiCall.json();
+            this.setState({BankList: getBank, spinner: false});
+        } catch(err) {
+            console.log("Error fetching data-----------", err);
+        }
+        //getBen
+        try {
+       
+            const BenApiCall = await fetch(Constant.URL+Constant.getBEN+"/"+this.state.customer_id);
+            const getBen = await BenApiCall.json();
+        
+            this.setState({BenList: getBen, spinner: false});
         } catch(err) {
             console.log("Error fetching data-----------", err);
         }
@@ -101,8 +125,15 @@ import {connect} from "react-redux";
         body: JSON.stringify({ 
             customer_id: this.state.customer_id,
             personal_info_id: this.state.personal_info_id,
+            ben_name:this.state.ben_name,
+            ben_id:this.state.ben_id,
+            ben_bank:this.state.ben_bank,
+            ben_acc:this.state.ben_acc,
+            ben_phone:this.state.ben_phone,
+            bank_id:this.state.bank_id,
             msg: this.state.msg,
             pin: this.state.pin,
+            c_type: this.state.c_type,
             getCountry_id:this.state.getFrom,
             amount: this.state.amount})
           })
@@ -183,6 +214,40 @@ import {connect} from "react-redux";
                     </TouchableOpacity>
                    
             <View>
+
+            {this.state.c_type==2? (
+                    <View style={{ flexDirection: 'row', alignItems: 'center', borderWidth: 1, margin: 15,marginTop:2, paddingHorizontal: 15 }}>
+                            <Text  style={{ flex: 0.1, paddingLeft: 1 }} ></Text> 
+                            <Picker  style={{ flex: 0.9, paddingLeft: 150 }}  
+                            selectedValue={this.state.bank_id}  
+                            onValueChange={(itemValue, itemPosition) => this.setState({bank_id: itemValue, toIndex: itemPosition})}   >  
+                             <Picker.Item label="SELECT BANK" value="0" /> 
+                             {
+                                this.state.BankList.map( (v)=>{
+                                return <Picker.Item label={v.bank_name  }  value={v.bank_id} />
+                                })
+                                } 
+                            </Picker> 
+                        </View>
+                     ): null }
+               {this.state.c_type==2? ( 
+                <View style={{ flexDirection: 'row', alignItems: 'center', borderWidth: 1, margin: 15, paddingHorizontal: 15 }}>
+                    <Picker  style={{ flex: 0.9, paddingLeft: 150 }}  
+                            selectedValue={this.state.ben_id}  
+                            onValueChange={(itemValue, itemPosition) => this.setState({ben_id: itemValue, ben_idIndex: itemPosition})}   > 
+                            
+                             <Picker.Item label=" SELECT BENEFICIARY" value="0"/> 
+                             <Picker.Item label=" CREATE NEW BENEFICIARY" value="New" /> 
+                             {
+                                this.state.BenList.map( (x)=>{
+                                return <Picker.Item label={x.ben_name +" - "+ x.ben_phone }  value={x.ben_id} />
+                                })
+                                } 
+                            </Picker> 
+                          
+                    </View>
+                        ): null }
+                   
                    
                     <View style={{ flexDirection: 'row', alignItems: 'center', borderWidth: 1, margin: 15, paddingHorizontal: 15 }}>
                         <Icon family="FontAwesome" name="money" size={25} />
@@ -206,6 +271,56 @@ import {connect} from "react-redux";
                             value={this.state.msg}
                         />
                     </View>
+                    {this.state.ben_id=="New" ? (  <View >
+             <View style={{ flexDirection: 'row', alignItems: 'center', borderWidth: 1, margin: 15, marginTop: 2, paddingHorizontal: 15 }}>
+                            <TextInput
+                                style={{ flex: 0.9, paddingLeft: 20 }}
+                                placeholder="Beneficiary Name"
+                                keyboardType="name-phone-pad"
+                                onChangeText={(ben_name)=>this.setState({ben_name})}
+                                value={this.state.ben_name}
+                                
+                            />
+                          
+                        </View>
+                        <View style={{ flexDirection: 'row', alignItems: 'center', borderWidth: 1, margin: 15, marginTop: 2, paddingHorizontal: 15 }}>
+                        <TextInput
+                                value={this.state.dial_code}
+                            />
+                            <TextInput
+                                style={{ flex: 0.9, paddingLeft: 20 }}
+                                placeholder="Beneficiary Phone"
+                                keyboardType="phone-pad"
+                                maxLength={16}
+                                onChangeText={(ben_phone)=>this.setState({ben_phone})}
+                                value={this.state.ben_phone}
+                            />
+                           
+                        </View>
+                        <View style={{ flexDirection: 'row', alignItems: 'center', borderWidth: 1, margin: 15, marginTop: 2, paddingHorizontal: 15 }}>
+                            <TextInput
+                                style={{ flex: 0.9, paddingLeft: 20 }}
+                                placeholder="Beneficiary Bank Name"
+                                keyboardType="name-phone-pad" 
+                                onChangeText={(ben_bank)=>this.setState({ben_bank})}
+                                value={this.state.ben_bank}
+                            />
+                          
+                        </View>
+                        <View style={{ flexDirection: 'row', alignItems: 'center', borderWidth: 1, margin: 15, marginTop: 2, paddingHorizontal: 15 }}>
+                            <TextInput
+                                style={{ flex: 0.9, paddingLeft: 20 }}
+                                placeholder="Beneficiary Account Number"
+                                keyboardType="phone-pad"
+                                onChangeText={(ben_acc)=>this.setState({ben_acc})}
+                                value={this.state.ben_acc}
+                                maxLength={14}
+                            />
+                          
+                        </View>
+                </View>  ): null}
+
+
                     <TouchableOpacity style={{ paddingVertical: 10, backgroundColor: '#020cab', marginTop: 30, borderRadius: 50, marginHorizontal: 30 }} onPress={this.handleOpen}  >
                         <Text style={{ color: '#FFF', textAlign: 'center', fontSize: 16 ,  fontFamily: 'Poppins-Bold',}}>RETURN</Text>
                     </TouchableOpacity>

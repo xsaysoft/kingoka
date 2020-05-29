@@ -27,20 +27,26 @@ export default class Users extends Component {
 
     async componentDidMount() {
         this.setState({ personal_info_id: await AsyncStorage.getItem('@personal_info_id') ,
-        getFrom: await AsyncStorage.getItem('@getFrom'),
+        getFrom: await AsyncStorage.getItem('@getFrom'),dial_code: await AsyncStorage.getItem('@dial_code'),
+        number_length :await AsyncStorage.getItem('@number_length'),
         });
     
     }
 
     onPressCustomer = async() => {
 
-        this.setState({ spinner: true });
+       
         const { cus_name, cus_phone } = this.state;
+        if(cus_phone.length != this.state.number_length){
+        Alert.alert("Invalid Phone number formate.  Number length must be "+this.state.number_length);
+        return false
+        }
         if (cus_name.length <= 0 || cus_phone.length <= 0) {
           this.setState({ spinner: false });
           Alert.alert("Please fill out the required fields.");
         }else {
              // post method
+             this.setState({ spinner: true });
     fetch(Constant.URL+Constant.addCUSTOMER,{
         method: 'POST',
         body: JSON.stringify({ 
@@ -82,6 +88,7 @@ export default class Users extends Component {
 
 
     render() {
+       
         return (
             <View style={{ flex: 1, backgroundColor: Theme.bgcolor }}>
                  <Spinner
@@ -99,11 +106,11 @@ export default class Users extends Component {
 
                     <View style={styles.transferbox}>
                         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-around' }} >
-                            <Text style={styles.paidTxt}>Add New Customer </Text>
+        <Text style={styles.paidTxt}>Add New Customer </Text>
                          
                         </View>
 
-                        <View style={styles.txtbox}>
+                        <View style={{ flexDirection: 'row', alignItems: 'center', borderWidth: 1, margin: 15, marginTop: 2, paddingHorizontal: 15 }}>
                             <TextInput
                                 style={{ flex: 0.9, paddingLeft: 20 }}
                                 placeholder="Customer Name"
@@ -114,18 +121,22 @@ export default class Users extends Component {
                             />
                           
                         </View>
-                        <View style={styles.txtbox}>
+                        <View style={{ flexDirection: 'row', alignItems: 'center', borderWidth: 1, margin: 15, marginTop: 2, paddingHorizontal: 15 }}>
+                            
+                            <TextInput
+                                value={this.state.dial_code}
+                            />
                             <TextInput
                                 style={{ flex: 0.9, paddingLeft: 20 }}
                                 placeholder="Phone"
                                 keyboardType="phone-pad"
-                                maxLength={14}
+                                maxLength={16}
                                 onChangeText={(cus_phone)=>this.setState({cus_phone})}
                                 value={this.state.cus_phone}
                             />
                            
                         </View>
-                        <View style={styles.txtbox}>
+                        <View style={{ flexDirection: 'row', alignItems: 'center', borderWidth: 1, margin: 15, marginTop: 2, paddingHorizontal: 15 }}>
                             <TextInput
                                 style={{ flex: 0.9, paddingLeft: 20 }}
                                 placeholder="Address"

@@ -45,6 +45,12 @@ export default class ExpenseType extends Component {
                         {this.state.transfer == 1 ? (
                             <Text style={styles.myAc}> Transfer Type</Text>
                         ) : null}
+                         {this.state.transfer == 2 ? (
+                            <Text style={styles.myAc}> Debtor Type</Text>
+                        ) : null}
+                         {this.state.transfer == 3 ? (
+                            <Text style={styles.myAc}> Cash Return Type</Text>
+                        ) : null}
                         <View style={styles.balancesty}>
                             <Text style={{ fontFamily: 'Poppins-Medium', color: '#000' }}>Balance </Text>
                             <Text style={styles.coststy}>{this.state.getCurrency} {this.state.wallet} </Text>
@@ -105,6 +111,61 @@ export default class ExpenseType extends Component {
 
                         </View>
                     ) : null}
+                     {this.state.transfer == 2 ? (
+                        <View style={styles.tablistContainer}>
+
+
+                            <TouchableOpacity style={styles.tabBox} onPress={() => this.props.navigation.navigate("Customers",
+                                {
+                                    c_type: 1,transaction:"DebtorAction",
+                                }
+                            )}>
+                                <View style={styles.tabIconSty}>
+                                    <Icon family="SimpleLineIcons" name="wallet" size={25} color="#FFF" />
+                                </View>
+                                <Text style={styles.tabName}>Agent Wallet</Text>
+                            </TouchableOpacity>
+
+                            <TouchableOpacity style={styles.tabBox} onPress={() => this.props.navigation.navigate("Customers",
+                                { c_type: 2,transaction:"DebtorAction", }
+                            )}>
+                                <View style={styles.tabIconSty}>
+                                    <Icon family="MaterialCommunityIcons" name="briefcase-upload-outline" size={25} color="#FFF" />
+                                </View>
+                                <Text style={styles.tabName}>Bank</Text>
+                            </TouchableOpacity>
+
+
+                        </View>
+                    ) : null}
+
+                    {this.state.transfer == 3 ? (
+                        <View style={styles.tablistContainer}>
+
+
+                            <TouchableOpacity style={styles.tabBox} onPress={() => this.props.navigation.navigate("Customers",
+                                {
+                                    c_type: 1,transaction:"CustomerAction",
+                                }
+                            )}>
+                                <View style={styles.tabIconSty}>
+                                    <Icon family="SimpleLineIcons" name="wallet" size={25} color="#FFF" />
+                                </View>
+                                <Text style={styles.tabName}>Agent Wallet</Text>
+                            </TouchableOpacity>
+
+                            <TouchableOpacity style={styles.tabBox} onPress={() => this.props.navigation.navigate("Customers",
+                                { c_type: 2,transaction:"CustomerAction", }
+                            )}>
+                                <View style={styles.tabIconSty}>
+                                    <Icon family="MaterialCommunityIcons" name="briefcase-upload-outline" size={25} color="#FFF" />
+                                </View>
+                                <Text style={styles.tabName}>Bank</Text>
+                            </TouchableOpacity>
+
+
+                        </View>
+                    ) : null}           
 
 
                 </ScrollView>

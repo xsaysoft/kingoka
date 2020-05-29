@@ -35,7 +35,7 @@ export default class Send extends Component {
             BankList: [],
             dataSource:[],
             PercentList:[],
-            bank_id: 0,ch_type:0
+            bank_id: 0,ch_type:2
 
 
 
@@ -242,8 +242,12 @@ export default class Send extends Component {
                             }}
                             value={this.state.amount}
                             onChangeText={text => {
+                                const getAmountV = Constant.rawNumber(text);
+                                var getpdue,percent
+                                 percent =2/100
+                                 getpdue =getAmountV*percent
                                 this.setState({
-                                    amount: text
+                                    amount: text,charges: getpdue
                                 })
                             }}
                             
@@ -268,7 +272,9 @@ export default class Send extends Component {
                         
                              
                              } }   >
-                            <Picker.Item label="PERCENTAGE" value="0" />
+                          
+                          <Picker.Item label="2 %" value="2" />
+                            <Picker.Item label="NO PERCENTAGE" value="0" />
                             {
                                 this.state.PercentList.map((v) => {
                                     return <Picker.Item label={v.value + " % "} value={v.value} />

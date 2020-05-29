@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-community/async-storage';
-//const URL = "http://192.168.88.34/king/portal/";
+//const URL = "http://192.168.88.35/king/portal/";
 const URL = "http://192.168.43.165/king/portal/";
 //const URL = "http://kingokagroup.com/";
 const LOGIN = "MobileApi/m_login";

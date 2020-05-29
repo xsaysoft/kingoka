@@ -197,7 +197,7 @@ class HomeScreen extends Component {
                                 </TouchableOpacity>
                             </View>
                             <View style={{ flex: 0.5, margin: 10 }}>
-                                <TouchableOpacity onPress={() => this.props.navigation.navigate("Payout", {
+                                <TouchableOpacity onPress={() => this.props.navigation.navigate("", {
                                     history: 1,
                                 })}>
                                     <LinearGradient colors={['#fc0f84', '#020cab']}
@@ -208,12 +208,12 @@ class HomeScreen extends Component {
                                             </View>
                                         </View>
                                     </LinearGradient>
-                                    <Text style={styles.paytypesty}> Reversal</Text>
+                                    <Text style={styles.paytypesty}> CashBox</Text>
                                 </TouchableOpacity>
                             </View>
                             <View style={{ flex: 0.5, margin: 10 }}>
-                                <TouchableOpacity onPress={() => this.props.navigation.navigate("Customers",{
-                                 transaction:"DebtorAction"
+                                <TouchableOpacity onPress={() => this.props.navigation.navigate("ExpenseType",{
+                                 transfer:2
                                 })} >
                                     <LinearGradient colors={['#fc0f84', '#020cab']}
                                         start={{ x: 1, y: 0 }} end={{ x: 0, y: 1 }} style={styles.gradsty}>
@@ -291,9 +291,10 @@ class HomeScreen extends Component {
                                 </TouchableOpacity>
                             </View>
                             <View style={{ flex: 0.5, margin: 10 }}>
-                            <TouchableOpacity onPress={() => this.props.navigation.navigate("Customers",{
-                                 transaction:"CustomerAction"
-                                })}>
+                            <TouchableOpacity onPress={() => this.props.navigation.navigate("ExpenseType",{
+                                 transfer:3
+                                })} >
+                           
                                     <LinearGradient colors={['#fc0f84', '#020cab']}
                                         start={{ x: 1, y: 0 }} end={{ x: 0, y: 1 }} style={styles.gradsty}>
                                         <View style={{ padding: 5, alignItems: 'center', }}>

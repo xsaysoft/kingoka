@@ -73,6 +73,19 @@ Constant.removeAsyncValue('@wallet')
                                 </View>
                             </TouchableOpacity>
                         </View>
+                        <View style={{ paddingLeft: 35, paddingVertical: 10, }}>
+                            <TouchableOpacity onPress={() => this.props.navigation.navigate("Payout", {
+                                    history: 1,
+                                })}>
+                                <View style={styles.settingLayout}>
+                                    <View style={styles.settingNamesty}>
+                                        <Icon family="FontAwesome" name="arrow-up"  size={30} color={Theme.mainColor} />
+                                        <Text style={styles.meunSty}>Reversal </Text>
+                                    </View>
+                                    <Icon family="MaterialIcons" name="keyboard-arrow-right" size={30} color="black" />
+                                </View>
+                            </TouchableOpacity>
+                        </View>
                       
                         <View style={{ paddingLeft: 35, paddingVertical: 10, }}>
                             <TouchableOpacity onPress={() => this.props.navigation.navigate("About")}>

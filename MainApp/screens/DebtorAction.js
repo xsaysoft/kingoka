@@ -20,7 +20,8 @@ import {connect} from "react-redux";
             cus_name : this.props.navigation.getParam('cus_name', 'Name'),
             cus_phone: this.props.navigation.getParam('cus_phone', 'phone'),
             customer_id: this.props.navigation.getParam('customer_id', '0'),
-            amount:'',debtor_type:0,
+            c_type:this.props.navigation.getParam('c_type', '0'),
+            amount:'',
             msg:"",
             personal_info_id:"",
             spinner: false,
@@ -29,6 +30,8 @@ import {connect} from "react-redux";
             pin:"",
             Amessage:"",
             Smessage:"",
+            BankList:[],
+            bank_id:"",
   
  
         }
@@ -46,6 +49,16 @@ import {connect} from "react-redux";
             const dataSource = await BalApiCall.json();
            console.log("dataSource",dataSource)
             this.setState({bal: dataSource.bal, spinner: false});
+        } catch(err) {
+            console.log("Error fetching data-----------", err);
+        }
+
+         //gET Bank
+         try {
+       
+            const BankApiCall = await fetch(Constant.URL+Constant.getBANKS);
+            const getBank = await BankApiCall.json();
+            this.setState({BankList: getBank, spinner: false});
         } catch(err) {
             console.log("Error fetching data-----------", err);
         }
@@ -78,10 +91,7 @@ import {connect} from "react-redux";
           this.setState({ spinner: false });
           Alert.alert("Please fill out the required field.");
         }else {
-            if(this.state.debtor_type==0){
-                Alert.alert("Select Debtor Action");
-                return false
-            }
+        
         this.setState({ show: true })
         }
       }
@@ -95,10 +105,6 @@ import {connect} from "react-redux";
 
         this.setState({ spinner: true });
      
-        if ( this.state.amount > Constant.rawNumber(this.state.bal)) {
-           
-            this.setState({ spinner: false,Ashow: true ,show: false,Amessage:"Insufficient Please try Again" });
-        }else {
              // post method
     fetch(Constant.URL+Constant.debtorPay,{
         method: 'POST',
@@ -106,8 +112,10 @@ import {connect} from "react-redux";
             customer_id: this.state.customer_id,
             personal_info_id: this.state.personal_info_id,
             msg: this.state.msg,
+            bank_id: this.state.bank_id,
             pin: this.state.pin,
-            debtor_type:this.state.debtor_type,
+            debtor_type:1,
+            c_type:this.state.c_type,
             getCountry_id:this.state.getFrom,
             amount: this.state.amount})
           })
@@ -140,7 +148,7 @@ import {connect} from "react-redux";
          });
       
       //end post method
-        }
+        
     }
 
     render() {
@@ -186,21 +194,24 @@ import {connect} from "react-redux";
                         </View>
                         
                     </TouchableOpacity>
+                    {this.state.c_type==2? (
+                    <View style={{ flexDirection: 'row', alignItems: 'center', borderWidth: 1, margin: 15,marginTop:2, paddingHorizontal: 15 }}>
+                            <Text  style={{ flex: 0.1, paddingLeft: 1 }} ></Text> 
+                            <Picker  style={{ flex: 0.9, paddingLeft: 150 }}  
+                            selectedValue={this.state.bank_id}  
+                            onValueChange={(itemValue, itemPosition) => this.setState({bank_id: itemValue, toIndex: itemPosition})}   >  
+                             <Picker.Item label="SELECT BANK" value="0" /> 
+                             {
+                                this.state.BankList.map( (v)=>{
+                                return <Picker.Item label={v.bank_name  }  value={v.bank_id} />
+                                })
+                                } 
+                            </Picker> 
+                        </View>
+                     ): null }
                    
             <View>
-            <View style={{ flexDirection: 'row', alignItems: 'center', borderWidth: 1, margin: 15, marginTop: 5, paddingHorizontal: 10 }}>
-                        <Text style={{ flex: 0.1, paddingLeft: 1 }} ></Text>
-                        <Picker style={{ flex: 0.9, paddingLeft: 150 }}
-                            selectedValue={this.state.debtor_type}
-                            onValueChange={(itemValue, itemPosition) => {
-                                this.setState({ debtor_type: itemValue, toIndex: itemPosition})
-                            }
-                            }>
-                            <Picker.Item label="Select Debtor Action" value="0" />
-                            <Picker.Item label="Borrowed" value="1" />
-                            <Picker.Item label="Paid Back" value="2" />
-                        </Picker>
-                    </View>
+   
                     <View style={{ flexDirection: 'row', alignItems: 'center', borderWidth: 1, margin: 15, paddingHorizontal: 15 }}>
                         <Icon family="FontAwesome" name="money" size={25} />
                         <TextInput style={{ paddingLeft: 10, fontSize: 16 }}

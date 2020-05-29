@@ -46,7 +46,7 @@ export default class agent extends Component {
         this.setState({ personal_info_id: await AsyncStorage.getItem('@personal_info_id')}); 
         try {
        
-            const CountryApiCall = await fetch(Constant.URL+Constant.getAGENT+"/"+this.state.getCountry_id);
+            const CountryApiCall = await fetch(Constant.URL+Constant.getAGENT+"/"+this.state.personal_info_id+"/"+this.state.to_id);
             const getCountry = await CountryApiCall .json();
             if(getCountry.length <= 0){
             this.setState({ spinner: false,show: true ,Amessage:"Not Agent Has Been Registered To Recieve " + this.state.to });

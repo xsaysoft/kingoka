@@ -53,17 +53,18 @@ import {connect} from "react-redux";
             this.props.getAgentCurrency(this.state.currency)
             this.setState({ wallet: dataSource.bal, c_wallet: dataSource.c_bal, spinner: false });
         } catch (err) {
-            console.log("Error fetching kdata-----------", err);
+            console.log("Error fetching data-----------", err);
             this.setState({ spinner: false });
         }
     }
+  
 
   
     handleOpen = async() => {
         this.setState({ show: true })
         if(Constant.removeAsyncValue('getFrom') &&  Constant.removeAsyncValue('getCurrency')){
        
-         await AsyncStorage.setItem('@getFrom', this.state.country_id)
+        await AsyncStorage.setItem('@getFrom', this.state.country_id)
        await AsyncStorage.setItem('@getCurrency', this.state.currency)
         this.bal()
          this.setState({ spinner: false,Sshow: true ,Smessage:"Wallet Currecy has been changed successfully" });
@@ -109,7 +110,7 @@ import {connect} from "react-redux";
                    
                     <View style={{  alignItems: 'center', margin: 15, paddingHorizontal: 15}}>
                         <Text style={{marginTop:1,color:"red", fontSize: 18}}>
-                        I UNDERSTAND THAT SWITCHING MY WALLET WILL CHANGE MY DEFAULT WALLET CURRENCY , COUNTRY AND CUSTOMER UNDER MY ACCOUNT
+                        I UNDERSTAND THAT SWITCHING MY WALLET WILL CHANGE MY DEFAULT WALLET CURRENCY , COUNTRY AND CUSTOMER UNDER MY ACCOUNT. AUTO ADD ADD WILL BE ACTIVATED ON THIS WALLET 
                         </Text>
                         <Text style={{marginTop:15,color:"#000"}}>
                        YOU CAN SWITCH BACK TO YOUR DEFAULT ACCOUNT AT ANY TIME 

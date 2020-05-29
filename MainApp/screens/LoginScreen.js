@@ -61,7 +61,10 @@ fetch(Constant.URL+Constant.LOGIN,{
          Constant.SetAsyncValue('@getCurrency', this.state.dataSource.data.currency),
          Constant.SetAsyncValue('@getFrom', this.state.dataSource.data.country_id),
          Constant.SetAsyncValue('@profit_rate', this.state.dataSource.data.profit_rate)
-         //Get HOME DETAILS
+         Constant.SetAsyncValue('@dial_code', this.state.dataSource.data.dial_code)
+         Constant.SetAsyncValue('@number_length', this.state.dataSource.data.number_length)
+         
+         //Get HOME DETAILS number_length
          try {
 
           const BalApiCall = await fetch(Constant.URL + Constant.getAgBal + "/" + this.state.dataSource.data.personal_info_id+"/"+this.state.dataSource.data.country_id);

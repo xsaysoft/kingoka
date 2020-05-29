@@ -54,7 +54,10 @@ export default class Send extends Component {
 
         this.setState({ wallet: await AsyncStorage.getItem('@wallet') ,
         personal_info_id: await AsyncStorage.getItem('@personal_info_id') ,
-        getCurrency: await AsyncStorage.getItem('@getCurrency'), });
+        getCurrency: await AsyncStorage.getItem('@getCurrency'),
+        dial_code: await AsyncStorage.getItem('@dial_code'),
+        number_length: await AsyncStorage.getItem('@number_length'),
+     });
         
         try {
        
@@ -110,8 +113,14 @@ export default class Send extends Component {
             
             if(ben_id=="New")
             {
+                const { ben_phone } = this.state;
+                if(ben_phone.length != this.state.number_length){
+                Alert.alert("Invalid Phone number formate.  Number length must be "+this.state.number_length);
+                return false
+                }
 
             }else{
+               
             this.setState({ben_id: this.state.BenIDList.data.ben_id,
                 ben_name: this.state.BenIDList.data.ben_name, 
                 ben_phone: this.state.BenIDList.data.ben_phone, 
@@ -194,7 +203,7 @@ export default class Send extends Component {
                     </View>
                  
 {this.state.ben_id=="New" ? (  <View >
-                                <View style={styles.txtbox}>
+    <View style={{ flexDirection: 'row', alignItems: 'center', borderWidth: 1, margin: 15, marginTop: 2, paddingHorizontal: 15 }}>
                             <TextInput
                                 style={{ flex: 0.9, paddingLeft: 20 }}
                                 placeholder="Beneficiary Name"
@@ -205,18 +214,21 @@ export default class Send extends Component {
                             />
                           
                         </View>
-                        <View style={styles.txtbox}>
+                        <View style={{ flexDirection: 'row', alignItems: 'center', borderWidth: 1, margin: 15, marginTop: 2, paddingHorizontal: 15 }}>
+                        <TextInput
+                                value={this.state.dial_code}
+                            />
                             <TextInput
                                 style={{ flex: 0.9, paddingLeft: 20 }}
                                 placeholder="Beneficiary Phone"
                                 keyboardType="phone-pad"
-                                maxLength={12}
+                                maxLength={16}
                                 onChangeText={(ben_phone)=>this.setState({ben_phone})}
                                 value={this.state.ben_phone}
                             />
                            
                         </View>
-                        <View style={styles.txtbox}>
+                        <View style={{ flexDirection: 'row', alignItems: 'center', borderWidth: 1, margin: 15, marginTop: 2, paddingHorizontal: 15 }}>
                             <TextInput
                                 style={{ flex: 0.9, paddingLeft: 20 }}
                                 placeholder="Beneficiary Bank Name"
@@ -226,7 +238,7 @@ export default class Send extends Component {
                             />
                           
                         </View>
-                        <View style={styles.txtbox}>
+                        <View style={{ flexDirection: 'row', alignItems: 'center', borderWidth: 1, margin: 15, marginTop: 2, paddingHorizontal: 15 }}>
                             <TextInput
                                 style={{ flex: 0.9, paddingLeft: 20 }}
                                 placeholder="Beneficiary Account Number"
@@ -241,7 +253,7 @@ export default class Send extends Component {
 
                      
                         
-                     <View style={{ flexDirection: 'row', alignItems: 'center', borderBottomWidth: 1, margin: 15, paddingHorizontal: 15 }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', borderWidth: 1, margin: 15, marginTop: 2, paddingHorizontal: 15 }}>
                         <TextInput style={{ flex: 1, paddingLeft: 10, fontSize: 16, fontFamily:'Poppins-ExtraLightItalic' }}
                             keyboardType='email-address'
                             placeholder="Add a message (Optioncal)"
