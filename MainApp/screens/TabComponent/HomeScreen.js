@@ -293,7 +293,7 @@ class HomeScreen extends Component {
                             <View style={{ flex: 0.5, margin: 10 }}>
                             <TouchableOpacity onPress={() => this.props.navigation.navigate("ExpenseType",{
                                  transfer:3
-                                })} >
+                                })} > 
                            
                                     <LinearGradient colors={['#fc0f84', '#020cab']}
                                         start={{ x: 1, y: 0 }} end={{ x: 0, y: 1 }} style={styles.gradsty}>

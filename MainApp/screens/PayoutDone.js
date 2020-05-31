@@ -165,7 +165,7 @@ export default class PayoutDone extends Component {
                             <Text style={{ color: "#FFF", fontSize: 40, paddingLeft: 5 }}>{Constant.numberFormate(bal.toFixed(2))}</Text>
 
                         </View>
-                        <Text style={styles.updateSty}>{this.state.from} > {this.state.to}</Text>
+                        {this.state.from ? ( <Text style={styles.updateSty}>{this.state.from} > {this.state.to}</Text>):null}
                     </View>
 
 

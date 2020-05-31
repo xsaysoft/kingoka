@@ -21,10 +21,12 @@ export default class SendContacts extends Component {
     }
 
     async componentDidMount() {
-        this.setState({ personal_info_id: await AsyncStorage.getItem('@personal_info_id')}); 
+        this.setState({ personal_info_id: await AsyncStorage.getItem('@personal_info_id'),
+        getFrom:await AsyncStorage.getItem('@getFrom'),}); 
+        
         try {
         
-            const CustomerApiCall = await fetch(Constant.URL+Constant.getTRANSFER+"/"+this.state.personal_info_id+"/"+this.state.history);
+            const CustomerApiCall = await fetch(Constant.URL+Constant.getTRANSFER+"/"+this.state.personal_info_id+"/"+this.state.history+"/"+this.state.getFrom);
             const getCustomer = await CustomerApiCall.json();
         
             this.setState({AgentList: getCustomer, spinner: false});
@@ -72,7 +74,8 @@ export default class SendContacts extends Component {
                         </View>
                         <View style={styles.userdetails}>
                             <Text style={{ fontSize: 18, color: '#000',fontFamily: 'Poppins-Light' }}>{rowdata.item.first_name} {rowdata.item.last_name}</Text>
-                            <Text style={{ fontSize: 10, color: '#000',fontFamily: 'Poppins-Thin' }}>{rowdata.item.aa_date}</Text>
+                            <Text style={{ fontSize: 10, color: '#000',fontFamily: 'Poppins-Thin' }}>{rowdata.item.aa_date}  </Text>
+                            {rowdata.item.type==4? (<Text  style={{ fontSize: 10,color: 'red'}}>Cash Return</Text>):null }
                         </View>
                     </View>
                 </View>

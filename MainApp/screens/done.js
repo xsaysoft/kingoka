@@ -39,6 +39,7 @@ class done extends Component {
             ch_type: this.props.navigation.getParam('ch_type','0'),
             due_amount: this.props.navigation.getParam('due_amount','0'),
             getCountry_id:this.props.navigation.getParam('getCountry_id','0'),
+            to_id:this.props.navigation.getParam('to_id','0'),
             pin: "",
             spinner: false,
             Amessage: "",
@@ -125,6 +126,7 @@ class done extends Component {
                     ch_type: this.state.ch_type,
                     due_amount: this.state.due_amount,
                     getCountry_id:this.state.getCountry_id,
+                    to_id:this.state.to_id,
                 })
             })
                 .then((response) => response.json())

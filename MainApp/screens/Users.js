@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, ScrollView, Alert,StatusBar } from "react-native";
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, ScrollView, Alert,StatusBar,Picker } from "react-native";
 import LinearGradient from 'react-native-linear-gradient';
 import Icon from '../common/icons';
 import Theme from "../styles/Theme";
@@ -19,9 +19,12 @@ export default class Users extends Component {
             cus_name:'',
             cus_phone:'',
             cus_adr:'',
+            cus_email:'',
             personal_info_id:"",
             Smessage:"",
             Amessage:"",
+            cus_phone_o:0,
+            CountryList:[],
         };
     }
 
@@ -30,6 +33,15 @@ export default class Users extends Component {
         getFrom: await AsyncStorage.getItem('@getFrom'),dial_code: await AsyncStorage.getItem('@dial_code'),
         number_length :await AsyncStorage.getItem('@number_length'),
         });
+        try {
+
+            const CountryApiCall = await fetch(Constant.URL + Constant.getCOUNTRY + "/" + this.state.getFrom);
+            const getCountry = await CountryApiCall.json();
+            console.log("getCountry", getCountry)
+            this.setState({ CountryList: getCountry, spinner: false });
+        } catch (err) {
+            console.log("Error fetching data-----------", err);
+        }
     
     }
 
@@ -52,6 +64,8 @@ export default class Users extends Component {
         body: JSON.stringify({ 
               cus_name: this.state.cus_name,
               cus_phone: this.state.cus_phone,
+              cus_email:this.state.cus_email,
+              cus_phone_o:this.state.cus_phone_o,
               personal_info_id: this.state.personal_info_id,
               getCountry_id:this.state.getFrom,
               cus_adr: this.state.cus_adr})
@@ -135,6 +149,38 @@ export default class Users extends Component {
                                 value={this.state.cus_phone}
                             />
                            
+                        </View>
+                        <View style={{ flexDirection: 'row', alignItems: 'center', borderWidth: 1, margin: 15,marginTop:2, paddingHorizontal: 15 }}>
+                         
+                            <Picker style={{ flex: 0.4, paddingLeft: 50 }}  
+                            selectedValue={this.state.dial_co}  
+                            onValueChange={(itemValue, itemPosition) => this.setState({dial_co: itemValue, toIndex: itemPosition})}   >  
+                             
+                             {
+                                this.state.CountryList.map( (v)=>{
+                                return <Picker.Item label={v.dial_code}  value={v.dial_code} />
+                                })
+                                } 
+                            </Picker> 
+                            <TextInput
+                                style={{ flex: 0.9, paddingLeft: 20 }}
+                                placeholder="(optional) Phone Alt "
+                                keyboardType="phone-pad"
+                                maxLength={16}
+                                onChangeText={(cus_phone_o)=>this.setState({cus_phone_o})}
+                                value={this.state.cus_phone_o}
+                            />
+                        </View>
+
+                        <View style={{ flexDirection: 'row', alignItems: 'center', borderWidth: 1, margin: 15, marginTop: 2, paddingHorizontal: 15 }}>
+                            <TextInput
+                                style={{ flex: 0.9, paddingLeft: 20 }}
+                                placeholder="Email"
+                                keyboardType="name-phone-pad" 
+                                onChangeText={(cus_email)=>this.setState({cus_email})}
+                                value={this.state.cus_email}
+                            />
+                          
                         </View>
                         <View style={{ flexDirection: 'row', alignItems: 'center', borderWidth: 1, margin: 15, marginTop: 2, paddingHorizontal: 15 }}>
                             <TextInput

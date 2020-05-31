@@ -60,16 +60,16 @@ export default class Rate extends Component {
        
           if(asc_val < 1){
              i = 0.1000
-            while (i < (asc_val+0.080)) {
+            while (i < (asc_val)) {
                 i = (i + 0.0001).toFixed(4);
                 floats.push(i);
                 i = parseFloat(i);
             }
           }else{
-             i = asc_val - 10
+             i = asc_val - 3
              if(i<0){i=0}else{i}
-            while (i < (asc_val + 10)) {
-                i = (i + 1).toFixed(4);
+            while (i < (asc_val)) {
+                i = (i + 0.001).toFixed(4);
                 floats.push(i);
                 i = parseFloat(i);
             }
@@ -86,16 +86,16 @@ export default class Rate extends Component {
           var x
           if(asc_val2 < 1){
                x = 0.1000
-              while (x < (asc_val2+0.080)) {
+              while (x < (asc_val2)) {
                 x = (x + 0.0001).toFixed(4);
                 floats2.push(x);
                 x = parseFloat(x);
             }
           }else
-          {   x = asc_val2- 10
+          {   x = asc_val2- 3
             if(x<0){x=0}else{x}
-            while (x < (asc_val2+10)) {
-                x = (x + 1).toFixed(4);
+            while (x < (asc_val2)) {
+                x = (x + 0.001).toFixed(4);
                 floats2.push(x);
                 x = parseFloat(x);
             }
@@ -164,7 +164,7 @@ export default class Rate extends Component {
                     <TouchableOpacity onPress={() => this.props.navigation.goBack()}>
                         <Icon family="MaterialIcons" name="arrow-back" size={25} color="#FFF" />
                     </TouchableOpacity>
-                    <Text style={styles.logintxt}>Rate Calculation{this.state.rate_v}</Text>
+                    <Text style={styles.logintxt}>Rate Calculation</Text>
                 </View>
                 <ScrollView>
                     <View style={styles.AmountCon}>
@@ -239,12 +239,13 @@ export default class Rate extends Component {
                                 this.setState({bal: getBal})
                             }
                             }}   >
-                                 <Picker.Item label={this.state.rate_v} value={this.state.rate_v} />
+                                
                             {
                                 this.state.mut_float.map((v) => {
                                     return <Picker.Item label={v} value={v} />
                                 })
                             }
+                             <Picker.Item label={this.state.rate_v} value={this.state.rate_v} />
                         </Picker>
                         ):null}
 
@@ -258,12 +259,13 @@ export default class Rate extends Component {
 
                             }
                             }}   >
-                                <Picker.Item label={this.state.rate_v} value={this.state.rate_v} />
+                              
                             {
                                 this.state.dv_float.map((v) => {
                                     return <Picker.Item label={v} value={v} />
                                 })
                             }
+                              <Picker.Item label={this.state.rate_v} value={this.state.rate_v} />
                         </Picker>
                         ):null}
 

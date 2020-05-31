@@ -22,7 +22,7 @@ import {connect} from "react-redux";
             customer_id: this.props.navigation.getParam('customer_id', '0'),
             c_type:this.props.navigation.getParam('c_type', '0'),
             amount:'',
-            bank_id:'',
+            agent_id:'',
             ben_id:'',
             msg:"",
             personal_info_id:"",
@@ -34,6 +34,7 @@ import {connect} from "react-redux";
             Smessage:"",
             BankList:[],
             BenList:[],
+            CountryList:[],
   
  
         }
@@ -54,15 +55,21 @@ import {connect} from "react-redux";
         } catch(err) {
             console.log("Error fetching data-----------", err);
         }
-         //gET Bank
+         //gET Agent
+        
          try {
-       
-            const BankApiCall = await fetch(Constant.URL+Constant.getBANKS);
-            const getBank = await BankApiCall.json();
-            this.setState({BankList: getBank, spinner: false});
-        } catch(err) {
-            console.log("Error fetching data-----------", err);
-        }
+        
+             const CountryApiCall = await fetch(Constant.URL+Constant.getAGENT+"/"+this.state.personal_info_id+"/"+this.state.getFrom);
+             const getCountry = await CountryApiCall .json();
+             if(getCountry.length <= 0){
+             this.setState({ spinner: false  });
+             }
+             this.setState({CountryList: getCountry, spinner: false});
+             console.log(getCountry)
+         } catch(err) {
+             console.log("Error fetching data-----------", err);
+         }
+        
         //getBen
         try {
        
@@ -70,6 +77,7 @@ import {connect} from "react-redux";
             const getBen = await BenApiCall.json();
         
             this.setState({BenList: getBen, spinner: false});
+           
         } catch(err) {
             console.log("Error fetching data-----------", err);
         }
@@ -130,7 +138,7 @@ import {connect} from "react-redux";
             ben_bank:this.state.ben_bank,
             ben_acc:this.state.ben_acc,
             ben_phone:this.state.ben_phone,
-            bank_id:this.state.bank_id,
+            agent_id:this.state.agent_id,
             msg: this.state.msg,
             pin: this.state.pin,
             c_type: this.state.c_type,
@@ -183,7 +191,7 @@ import {connect} from "react-redux";
                         <Icon family="MaterialIcons" name="arrow-back" size={25} color="#FFF" />
                     </TouchableOpacity>
               
-                        <Text style={styles.headTxt}> Return Cash to  {this.state.cus_name} </Text>
+                        <Text style={styles.headTxt}> Return Cash to  {this.state.cus_name}  </Text>
               
                 
                 </View>
@@ -219,12 +227,12 @@ import {connect} from "react-redux";
                     <View style={{ flexDirection: 'row', alignItems: 'center', borderWidth: 1, margin: 15,marginTop:2, paddingHorizontal: 15 }}>
                             <Text  style={{ flex: 0.1, paddingLeft: 1 }} ></Text> 
                             <Picker  style={{ flex: 0.9, paddingLeft: 150 }}  
-                            selectedValue={this.state.bank_id}  
-                            onValueChange={(itemValue, itemPosition) => this.setState({bank_id: itemValue, toIndex: itemPosition})}   >  
-                             <Picker.Item label="SELECT BANK" value="0" /> 
+                            selectedValue={this.state.agent_id}  
+                            onValueChange={(itemValue, itemPosition) => this.setState({agent_id: itemValue, toIndex: itemPosition})}   >  
+                             <Picker.Item label="SELECT AGENT" value="0" /> 
                              {
-                                this.state.BankList.map( (v)=>{
-                                return <Picker.Item label={v.bank_name  }  value={v.bank_id} />
+                                this.state.CountryList.map( (v)=>{
+                                return <Picker.Item label={v.first_name +" "+v.last_name +" > "+v.phone}  value={v.personal_info_id} />
                                 })
                                 } 
                             </Picker> 
@@ -237,7 +245,7 @@ import {connect} from "react-redux";
                             onValueChange={(itemValue, itemPosition) => this.setState({ben_id: itemValue, ben_idIndex: itemPosition})}   > 
                             
                              <Picker.Item label=" SELECT BENEFICIARY" value="0"/> 
-                             <Picker.Item label=" CREATE NEW BENEFICIARY" value="New" /> 
+                             <Picker.Item label=" CREATE NEW BENEFICIARY" value="N01" /> 
                              {
                                 this.state.BenList.map( (x)=>{
                                 return <Picker.Item label={x.ben_name +" - "+ x.ben_phone }  value={x.ben_id} />

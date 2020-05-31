@@ -96,6 +96,7 @@ export default class agent extends Component {
                 ch_type: this.state.ch_type,
                 due_amount: this.state.due_amount,
                 getCountry_id:this.state.getCountry_id,
+                to_id:this.state.to_id,
                
               
               })} >

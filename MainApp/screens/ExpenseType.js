@@ -160,7 +160,7 @@ export default class ExpenseType extends Component {
                                 <View style={styles.tabIconSty}>
                                     <Icon family="MaterialCommunityIcons" name="briefcase-upload-outline" size={25} color="#FFF" />
                                 </View>
-                                <Text style={styles.tabName}>Bank</Text>
+                                <Text style={styles.tabName}>Other Agent</Text>
                             </TouchableOpacity>
 
 

@@ -280,7 +280,7 @@ class PayoutConfirm extends Component {
                             {this.state.getCurrency}
                             <Text style={{ color: "#FFF", fontSize: 30, paddingLeft: 5 }}>{Constant.numberFormate(this.state.bal.toFixed(2))}</Text>
                         </View>
-                        <Text style={styles.updateSty}>{this.state.from} > {this.state.to} </Text>
+                        {this.state.from ? ( <Text style={styles.updateSty}>{this.state.from} > {this.state.to}</Text>):null}
 
 
                         {this.state.bank_type != 3 ? (

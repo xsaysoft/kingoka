@@ -35,7 +35,7 @@ export default class Send extends Component {
             BankList: [],
             dataSource:[],
             PercentList:[],
-            bank_id: 0,ch_type:2
+            bank_id: 0,ch_type:2,value:0
 
 
 
@@ -99,7 +99,7 @@ export default class Send extends Component {
         const getAmount = Constant.rawNumber(this.state.amount) ;
         if(this.state.ch_type==0)
         {
-            getCharges = Constant.rawNumber(this.state.charges) ;
+            getCharges = 0 ;
         }else{
             getCharges = this.state.charges ; 
         }
@@ -204,7 +204,7 @@ export default class Send extends Component {
                     <TouchableOpacity onPress={() => this.props.navigation.goBack()}>
                         <Icon family="MaterialIcons" name="arrow-back" size={25} color="#FFF" />
                     </TouchableOpacity>
-                    <Text style={styles.headTxt}>Send {this.state.cus_name} </Text>
+        <Text style={styles.headTxt}>Send {this.state.cus_name}</Text>
                 </View>
                 <ScrollView>
                     <View style={{ flexDirection: 'row', borderBottomWidth: 1, borderColor: 'lightgray', alignItems: 'center' }}>
