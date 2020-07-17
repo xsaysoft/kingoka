@@ -81,7 +81,7 @@ export default class ReceiveHistory extends Component {
                         <TextInput style={{ paddingLeft: 10, fontSize: 16 }}
                            
                             placeholder="Quick Search"
-                            onChangeText={text => this.searchFilterFunction(text)}
+                            // onChangeText={text => this.searchFilterFunction(text)}
                             autoCorrect={false}  
                         />
                 </View>

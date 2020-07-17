@@ -279,7 +279,7 @@ import {connect} from "react-redux";
                             value={this.state.msg}
                         />
                     </View>
-                    {this.state.ben_id=="New" ? (  <View >
+                    {this.state.ben_id=="N01" ? (  <View >
              <View style={{ flexDirection: 'row', alignItems: 'center', borderWidth: 1, margin: 15, marginTop: 2, paddingHorizontal: 15 }}>
                             <TextInput
                                 style={{ flex: 0.9, paddingLeft: 20 }}

@@ -28,7 +28,7 @@ export default class Send extends Component {
             ch_type: this.props.navigation.getParam('ch_type','0'),
             due_amount: this.props.navigation.getParam('due_amount','0'),
             getCountry_id:this.props.navigation.getParam('getCountry_id','0'),
-            ben_name:"",
+            ben_name:"",number_length:"",dial_code:"",
             message:"",
             ben_id:"",
             ben_bank:"",
@@ -55,8 +55,8 @@ export default class Send extends Component {
         this.setState({ wallet: await AsyncStorage.getItem('@wallet') ,
         personal_info_id: await AsyncStorage.getItem('@personal_info_id') ,
         getCurrency: await AsyncStorage.getItem('@getCurrency'),
-        dial_code: await AsyncStorage.getItem('@dial_code'),
-        number_length: await AsyncStorage.getItem('@number_length'),
+        
+    
      });
         
         try {
@@ -68,7 +68,16 @@ export default class Send extends Component {
         } catch(err) {
             console.log("Error fetching data-----------", err);
         }
+            //Get Country Details
+            try {
 
+                const CountryApi = await fetch(Constant.URL + Constant.getCountryMain + "/" + this.state.to_id);
+                const getCountryN = await CountryApi.json();
+                console.log("CountryData", getCountryN.data.dial_code)
+                this.setState({ spinner: false ,dial_code:getCountryN.data.dial_code,number_length:getCountryN.data.number_length});
+            } catch (err) {
+                console.log("Error fetching data-----------", err);
+            }
       
     
     }
@@ -173,7 +182,7 @@ export default class Send extends Component {
                     <TouchableOpacity onPress={() => this.props.navigation.goBack()}>
                         <Icon family="MaterialIcons" name="arrow-back" size={25} color="#FFF" />
                     </TouchableOpacity>
-        <Text style={styles.headTxt}> Add Beneficiary {this.state.cus_name}  </Text>
+        <Text style={styles.headTxt}> Add Beneficiary {this.state.cus_name}   </Text>
                 </View>
                 <ScrollView>
                     <View style={{ flexDirection: 'row', borderBottomWidth: 1, borderColor: 'lightgray', alignItems: 'center' }}>
@@ -256,7 +265,7 @@ export default class Send extends Component {
                 <View style={{ flexDirection: 'row', alignItems: 'center', borderWidth: 1, margin: 15, marginTop: 2, paddingHorizontal: 15 }}>
                         <TextInput style={{ flex: 1, paddingLeft: 10, fontSize: 16, fontFamily:'Poppins-ExtraLightItalic' }}
                             keyboardType='email-address'
-                            placeholder="Add a message (Optioncal)"
+                            placeholder="Add a message (Optional)"
                             onChangeText={(message)=>this.setState({message})}
                             value={this.state.message}
                         />

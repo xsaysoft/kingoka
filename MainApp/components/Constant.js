@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-community/async-storage';
-//const URL = "http://192.168.88.35/king/portal/";
-const URL = "http://192.168.43.165/king/portal/";
-//const URL = "http://kingokagroup.com/";
+//const URL = "http://192.168.88.18/king/portal/";
+//const URL = "http://192.168.43.165/king/portal/";
+const URL = "http://kingokagroup.com/";
 const LOGIN = "MobileApi/m_login";
 const getCOUNTRY = "MobileApi/getCountry";
 const getRATE = "MobileApi/getRate";
@@ -30,6 +30,9 @@ const ConfirmTransfer = "MobileApi/ConfirmTransfer";
 const debitWallet =  "MobileApi/debitWallet";
 const debtorPay  =  "MobileApi/debtorPay";
 const getCountryMain = "MobileApi/getCountryMain";
+const TransHistory="MobileApi/TransHistory";
+const UpdateToken="MobileApi/UpdateToken";
+const getAgentCountryWallet="MobileApi/getAgentCountryWallet"
 
 
 export default {
@@ -62,6 +65,9 @@ export default {
     debitWallet,
     debtorPay,
     getCountryMain,
+    TransHistory,
+    UpdateToken,
+    getAgentCountryWallet,
 
     numberFormate(x) {
         return '' + x.replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')

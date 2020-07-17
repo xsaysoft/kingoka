@@ -1,44 +1,68 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, FlatList } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, FlatList,TextInput } from 'react-native';
 import Theme from '../../styles/Theme';
-
-const Credited = <Text style={{ color: 'blue', fontSize: 10 ,fontFamily:'Poppins-Regular',  textAlign: 'center',}}>Credited</Text>
-const Success = <Text style={{ color: '#8d44ad', fontSize: 10 ,fontFamily:'Poppins-Regular',  textAlign: 'center',}}>Success</Text>
-const Falied = <Text style={{ color: 'red', fontSize: 10,fontFamily:'Poppins-Regular',  textAlign: 'center', }}>Falied</Text>
-
-const Movie = <Text style={{ fontSize: 18, color: 'black', fontFamily: 'Poppins-Light' }}>Movie Ticket Book</Text>
-const MobileTxt = <Text style={{fontSize: 18,color: '#000',fontFamily: 'Poppins-Light'}}>Moblie Recharge</Text>
-
+import Spinner from 'react-native-loading-spinner-overlay';
+import Icon from '../../common/icons';
+import Constant from "../../components/Constant";
+import AsyncStorage from '@react-native-community/async-storage';
 export default class TransferScreen extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            transfer: [
-                { userimage: require('../../assets/img/boy.png'), username: 'Chisto', transferdate: '27 may 2019', amount: 322, payclip: 'Debited' },
-                { userimage: require('../../assets/img/boy.png'), username: 'Natasha', transferdate: '26 may 2019', amount: 4865, payclip: Credited },
-                { userimage: require('../../assets/img/boy.png'), username: 'Natasha', transferdate: '16 may 2019', amount: 345, payclip: Falied },
-                { userimage: require('../../assets/img/boy.png'), username: 'Chisto', transferdate: '26 april 2019', amount: 87, payclip: Success },
-                
-            ]
+            customerList: [ ],
+            spinner: true,
+            personal_info_id:"",
+            cus_img: "../../assets/img/boy.png"
         }
     }
-    _renderTransfer(rowdata) {
+
+    async componentDidMount() {
+        this.setState({ personal_info_id: await AsyncStorage.getItem('@personal_info_id') ,
+        getFrom: await AsyncStorage.getItem('@getFrom'),}); 
+        try {
+   
+            const CustomerApiCall = await fetch(Constant.URL+Constant.TransHistory+"/"+this.state.personal_info_id+"/"+this.state.getFrom);
+            const getCustomer = await CustomerApiCall.json();
+          
+            this.setState({customerList: getCustomer, spinner: false});
+        } catch(err) {
+            console.log("Error fetching data-----------", err);
+        }
+    }
+ _renderTransfer(rowdata) {
         return (
-            <TouchableOpacity>
+            <TouchableOpacity onPress={()=>this.props.navigation.navigate("")} >
                 <View style={styles.transferbox}>
                     <View style={styles.flexrow}>
                         <View style={styles.imgContainer}>
-                            <Image style={styles.userimg} source={rowdata.item.userimage} />
+                            <Image style={styles.userimg} source={require('../../assets/img/boy.png')} />
                         </View>
                         <View style={styles.flexrow}>
                             <View style={styles.userdetails}>
-                                <Text style={{fontSize: 18,color: '#000',fontFamily: 'Poppins-Light'}}>{rowdata.item.username}</Text>
-                                <Text style={{ fontSize: 9, color: '#000', fontFamily: 'Poppins-Thin' }}>{rowdata.item.transferdate}</Text>
+                            <Text style={{fontSize: 15,color: '#000',fontFamily: 'Poppins-Light'}}>{rowdata.item.cus_name}</Text>
+                                <Text style={{fontSize: 10,color: '#000',fontFamily: 'Poppins-Light'}}>{rowdata.item.c_ref}</Text>
+                                {rowdata.item.type == 4 ? (
+                              
+                                <Text style={{ fontSize: 9, color: 'orange', fontFamily: 'Poppins-Thin' }}>Cash  Return </Text>
+                            
+                                ):null}
+                                {rowdata.item.type == 0 && rowdata.item.status == 0  ? (
+                                <Text style={{ fontSize: 9, color: 'green', fontFamily: 'Poppins-Thin' }}> Cash Send </Text>
+                                ):null}
+                                 {rowdata.item.type == 0 && rowdata.item.status == 1  ? (
+                                <Text style={{ fontSize: 9, color: 'green', fontFamily: 'Poppins-Thin' }}> Cash Send </Text>
+                                ):null}
+                                  {rowdata.item.status == 2 ? (
+                                <Text style={{ fontSize: 9, color: 'red', fontFamily: 'Poppins-Thin' }}> Cash Reverse </Text>
+                                ):null}
+
+                                <Text style={{ fontSize: 9, color: '#000', fontFamily: 'Poppins-Thin' }}>{rowdata.item.a_date}</Text>
                             </View>
                         </View>
                         <View style={styles.paymentsty}>
-                            <Text style={styles.amountSty}>NGN {rowdata.item.amount}</Text>
-                            <Text style={styles.debited}>{rowdata.item.payclip}</Text>
+                            <Text style={styles.amountSty}>{this.state.getCurrency} {rowdata.item.amount}</Text>
+                            <Text style={{ fontSize: 9, color: 'red', fontFamily: 'Poppins-Thin' }}>{rowdata.item.reason}</Text>
+                            <Text >{rowdata.item.t_type}</Text>
                         </View>
                     </View>
                 </View>
@@ -51,10 +75,20 @@ export default class TransferScreen extends Component {
                 <View style={{ padding: 10, paddingLeft: 15 }}>
                     <Text style={{ fontSize: 18, fontFamily: 'Poppins-Bold' }}>Transaction History</Text>
                 </View>
+                
+                <View style={{ flexDirection: 'row', alignItems: 'center', borderWidth: 1, margin: 15, paddingHorizontal: 15 }}>
+                        <Icon family="Feather" name="search" size={25} />
+                        <TextInput style={{ paddingLeft: 10, fontSize: 16 }}
+                           
+                            placeholder="Quick Search"
+                            // onChangeText={text => this.searchFilterFunction(text)}
+                            autoCorrect={false}  
+                        />
+                </View>
                 <ScrollView>
                     <FlatList
-                        data={this.state.transfer}
-                        renderItem={this._renderTransfer.bind(this)}
+                         data={this.state.customerList}
+                         renderItem={this._renderTransfer.bind(this)}
                     />
                 </ScrollView>
             </View>

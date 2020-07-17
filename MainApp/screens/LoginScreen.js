@@ -6,6 +6,7 @@ import Constant from "../components/Constant";
 import {connect} from "react-redux";
 import AsyncStorage from '@react-native-community/async-storage';
 
+
 import Icon from '../common/icons';
 
 class LoginScreen extends Component {
@@ -16,15 +17,24 @@ class LoginScreen extends Component {
       spinner: false,
       dataSource:[],
       email:'',
-      Password:''
+      password:0
     }
 } 
 
+
+async componentDidMount() {
+  this.setState({ email: await AsyncStorage.getItem('@email'),}); 
+
+}
 
 
 
   onPressSignIn = async() => {
 
+    if(this.state.password==0){
+      Alert.alert("Please enter your password.");
+      return false
+    }
     this.setState({ spinner: true });
     const { email, password } = this.state;
     if (email.length <= 0 || password.length <= 0) {

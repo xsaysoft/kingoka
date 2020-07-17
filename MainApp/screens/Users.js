@@ -22,16 +22,14 @@ export default class Users extends Component {
             cus_email:'',
             personal_info_id:"",
             Smessage:"",
-            Amessage:"",
-            cus_phone_o:0,
-            CountryList:[],
+            Amessage:"",cus_phone:"",cus_phone_o:"",dial_code:"",number_length:"",
+            CountryList:[],CountryData:[]
         };
     }
 
     async componentDidMount() {
         this.setState({ personal_info_id: await AsyncStorage.getItem('@personal_info_id') ,
-        getFrom: await AsyncStorage.getItem('@getFrom'),dial_code: await AsyncStorage.getItem('@dial_code'),
-        number_length :await AsyncStorage.getItem('@number_length'),
+        getFrom: await AsyncStorage.getItem('@getFrom'),
         });
         try {
 
@@ -42,20 +40,41 @@ export default class Users extends Component {
         } catch (err) {
             console.log("Error fetching data-----------", err);
         }
+
+        //Get Country Details
+        try {
+
+            const CountryApi = await fetch(Constant.URL + Constant.getCountryMain + "/" + this.state.getFrom);
+            const getCountryN = await CountryApi.json();
+            console.log("CountryData", getCountryN.data.dial_code)
+            this.setState({ spinner: false ,dial_code:getCountryN.data.dial_code,number_length:getCountryN.data.number_length});
+        } catch (err) {
+            console.log("Error fetching data-----------", err);
+        }
     
     }
 
     onPressCustomer = async() => {
 
        
-        const { cus_name, cus_phone } = this.state;
-        if(cus_phone.length != this.state.number_length){
-        Alert.alert("Invalid Phone number formate.  Number length must be "+this.state.number_length);
-        return false
+        const { cus_name, cus_phone,cus_phone_o } = this.state;
+      
+        if(cus_phone.length <= 0){
+         
+            if(cus_phone_o.length<=0){
+                Alert.alert("Optional Phone is required or provide in your phone number");
+                return false
+            }
+
+        }else{
+            if(cus_phone.length != this.state.number_length){
+                Alert.alert("Invalid Phone number formate.  Number length must be "+this.state.number_length);
+                return false
+                }
         }
-        if (cus_name.length <= 0 || cus_phone.length <= 0) {
+        if (cus_name.length <= 0 ) {
           this.setState({ spinner: false });
-          Alert.alert("Please fill out the required fields.");
+          Alert.alert("Name is required.");
         }else {
              // post method
              this.setState({ spinner: true });
@@ -115,12 +134,12 @@ export default class Users extends Component {
                         <TouchableOpacity onPress={() => this.props.navigation.goBack()}>
                             <Icon family="MaterialIcons" name="arrow-back" size={25} color="#FFF" />
                         </TouchableOpacity>
-                        <Text style={styles.headTxt}>Customer</Text>
+        <Text style={styles.headTxt}>Customer </Text>
                     </View>
 
                     <View style={styles.transferbox}>
                         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-around' }} >
-        <Text style={styles.paidTxt}>Add New Customer </Text>
+        <Text style={styles.paidTxt}>Add New Customer  </Text>
                          
                         </View>
 

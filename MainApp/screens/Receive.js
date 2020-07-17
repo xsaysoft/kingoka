@@ -58,7 +58,7 @@ import {connect} from "react-redux";
         //gET Bank
         try {
        
-            const BankApiCall = await fetch(Constant.URL+Constant.getBANKS);
+            const BankApiCall = await fetch(Constant.URL+Constant.getBANKS+"/"+this.state.getFrom);
             const getBank = await BankApiCall.json();
             this.setState({BankList: getBank, spinner: false});
         } catch(err) {
@@ -251,7 +251,7 @@ import {connect} from "react-redux";
                         </View>
                         
                     </TouchableOpacity>
-                    {this.state.income==1? (
+                    {/* {this.state.income==1? (
                     <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center', paddingLeft: 20 , paddingTop:10}}  >
                         <Icon style={{ padding: 5 }} family="Feather" name="trending-up" size={30} color="#020cab" />
                         <View>
@@ -260,7 +260,7 @@ import {connect} from "react-redux";
                         </View>
                         
                     </TouchableOpacity>
-                     ): null }
+                     ): null } */}
             {this.state.income==0? (
             <View>
                     {this.state.c_type==2? (

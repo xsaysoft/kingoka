@@ -9,6 +9,7 @@ import AppWithNavigationState from "./navigators/AppNavigator";
 
 
 
+
 const store = createStore(
   AppReducer,
   applyMiddleware(thunk),

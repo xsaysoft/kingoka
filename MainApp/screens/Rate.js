@@ -132,7 +132,7 @@ export default class Rate extends Component {
             return false;
         }
         this.setState({show: false})
-        this.props.navigation.navigate("SendB",{
+        this.props.navigation.navigate("RateConvert",{
             cus_name: this.state.cus_name,
             customer_id: this.state.customer_id,
             amount: this.state.amount.toFixed(5),
@@ -146,6 +146,7 @@ export default class Rate extends Component {
             cus_phone: this.state.cus_phone,
             bank_id: this.state.bank_id,
             ch_type: this.state.ch_type,
+            bal:this.state.bal,
             due_amount: this.state.due_amount.toFixed(5),
             getCountry_id: this.state.getCountry_id,
 

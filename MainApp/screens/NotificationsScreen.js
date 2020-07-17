@@ -8,17 +8,9 @@ export default class Notifi extends Component {
         super(props)
         this.state = {
             transfer: [
-                { userimage: require('../assets/img/atm.png'), username: '$ 260.00 withdrawn at ATM', },
-                { userimage: require('../assets/img/bank.png'), username: '$ 550.00 Credited for your Bank Account', },
+               
             ],
-            transferlater: [
-                { userimage: require('../assets/img/girl.png'), username: '$ 1200.00 Credited from NETbanking', transferdate: '28 may 2019', },
-                { userimage: require('../assets/img/bank.png'), username: '$ 55.00 Charges for your Bank Account', transferdate: '26 may 2019', },
-                { userimage: require('../assets/img/man.png'), username: '$ 3300.00 Debited ', transferdate: '17 may 2019', },
-                { userimage: require('../assets/img/atm.png'), username: '$ 5000.00 Credited at ATM', transferdate: '10 may 2019', },
-                { userimage: require('../assets/img/atm.png'), username: '$ 6000.00 Credited at ATM', transferdate: '3 may 2019', },
-
-            ],
+            
         }
     }
 
@@ -54,16 +46,12 @@ export default class Notifi extends Component {
                     <Text style={styles.headtxt}>Notification</Text>
                 </View>
                 <ScrollView>
-                    <Text style={styles.txtday}>TODAY</Text>
+                  
                     <FlatList
                         data={this.state.transfer}
                         renderItem={this._renderTransfer.bind(this)}
                     />
-                    <Text style={styles.txtday}>OLDER</Text>
-                    <FlatList
-                        data={this.state.transferlater}
-                        renderItem={this._renderTransfer.bind(this)}
-                    />
+                  
                 </ScrollView>
             </View>
         );

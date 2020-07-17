@@ -1,5 +1,5 @@
-import React, { Component } from 'react';
-import { View, Text, ScrollView, StyleSheet, Image, FlatList, TouchableOpacity, ImageBackground, Dimensions } from 'react-native';
+import React, { Component,useEffect } from 'react';
+import { View, Text, ScrollView, StyleSheet, Image, Alert, TouchableOpacity, BackHandler, Dimensions } from 'react-native';
 import Icon from '../../common/icons';
 import LinearGradient from 'react-native-linear-gradient';
 import AsyncStorage from '@react-native-community/async-storage';
@@ -8,6 +8,7 @@ import Constant from "../../components/Constant";
 import {connect} from "react-redux";
 import Spinner from 'react-native-loading-spinner-overlay';
 import { NavigationEvents } from 'react-navigation';
+import messaging from '@react-native-firebase/messaging';
 
 
 const { width } = Dimensions.get('window');
@@ -38,6 +39,29 @@ class HomeScreen extends Component {
        
     }
 
+    onButtonPress = () => {
+        BackHandler.removeEventListener('hardwareBackPress', this.handleBackButton);
+        // then navigate
+        navigate('NewScreen');
+      }
+      
+      handleBackButton = () => {
+       Alert.alert(
+           'Exit App',
+           'Are you sure you want to exit this application?', [{
+               text: 'Cancel',
+               onPress: () => console.log('Cancel Pressed'),
+               style: 'cancel'
+           }, {
+               text: 'OK',
+               onPress: () => BackHandler.exitApp()
+           }, ], {
+               cancelable: false
+           }
+        )
+        return true;
+      } 
+
     async bal() {
 
         this.setState({ spinner: true });
@@ -57,15 +81,51 @@ class HomeScreen extends Component {
     }
 
     async componentDidMount() {
-     
       this.bal()
-     
+      this.getFcmToken();
+      //BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);
     }
 
+    componentWillUnmount() {
+       // BackHandler.removeEventListener('hardwareBackPress', this.handleBackButton);
+      }
 
 
 
+      //get Push Token 
+      getFcmToken = async () => {
+        const fcmToken = await messaging().getToken();
+        if (fcmToken) {
+            this.updateToken (fcmToken)
+         console.log("Your Firebase Token is:", fcmToken);
+        } else {
+         console.log("Failed", "No token received");
+        }
+      }
 
+
+ updateToken (fc_token){
+          // post method
+          fetch(Constant.URL + Constant.UpdateToken, {
+            method: 'POST',
+            body: JSON.stringify({
+                token: fc_token,
+                personal_info_id: this.state.personal_info_id,
+              
+            })
+        })
+            .then((response) => response.json())
+            .then((result) => {
+                this.setState({
+                    spinner: false,
+                });
+
+            }).catch(function (error) {
+                console.log("-------- error ------- " + error);
+              
+            });
+
+ }
    
 
     _renderBannerItems(rowData) {
@@ -106,7 +166,7 @@ class HomeScreen extends Component {
                             <View style={{ margin: 10 }}>
                                 <TouchableOpacity onPress={() => this.props.navigation.navigate("Notifi")}>
                                     <Icon family="FontAwesome" name="bell-o" size={23} color="#FFF" />
-                                    <Text style={styles.notifisty}>2</Text>
+                                    <Text style={styles.notifisty}>0</Text>
                                 </TouchableOpacity>
                             </View>
                         </View>
@@ -208,7 +268,7 @@ class HomeScreen extends Component {
                                             </View>
                                         </View>
                                     </LinearGradient>
-                                    <Text style={styles.paytypesty}> CashBox</Text>
+                                    <Text style={styles.paytypesty}> Remit</Text>
                                 </TouchableOpacity>
                             </View>
                             <View style={{ flex: 0.5, margin: 10 }}>

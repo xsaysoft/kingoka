@@ -3,6 +3,7 @@ import { View, Text, ScrollView, StyleSheet, Image, TouchableOpacity, TextInput 
 import LinearGradient from 'react-native-linear-gradient';
 import Icon from '../common/icons';
 import Theme from '../styles/Theme';
+import AsyncStorage from '@react-native-community/async-storage';
 
 export default class UserprofileEdit extends Component {
     constructor(props) {

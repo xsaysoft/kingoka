@@ -56,7 +56,7 @@ import {connect} from "react-redux";
          //gET Bank
          try {
        
-            const BankApiCall = await fetch(Constant.URL+Constant.getBANKS);
+            const BankApiCall = await fetch(Constant.URL+Constant.getBANKS+"/"+this.state.getFrom);
             const getBank = await BankApiCall.json();
             this.setState({BankList: getBank, spinner: false});
         } catch(err) {

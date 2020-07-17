@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, Image, StyleSheet } from 'react-native';
+import { View, Text, Image, StyleSheet ,Alert} from 'react-native';
 import ThemeStyle from '../styles/Theme';
 import { NavigationActions, StackActions } from 'react-navigation';
 import LinearGradient from 'react-native-linear-gradient';
@@ -20,9 +20,8 @@ export default class SplashScreen extends Component {
         };
     
     }
-   
+
     async componentWillMount() {
-   
         const isLoggedIn = await AsyncStorage.getItem('@isLoggedIn');
         const personal_info_id= await AsyncStorage.getItem('@personal_info_id');
         if (isLoggedIn) {
@@ -34,10 +33,10 @@ export default class SplashScreen extends Component {
         
       }
 
-    componentDidMount() {
-      
-           
+    
+  
 
+    componentDidMount() {
         var timer = setTimeout(() => {
             this.setState({
                 visible: !this.state.visible

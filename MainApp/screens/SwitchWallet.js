@@ -17,6 +17,7 @@ export default class SwitchWallet extends Component {
             personal_info_id:"",
             cus_img: "../assets/img/boy.png",
             c_type : this.props.navigation.getParam('c_type', '0'),
+            
         }
     }
 
@@ -42,6 +43,7 @@ export default class SwitchWallet extends Component {
                 country_id: rowdata.item.country_id,
                 currency: rowdata.item.currency,
                 country: rowdata.item.country,
+                c_type:this.state.c_type
               
               })} >
                 <View style={styles.transferbox}>
@@ -77,7 +79,13 @@ export default class SwitchWallet extends Component {
                     <TouchableOpacity onPress={() => this.props.navigation.goBack()}>
                         <Icon family="MaterialIcons" name="arrow-back" size={25} color="#FFF" />
                     </TouchableOpacity>
+                    {this.state.c_type == 1 ? ( 
         <Text style={styles.headTxt}>Switch Wallet </Text>
+        ): null}
+
+{this.state.c_type == 2 ? ( 
+        <Text style={styles.headTxt}>Activate Wallet </Text>
+        ): null}
                 </View>
          
                 <ScrollView>

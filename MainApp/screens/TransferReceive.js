@@ -22,11 +22,11 @@ export default class TransferReceive extends Component {
 
     async componentDidMount() {
         this.setState({ personal_info_id: await AsyncStorage.getItem('@personal_info_id'),
-        getCurrency: await AsyncStorage.getItem('@getCurrency'), }); 
+        getCurrency: await AsyncStorage.getItem('@getCurrency'), getFrom: await AsyncStorage.getItem('@getFrom'),}); 
        
         try {
    
-            const TransferApiCall = await fetch(Constant.URL+Constant.TransferPending+"/"+this.state.personal_info_id);
+            const TransferApiCall = await fetch(Constant.URL+Constant.TransferPending+"/"+this.state.personal_info_id+"/"+this.state.getFrom);
             const getTransfer = await TransferApiCall.json();
            
             this.setState({TransferList: getTransfer, spinner: false});
@@ -54,7 +54,7 @@ export default class TransferReceive extends Component {
                         </View>
                         <View style={styles.flexrow}>
                             <View style={styles.userdetails}>
-                            <Text style={{ fontSize: 16, color: '#000', fontFamily: 'Poppins-Thin' }}>{rowdata.item.first_name} {rowdata.item.last_name}</Text>
+            <Text style={{ fontSize: 16, color: '#000', fontFamily: 'Poppins-Thin' }}>{rowdata.item.first_name} {rowdata.item.last_name} {rowdata.item.s_name}</Text>
             <Text style={{fontSize: 15,color: '#000',fontFamily: 'Poppins-Light'}}>{this.state.getCurrency} {rowdata.item.amount}</Text>
                                 
             <Text style={{ fontSize: 10, color: '#000', fontFamily: 'Poppins-Thin' }}>{rowdata.item.phone} </Text>

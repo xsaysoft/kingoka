@@ -22,11 +22,12 @@ import {connect} from "react-redux";
             currency : this.props.navigation.getParam('currency', 'Name'),
             country: this.props.navigation.getParam('country', 'phone'),
             country_id: this.props.navigation.getParam('country_id', '0'),
+            c_type : this.props.navigation.getParam('c_type', '0'),
             spinner: false,
             bal:"0.00",
             show: false,
             pin:"",
-            Amessage:"",
+            Amessage:"",p_status:"",personal_info_id:0,
             Smessage:"",
   
  
@@ -34,8 +35,10 @@ import {connect} from "react-redux";
     }
     async componentDidMount() {
         //this.setState({ spinner: true });
+        
         this.setState({ 
             personal_info_id: await AsyncStorage.getItem('@personal_info_id')  });
+            this.country_status()
     
     }
 
@@ -44,7 +47,7 @@ import {connect} from "react-redux";
         this.setState({ spinner: true });
         try {
 
-            const BalApiCall = await fetch(Constant.URL + Constant.getAgBal + "/" + this.state.personal_info_id+"/"+this.state.country_id);
+            const BalApiCall = await fetch(Constant.URL + Constant.getAgBal + "/" + this.state.personal_info_id+"/"+this.state.country_id+"/"+this.state.p_status);
             const dataSource = await BalApiCall.json();
             await AsyncStorage.setItem('@wallet', dataSource.bal)
             
@@ -57,10 +60,43 @@ import {connect} from "react-redux";
             this.setState({ spinner: false });
         }
     }
+
+    async activate() {
+
+        this.setState({ spinner: true });
+        try {
+
+            const BalApiCall = await fetch(Constant.URL + Constant.getAgBal + "/" + this.state.personal_info_id+"/"+this.state.country_id+"/"+this.state.p_status);
+            const dataSource = await BalApiCall.json();
+            await AsyncStorage.setItem('@wallet', dataSource.bal)
+
+        } catch (err) {
+            console.log("Error fetching data-----------", err);
+            this.setState({ spinner: false });
+        }
+    }
+
+    
+    async country_status() {
+
+        this.setState({ spinner: true });
+        try {
+
+            const BalApiCall = await fetch(Constant.URL + Constant.getAgentCountryWallet+"/"+this.state.personal_info_id+"/"+this.state.country_id);
+            const CountrySource = await BalApiCall.json();
+    
+     
+            this.setState({ p_status: CountrySource.data.p_status, spinner: false });
+        } catch (err) {
+            console.log("Error fetching data-----------", err);
+            this.setState({ spinner: false });
+        }
+    }
   
 
   
     handleOpen = async() => {
+    
         this.setState({ show: true })
         if(Constant.removeAsyncValue('getFrom') &&  Constant.removeAsyncValue('getCurrency')){
        
@@ -71,9 +107,16 @@ import {connect} from "react-redux";
         }else{
             this.setState({ spinner: false,Ashow: true ,show: false,Amessage:"Unable to make changes, please try again" });
         }
-        
-        
+          
+      }
 
+      handleActivate = async() => {
+        
+        this.setState({ show: true })
+        this.activate()
+         this.setState({ spinner: false,Sshow: true ,Smessage:"Wallet Currecy has been activated successfully" });
+        
+          
       }
     
       
@@ -91,7 +134,14 @@ import {connect} from "react-redux";
                     <TouchableOpacity onPress={() => this.props.navigation.goBack()}>
                         <Icon family="MaterialIcons" name="arrow-back" size={25} color="#FFF" />
                     </TouchableOpacity>
+                    {this.state.c_type == 1 ? (
+        
                     <Text style={styles.headTxt}>Confirm Switch Wallet To  {this.state.currency} </Text>
+                    ):null}
+                      {this.state.c_type == 2 ? (
+        
+                    <Text style={styles.headTxt}>Activate  Wallet from  {this.state.currency} </Text>
+                            ):null}
                 </View>
                 <ScrollView>
                     <View style={{ flexDirection: 'row', borderBottomWidth: 1, borderColor: 'lightgray', alignItems: 'center' }}>
@@ -101,16 +151,23 @@ import {connect} from "react-redux";
                         <View style={styles.userdetails}>
                             <Text style={{ fontSize: 18, color: '#000', fontFamily: 'Poppins-Light' }}>{this.state.currency}</Text>
                             <Text style={{ fontSize: 12, color: '#000', fontFamily: 'Poppins-Thin' }}>{this.state.country}</Text>
+                            {this.state.p_status == 1 ? (
+                            <Text style={{ fontSize: 12, color: 'green', fontFamily: 'Poppins-Thin' , textAlign: 'right' }}>ACTIVATED FOR PAYOUT</Text>
+                            ):null}
+                            {this.state.p_status == 0  ||  this.state.p_status == null? (
+                            <Text style={{ fontSize: 12, color: 'red', fontFamily: 'Poppins-Thin' , textAlign: 'right' }}>NOT ACTIVATED FOR PAYOUT</Text>
+                            ):null}
                         </View>
                        
                     </View>
                     <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center', paddingLeft: 20 , paddingTop:10}}  >
                         
                     </TouchableOpacity>
-                   
+                    {this.state.c_type == 1 ? (
+                <View>
                     <View style={{  alignItems: 'center', margin: 15, paddingHorizontal: 15}}>
                         <Text style={{marginTop:1,color:"red", fontSize: 18}}>
-                        I UNDERSTAND THAT SWITCHING MY WALLET WILL CHANGE MY DEFAULT WALLET CURRENCY , COUNTRY AND CUSTOMER UNDER MY ACCOUNT. AUTO ADD ADD WILL BE ACTIVATED ON THIS WALLET 
+                        I UNDERSTAND THAT SWITCHING MY WALLET WILL CHANGE MY DEFAULT WALLET CURRENCY , COUNTRY AND CUSTOMER UNDER MY ACCOUNT. 
                         </Text>
                         <Text style={{marginTop:15,color:"#000"}}>
                        YOU CAN SWITCH BACK TO YOUR DEFAULT ACCOUNT AT ANY TIME 
@@ -118,10 +175,30 @@ import {connect} from "react-redux";
 
                     </View>
 
-                 
+            
                     <TouchableOpacity style={{ paddingVertical: 10, backgroundColor: '#020cab', marginTop: 30, borderRadius: 50, marginHorizontal: 30 }} onPress={this.handleOpen}  >
                         <Text style={{ color: '#FFF', textAlign: 'center', fontSize: 16 ,  fontFamily: 'Poppins-Bold',}}>CONFIRM WALLET SWITCH</Text>
                     </TouchableOpacity>
+                </View>
+                    ):null}
+
+{this.state.c_type == 2? (
+                <View>
+                <View style={{ flexDirection: 'row', alignItems: 'center', borderWidth: 1, margin: 15, marginTop: 10, paddingHorizontal: 15 }}>
+                             <Text style={{ flex: 0.1, paddingLeft: 1 }} ></Text>
+                             <Picker style={{ flex: 0.9, paddingLeft: 150 }}
+                                 selectedValue={this.state.p_status}
+                                 onValueChange={(itemValue, itemPosition) => this.setState({ p_status: itemValue, toIndex: itemPosition })}   >
+                                 {/* <Picker.Item label="SELECT SWITCH TYPE" value="0" /> */}
+                                 <Picker.Item label="DON'T ADD TO PAYOUT LISTING" value="0" />
+                                 <Picker.Item label="ADD TO PAYOUT LISTING" value="1" />
+                             </Picker>
+                             </View>
+                    <TouchableOpacity style={{ paddingVertical: 10, backgroundColor: '#020cab', marginTop: 30, borderRadius: 50, marginHorizontal: 30 }} onPress={this.handleActivate}  >
+                        <Text style={{ color: '#FFF', textAlign: 'center', fontSize: 16 ,  fontFamily: 'Poppins-Bold',}}>ACTIVATE WALLET</Text>
+                    </TouchableOpacity>
+                    </View>
+                    ):null}
                     <View style={{margin: 20}}></View>
 
                     
@@ -156,6 +233,8 @@ import {connect} from "react-redux";
                             this.props.navigation.navigate("TabNav")
                             }} >Close</SCLAlertButton>
         </SCLAlert>
+
+        
 
                 </ScrollView>
             </View>

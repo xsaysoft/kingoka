@@ -19,7 +19,6 @@ export default class ProfileScreen extends Component {
     logout= async () => {
        if(
 Constant.removeAsyncValue('@isLoggedIn')&&
-Constant.removeAsyncValue('@email')&&
 Constant.removeAsyncValue('@first_name')&&
 Constant.removeAsyncValue('@last_name')&&
 Constant.removeAsyncValue('@phone')&&
@@ -63,7 +62,9 @@ Constant.removeAsyncValue('@wallet')
                             </TouchableOpacity>
                         </View>
                         <View style={{ paddingLeft: 35, paddingVertical: 10, }}>
-                            <TouchableOpacity onPress={() => this.props.navigation.navigate("SwitchWallet")}>
+                            <TouchableOpacity onPress={() => this.props.navigation.navigate("SwitchWallet",
+                            { c_type: 1 }
+                            )}>
                                 <View style={styles.settingLayout}>
                                     <View style={styles.settingNamesty}>
                                         <Icon family="FontAwesome" name="money" size={30} color={Theme.mainColor} />
@@ -73,6 +74,33 @@ Constant.removeAsyncValue('@wallet')
                                 </View>
                             </TouchableOpacity>
                         </View>
+
+                        <View style={{ paddingLeft: 35, paddingVertical: 10, }}>
+                            <TouchableOpacity onPress={() => this.props.navigation.navigate("SwitchWallet",
+                            { c_type: 2 })}>
+                                <View style={styles.settingLayout}>
+                                    <View style={styles.settingNamesty}>
+                                        <Icon family="Feather" name="trending-up"  size={30} color={Theme.mainColor} />
+                                        <Text style={styles.meunSty}>Activate Wallet </Text>
+                                    </View>
+                                    <Icon family="MaterialIcons" name="keyboard-arrow-right" size={30} color="black" />
+                                </View>
+                            </TouchableOpacity>
+                        </View>
+
+                        <View style={{ paddingLeft: 35, paddingVertical: 10, }}>
+                            <TouchableOpacity onPress={() => this.props.navigation.navigate("Formula",
+                            { c_type: 2 })}>
+                                <View style={styles.settingLayout}>
+                                    <View style={styles.settingNamesty}>
+                                        <Icon family="Feather" name="activity" size={30} color={Theme.mainColor} />
+                                        <Text style={styles.meunSty}>Formula </Text>
+                                    </View>
+                                    <Icon family="MaterialIcons" name="keyboard-arrow-right" size={30} color="black" />
+                                </View>
+                            </TouchableOpacity>
+                        </View>
+
                         <View style={{ paddingLeft: 35, paddingVertical: 10, }}>
                             <TouchableOpacity onPress={() => this.props.navigation.navigate("Payout", {
                                     history: 1,

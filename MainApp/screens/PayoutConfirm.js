@@ -43,7 +43,7 @@ class PayoutConfirm extends Component {
             payout_cost: 0,
             Cbal: 0, pay_to: 0,
             CountryList: [], rate_v: 0,
-            rate_type: 0,
+            rate_type: 0,reason:"",ref_no:"",
             dataSource: [],
 
 
@@ -67,7 +67,7 @@ class PayoutConfirm extends Component {
 
         try {
 
-            const BankApiCall = await fetch(Constant.URL + Constant.getBANKS);
+            const BankApiCall = await fetch(Constant.URL + Constant.getBANKS+"/"+this.state.getFrom);
             const getBank = await BankApiCall.json();
             this.setState({ BankList: getBank, spinner: false });
         } catch (err) {
@@ -176,7 +176,8 @@ class PayoutConfirm extends Component {
                     payout_due: this.state.Cbal,
                     getFrom: this.state.getFrom,
                     payout_bal:this.state.payout_bal,
-                    payout_bal_set:this.state.payout_bal_set
+                    payout_bal_set:this.state.payout_bal_set,
+                    ref_no:this.state.ref_no
                 })
             })
                 .then((response) => response.json())
@@ -212,7 +213,12 @@ class PayoutConfirm extends Component {
     onPressRV = async () => {
 
 
-        const { pin } = this.state;
+        const { pin ,reason} = this.state;
+
+        if (reason.length <= 0) {
+            Alert.alert("Please Enter Reason for not making payment.");
+            return false
+        }
         if (pin.length <= 0) {
             Alert.alert("Please Enter Your Pin.");
         } else {
@@ -225,6 +231,7 @@ class PayoutConfirm extends Component {
                     agent_acct_id: this.state.agent_acct_id,
                     pin: this.state.pin,
                     c_ref: this.state.c_ref,
+                    reason:this.state.reason,
 
                 })
             })
@@ -302,6 +309,18 @@ class PayoutConfirm extends Component {
                                 <Text style={{ textAlign: 'right', fontSize: 15, color: "#fff" }}>
 
                                     {Constant.numberFormate(this.state.payout_bal_set)}
+                                </Text>
+                            </View>
+                        ) : null}
+                        {/* Cross Country */}
+                        {this.state.bank_type == 3 ? (
+                            <View>
+                            
+                                <Text style={{ textAlign: 'right', fontSize: 12, color: "#fff" }}>Payout Due</Text>
+                                <Text style={{ textAlign: 'right', fontSize: 10, color: "#fff" }}>Charges : {this.state.payout_cost}</Text>
+                                
+                                <Text style={{ textAlign: 'right', fontSize: 15, color: "#fff" }}>
+                                {this.state.x_tox}    {Constant.numberFormate(this.state.due_bal.toFixed(2))}
                                 </Text>
                             </View>
                         ) : null}
@@ -552,6 +571,36 @@ class PayoutConfirm extends Component {
                             
                     ) : null}
 
+                    {this.state.bank_type == 2 ? (
+                                <View>
+                                <View style={{ flexDirection: 'row', alignItems: 'center', borderWidth: 1, margin: 15, paddingHorizontal: 15 }}>
+                            
+                                <TextInput style={{ paddingLeft: 10, fontSize: 16 }}
+
+                                    placeholder="Reference No"
+                                    onChangeText={(ref_no) => this.setState({ ref_no })}
+                                    value={this.state.ref_no}
+                                />
+
+                                </View>
+                         </View>
+                            ) : null}
+
+                    {this.state.bank_type == 20 ? (
+                                <View>
+                                <View style={{ flexDirection: 'row', alignItems: 'center', borderWidth: 1, margin: 15, paddingHorizontal: 15 }}>
+                            
+                                <TextInput style={{ paddingLeft: 10, fontSize: 16 }}
+
+                                    placeholder="Reason"
+                                    onChangeText={(reason) => this.setState({ reason })}
+                                    value={this.state.reason}
+                                />
+
+                                </View>
+                         </View>
+                            ) : null}
+
                     <View style={{ flexDirection: 'row', alignItems: 'center', borderWidth: 1, margin: 15, paddingHorizontal: 15 }}>
                         <Icon family="Feather" name="key" size={25} />
                         <TextInput style={{ paddingLeft: 10, fontSize: 16 }}
@@ -572,7 +621,7 @@ class PayoutConfirm extends Component {
                         <View>
                             {this.state.bank_type == 3 ? (
                                 <TouchableOpacity style={{ paddingVertical: 10, backgroundColor: '#020cab', marginTop: 30, borderRadius: 50, marginHorizontal: 30 }} onPress={this.handleOpen}>
-                                    <Text style={{ color: '#FFF', textAlign: 'center', fontSize: 16, fontFamily: 'Poppins-Bold', }}>Confirm Cross Payout</Text>
+                                    <Text style={{ color: '#FFF', textAlign: 'center', fontSize: 16, fontFamily: 'Poppins-Bold', }}>View Cross Payout</Text>
                                 </TouchableOpacity>
                             ) : null}
                         </View>
@@ -588,9 +637,11 @@ class PayoutConfirm extends Component {
                             ) : null}
 
                             {this.state.bank_type == 20 ? (
+                              
                                 <TouchableOpacity style={{ paddingVertical: 10, backgroundColor: 'red', marginTop: 30, borderRadius: 50, marginHorizontal: 30 }} onPress={this.onPressRV}>
                                     <Text style={{ color: '#FFF', textAlign: 'center', fontSize: 16, fontFamily: 'Poppins-Bold', }}>Unable To Payout</Text>
                                 </TouchableOpacity>
+                        
                             ) : null}
 
 
@@ -643,13 +694,13 @@ class PayoutConfirm extends Component {
                             this.setState({ Pshow: false })
                         }}
                     >
+                       
                         <View style={styles.rowcenter}>
-
                         {this.state.payout_due_set <= 0 ? (
-                            <Text style={{ color: "#000", fontSize: 30, paddingLeft: 5, textAlign: "center" }}> {this.state.tto} {Constant.numberFormate(this.state.Cbal.toFixed(2))}</Text>
+                            <Text style={{ color: "#000", fontSize: 25, paddingLeft: 5, textAlign: "center" }}> {this.state.tto} {Constant.numberFormate(this.state.Cbal.toFixed(2))}</Text>
                          ):null}
                          {this.state.payout_due_set > 0 ? (
-                            <Text style={{ color: "#000", fontSize: 30, paddingLeft: 5, textAlign: "center" }}> {this.state.tto} {this.state.Cbal}</Text>
+                            <Text style={{ color: "#000", fontSize: 25, paddingLeft: 5, textAlign: "center" }}> {this.state.tto} {this.state.Cbal}</Text>
                          ):null}
                         </View>
                       

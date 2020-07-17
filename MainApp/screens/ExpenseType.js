@@ -71,14 +71,14 @@ export default class ExpenseType extends Component {
                                 <Text style={styles.tabName}>Agent Wallet</Text>
                             </TouchableOpacity>
 
-                            <TouchableOpacity style={styles.tabBox} onPress={() => this.props.navigation.navigate("ExpenseCal",
+                            {/* <TouchableOpacity style={styles.tabBox} onPress={() => this.props.navigation.navigate("ExpenseCal",
                                 { c_type: 2 }
                             )}>
                                 <View style={styles.tabIconSty}>
                                     <Icon family="MaterialCommunityIcons" name="briefcase-upload-outline" size={25} color="#FFF" />
                                 </View>
                                 <Text style={styles.tabName}>Bank</Text>
-                            </TouchableOpacity>
+                            </TouchableOpacity> */}
 
 
                         </View>
@@ -108,6 +108,8 @@ export default class ExpenseType extends Component {
                                 <Text style={styles.tabName}>Bank</Text>
                             </TouchableOpacity>
 
+                        
+
 
                         </View>
                     ) : null}
@@ -126,14 +128,16 @@ export default class ExpenseType extends Component {
                                 <Text style={styles.tabName}>Agent Wallet</Text>
                             </TouchableOpacity>
 
-                            <TouchableOpacity style={styles.tabBox} onPress={() => this.props.navigation.navigate("Customers",
+                            {/* <TouchableOpacity style={styles.tabBox} onPress={() => this.props.navigation.navigate("Customers",
                                 { c_type: 2,transaction:"DebtorAction", }
                             )}>
                                 <View style={styles.tabIconSty}>
                                     <Icon family="MaterialCommunityIcons" name="briefcase-upload-outline" size={25} color="#FFF" />
                                 </View>
                                 <Text style={styles.tabName}>Bank</Text>
-                            </TouchableOpacity>
+                            </TouchableOpacity> */}
+
+                          
 
 
                         </View>

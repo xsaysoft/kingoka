@@ -27,6 +27,7 @@ import SendB from '../screens/SendB';
 import agent from '../screens/agent';
 import done from '../screens/done';
 import Rate from '../screens/Rate';
+import RateConvert from '../screens/RateConvert';
 import Payout from '../screens/Payout';
 import PayoutDone from '../screens/PayoutDone';
 import Credit from '../screens/Credit';
@@ -43,6 +44,8 @@ import TransferConfirm from "../screens/TransferConfirm";
 import CustomerAction from "../screens/CustomerAction";
 import Customers from "../screens/Customers";
 import DebtorAction from "../screens/DebtorAction";
+import Formula from "../screens/Formula";
+import FormulaRate from "../screens/FormulaRate";
 
 
 
@@ -339,6 +342,25 @@ const Routes = {
       header: null
     },
   },
+  Formula: {
+    screen:   Formula,
+    navigationOptions: {
+      header: null
+    },
+  },
+  FormulaRate: {
+    screen:   FormulaRate,
+    navigationOptions: {
+      header: null
+    },
+  },
+  RateConvert: {
+    screen:   RateConvert,
+    navigationOptions: {
+      header: null
+    },
+  },
+  
   
   
 }

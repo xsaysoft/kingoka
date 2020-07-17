@@ -22,7 +22,7 @@ class TransferCal extends Component {
 
             BankList: [],
             AgentList: [],
-            bank_id: "",
+            bank_id: "",bank_id_to:0,
             amount: '',
             msg: "",
             personal_info_id: "",
@@ -31,9 +31,10 @@ class TransferCal extends Component {
             show: false,
             income_bal: 0,
             pin: "",
-            Amessage: "",
+            Amessage: "",transfer_t:"",transfer_b:"",
             Smessage: "",
-            agent_to_id:0,
+            agent_to_id:0,ben_bank:0,
+            ben_acc:0,ben_name:0
 
 
         }
@@ -59,7 +60,7 @@ class TransferCal extends Component {
         //gET Bank
         try {
 
-            const BankApiCall = await fetch(Constant.URL + Constant.getBANKS);
+            const BankApiCall = await fetch(Constant.URL + Constant.getBANKS+"/"+this.state.getFrom);
             const getBank = await BankApiCall.json();
             this.setState({ BankList: getBank, spinner: false });
         } catch (err) {
@@ -68,7 +69,7 @@ class TransferCal extends Component {
          //gET Agent
          try {
 
-            const AgentApiCall = await fetch(Constant.URL + Constant.getAGENT+"/"+this.state.getFrom);
+            const AgentApiCall = await fetch(Constant.URL + Constant.getAGENT+"/"+this.state.personal_info_id+"/"+this.state.getFrom);
             const getAgent = await AgentApiCall.json();
            
             this.setState({ AgentList: getAgent, spinner: false });
@@ -101,22 +102,46 @@ class TransferCal extends Component {
         const { amount } = this.state;
         console.log("bank_id",this.state.bank_id)
         // console.log(Math.round(this.state.wallet))
-        if(this.state.agent_to_id==0 && this.state.c_type==1){
+        if(this.state.agent_to_id==0 && this.state.transfer_t==1){
             Alert.alert("Select Agent To Continue.");
             return false
         }
-        if(this.state.bank_id==0 && this.state.c_type==2){
+        if(this.state.bank_id==0 && this.state.transfer_t==2){
             Alert.alert("Select Bank To Continue.");
             return false
         }
+
+        if(this.state.ben_name==0 && this.state.transfer_b==1){
+            Alert.alert("Enter Beneficiary  Name");
+            return false
+        }
+        if(this.state.ben_bank==0 && this.state.transfer_b==1){
+            Alert.alert("Enter Beneficiary Bank Name");
+            return false
+        }
+        if(this.state.ben_acc==0 && this.state.transfer_b==1){
+            Alert.alert("Enter Beneficiary Bank Account");
+            return false
+        }
+        
+
+        if(this.state.bank_id==0 && this.state.transfer_b==2){
+            Alert.alert("Select Bank To Continue.");
+            return false
+        }
+        if(this.state.bank_id_to==0 && this.state.transfer_b==2){
+            Alert.alert("Select Bank To Continue.");
+            return false
+        }
+
         if(this.state.personal_info_id==this.state.agent_to_id){
             Alert.alert("Invalid Transfer , You can not make a self transfer.");
             return false
         }
-        // if( this.state.amount  > Math.round(this.state.wallet) ){
-        //     Alert.alert("Insufficient Fund");
-        //     return false
-        // }
+        if( this.state.msg =="" ){
+            Alert.alert("Enter Transfer Message");
+            return false
+        }
         if (amount.length <= 0) {
             this.setState({ spinner: false });
             Alert.alert("Please Enter Amount.");
@@ -143,9 +168,15 @@ class TransferCal extends Component {
                 msg: this.state.msg,
                 pin: this.state.pin,
                 bank_id: this.state.bank_id,
+                bank_id_to: this.state.bank_id_to,
+                c_type:this.state.c_type,
+                transfer_b:this.state.transfer_b,
                 getCountry_id: this.state.getFrom,
                 getProfit: 0,
-                amount: this.state.amount
+                amount: this.state.amount,
+                ben_name:this.state.ben_name,
+                ben_bank:this.state.ben_bank,
+                ben_acc:this.state.ben_acc,
             })
         })
             .then((response) => response.json())
@@ -208,9 +239,144 @@ class TransferCal extends Component {
                         </View>
 
                     </TouchableOpacity>
-
+                     {/* BANK TRANSFER */}
                     {this.state.c_type == 2 ? (
+                     <View>
+
+                            
+
+                             <View style={{ flexDirection: 'row', alignItems: 'center', borderWidth: 1, margin: 15, marginTop: 10, paddingHorizontal: 15 }}>
+                             <Text style={{ flex: 0.1, paddingLeft: 1 }} ></Text>
+                             <Picker style={{ flex: 0.9, paddingLeft: 150 }}
+                                 selectedValue={this.state.transfer_b}
+                                 onValueChange={(itemValue, itemPosition) => this.setState({ transfer_b: itemValue, toIndex: itemPosition })}   >
+                                 <Picker.Item label="SELECT TRANSFER TYPE" value="0" />
+                                 <Picker.Item label="Agent Transfer Request" value="1" />
+                                 <Picker.Item label="Transfer To Other Banks" value="2" />
+                             </Picker>
+                             </View>
+
+                           
+                    {this.state.transfer_b == 1 ? (
+                         <View >
+                         <View style={{ flexDirection: 'row', alignItems: 'center', borderWidth: 1, margin: 15, marginTop: 2, paddingHorizontal: 15 }}>
+                                                 <TextInput
+                                                     style={{ flex: 0.9, paddingLeft: 20 }}
+                                                     placeholder="Beneficiary Name"
+                                                     keyboardType="name-phone-pad"
+                                                     onChangeText={(ben_name)=>this.setState({ben_name})}
+                                                     value={this.state.ben_name}
+                                                     
+                                                 />
+                                               
+                                             </View>
+                                    
+                                             <View style={{ flexDirection: 'row', alignItems: 'center', borderWidth: 1, margin: 15, marginTop: 2, paddingHorizontal: 15 }}>
+                                                 <TextInput
+                                                     style={{ flex: 0.9, paddingLeft: 20 }}
+                                                     placeholder="Beneficiary Bank Name"
+                                                     keyboardType="name-phone-pad" 
+                                                     onChangeText={(ben_bank)=>this.setState({ben_bank})}
+                                                     value={this.state.ben_bank}
+                                                 />
+                                               
+                                             </View>
+                                             <View style={{ flexDirection: 'row', alignItems: 'center', borderWidth: 1, margin: 15, marginTop: 2, paddingHorizontal: 15 }}>
+                                                 <TextInput
+                                                     style={{ flex: 0.9, paddingLeft: 20 }}
+                                                     placeholder="Beneficiary Account Number"
+                                                     keyboardType="phone-pad"
+                                                     onChangeText={(ben_acc)=>this.setState({ben_acc})}
+                                                     value={this.state.ben_acc}
+                                                     maxLength={14}
+                                                 />
+                                               
+                                             </View>
+                                     </View>
+                      ) : null}
+
+
+                    {this.state.transfer_b == 2 ? (
+                        <View>
+                            <View style={{ flexDirection: 'row', alignItems: 'center', borderWidth: 1, margin: 15, marginTop: 2, paddingHorizontal: 15 }}>
+                            <Text style={{ flex: 0.1, paddingLeft: 1 }} ></Text>
+                            <Picker style={{ flex: 0.9, paddingLeft: 150 }}
+                                selectedValue={this.state.bank_id}
+                                onValueChange={(itemValue, itemPosition) => this.setState({ bank_id: itemValue, toIndex: itemPosition })}   >
+                                <Picker.Item label="SELECT BANK FROM" value="0" />
+                                {
+                                    this.state.BankList.map((v) => {
+                                        return <Picker.Item label={v.bank_name} value={v.bank_id} />
+                                    })
+                                }
+                            </Picker>
+                        </View>
                         <View style={{ flexDirection: 'row', alignItems: 'center', borderWidth: 1, margin: 15, marginTop: 2, paddingHorizontal: 15 }}>
+                            <Text style={{ flex: 0.1, paddingLeft: 1 }} ></Text>
+                            <Picker style={{ flex: 0.9, paddingLeft: 150 }}
+                                selectedValue={this.state.bank_id_to}
+                                onValueChange={(itemValue, itemPosition) => this.setState({ bank_id_to: itemValue, toIndex: itemPosition })}   >
+                                <Picker.Item label="SELECT BANK TO" value="0" />
+                                {
+                                    this.state.BankList.map((v) => {
+                                        return <Picker.Item label={v.bank_name} value={v.bank_id} />
+                                    })
+                                }
+                            </Picker>
+                        </View>
+                    </View>
+                      ) : null}
+
+                       
+                    </View>
+                    ) : null}
+                   
+                        <View style={{ flexDirection: 'row', alignItems: 'center', borderWidth: 1, margin: 15, paddingHorizontal: 15 }}>
+                            <Icon family="FontAwesome" name="money" size={25} />
+                            <TextInput style={{ paddingLeft: 10, fontSize: 16 }}
+                                keyboardType='number-pad'
+                                placeholder="Enter Amount"
+                                value={this.state.amount}
+                                onChangeText={(amount) => {
+                                    this.setState({ amount, income_bal: amount })
+
+                                }} 
+
+                            />
+                        </View>
+                  
+                    {this.state.c_type == 1 ? (
+                    <View>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', borderWidth: 1, margin: 15, marginTop: 10, paddingHorizontal: 15 }}>
+                    <Text style={{ flex: 0.1, paddingLeft: 1 }} ></Text>
+                    <Picker style={{ flex: 0.9, paddingLeft: 150 }}
+                        selectedValue={this.state.transfer_t}
+                        onValueChange={(itemValue, itemPosition) => this.setState({ transfer_t: itemValue, toIndex: itemPosition })}   >
+                        <Picker.Item label="SELECT TRANSFER TYPE" value="0" />
+                        <Picker.Item label="Transfer to agent" value="1" />
+                        <Picker.Item label="Transfer Bank" value="2" />
+                    </Picker>
+                    </View>
+
+                    {this.state.transfer_t == 1 ? (
+                    <View style={{ flexDirection: 'row', alignItems: 'center', borderWidth: 1, margin: 15, marginTop: 2, paddingHorizontal: 15 }}>
+                        <Text style={{ flex: 0.1, paddingLeft: 1 }} ></Text>
+                        <Picker style={{ flex: 0.9, paddingLeft: 150 }}
+                            selectedValue={this.state.agent_to_id}
+                            onValueChange={(itemValue, itemPosition) => this.setState({ agent_to_id: itemValue, toIndex: itemPosition })}   >
+                            <Picker.Item label="SELECT AGENT" value="0" />
+                            {
+                                this.state.AgentList.map((v) => {
+                                    return <Picker.Item label={v.first_name +" "+ v.last_name +" ["+ v.phone+"]"} value={v.personal_info_id} />
+                                })
+                            }
+                        </Picker>
+                    </View>
+                      ) : null}
+
+
+                    {this.state.transfer_t == 2 ? (
+                            <View style={{ flexDirection: 'row', alignItems: 'center', borderWidth: 1, margin: 15, marginTop: 2, paddingHorizontal: 15 }}>
                             <Text style={{ flex: 0.1, paddingLeft: 1 }} ></Text>
                             <Picker style={{ flex: 0.9, paddingLeft: 150 }}
                                 selectedValue={this.state.bank_id}
@@ -223,69 +389,16 @@ class TransferCal extends Component {
                                 }
                             </Picker>
                         </View>
-                    ) : null}
-                   
-                        <View style={{ flexDirection: 'row', alignItems: 'center', borderWidth: 1, margin: 15, paddingHorizontal: 15 }}>
-                            <Icon family="FontAwesome" name="money" size={25} />
-                            <TextInput style={{ paddingLeft: 10, fontSize: 16 }}
-                                keyboardType='number-pad'
-                                placeholder="Enter Amount"
-                                value={this.state.amount}
-                                onChangeText={(amount) => {
-                                    this.setState({ amount, income_bal: amount })
+                      ) : null}
 
-                                }}
-
-                            />
-                        </View>
-                  
-                    {this.state.c_type == 1 ? (
-                    <View style={{ flexDirection: 'row', alignItems: 'center', borderWidth: 1, margin: 15, marginTop: 2, paddingHorizontal: 15 }}>
-                        <Text style={{ flex: 0.1, paddingLeft: 1 }} ></Text>
-                        <Picker style={{ flex: 0.9, paddingLeft: 150 }}
-                            selectedValue={this.state.agent_to_id}
-                            onValueChange={(itemValue, itemPosition) => this.setState({ agent_to_id: itemValue, toIndex: itemPosition })}   >
-                            <Picker.Item label="SELECT AGENT" value="0" />
-                            {
-                                this.state.AgentList.map((v) => {
-                                    return <Picker.Item label={v.first_name +" "+ v.last_name +" ["+ v.country+"]"} value={v.personal_info_id} />
-                                })
-                            }
-                        </Picker>
                     </View>
                       ) : null}
-                    {/* <View style={{ flexDirection: 'row', alignItems: 'center', borderWidth: 1, margin: 15,marginTop:20, paddingHorizontal: 15 }}>
-                    <Text >Profit Rate</Text>
-                    
-                        <TextInputMask style={{ paddingLeft: 10, fontSize: 16 }}
-                            type={'money'}
-                            placeholder="Enter Rate"
-                            options={{
-                                precision: 4,
-                                separator: '.',
-                                delimiter: ',',
-                                unit: '',
-                                suffixUnit: ''
-                            }}
-                            value={this.state.getProfit}
-                            onChangeText={text => {
-                                this.setState({
-                                    getProfit: text,
-                                    income_bal:this.state.amount*Constant.rawNumber(text)
-                                })
-
-                                
-                                
-                            }}
-                            
-                        />
-                        
-                    </View> */}
+                  
 
                     <View style={{ flexDirection: 'row', alignItems: 'center', borderBottomWidth: 1, margin: 15, paddingHorizontal: 15 }}>
                         <TextInput style={{ flex: 1, paddingLeft: 10, fontSize: 16, fontFamily: 'Poppins-ExtraLightItalic' }}
                             keyboardType='email-address'
-                            placeholder="Add a message (Optioncal)"
+                            placeholder="Add a message"
                             onChangeText={(msg) => this.setState({ msg })}
                             value={this.state.msg}
                         />
