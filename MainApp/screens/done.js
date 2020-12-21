@@ -50,9 +50,14 @@ class done extends Component {
                 [props.navigation.getParam('first_name', '') + " " + this.props.navigation.getParam('last_name', ''), this.props.navigation.getParam('cus_name', ''), this.props.navigation.getParam('ben_name', '')],
                 [this.props.navigation.getParam('phone', '0'), this.props.navigation.getParam('cus_phone', 'phone'), this.props.navigation.getParam('ben_phone', '')],
             ],
-            RtableHead: ['Amount', 'Charges', 'Rate'],
+            RtableHead: ['AMOUNT', 'CHARGES', 'RATE'],
             RtableData: [
                 [this.props.navigation.getParam('due_amount', '0'), this.props.navigation.getParam('charges', '0'), this.props.navigation.getParam('rate', '0')],
+
+            ],
+            BtableHead: ['BANK', 'ACCOUNT'],
+            BtableData: [
+                [this.props.navigation.getParam('ben_bank', ''), this.props.navigation.getParam('ben_acc', '')],
 
             ]
 
@@ -72,7 +77,7 @@ class done extends Component {
         this.setState({ spinner: true });
         try {
 
-            const BalApiCall = await fetch(Constant.URL + Constant.getAgBal + "/" + this.state.personal_info_id+"/"+this.state.getFrom);
+            const BalApiCall = await fetch(Constant.URL + Constant.getAgBal + "/" + this.state.personal_info_id+"/"+this.state.getFrom+"/"+2);
             const dataSource = await BalApiCall.json();
             Constant.SetAsyncValue('@wallet', dataSource.bal)
             this.props.getCustomerWallet(dataSource.c_bal)
@@ -90,6 +95,12 @@ class done extends Component {
 
     onPressTransfer = async () => {
 
+        let r_amount
+        if (this.state.rate_type == 1) {
+            r_amount = (this.state.due_amount) * (this.state.rate)
+        } else {
+            r_amount = (this.state.due_amount) / (this.state.rate)
+        }
 
         const { pin } = this.state;
         if (pin.length <= 0) {
@@ -127,6 +138,7 @@ class done extends Component {
                     due_amount: this.state.due_amount,
                     getCountry_id:this.state.getCountry_id,
                     to_id:this.state.to_id,
+                    r_amount:r_amount
                 })
             })
                 .then((response) => response.json())
@@ -165,7 +177,7 @@ class done extends Component {
         } else {
             bal = (this.state.due_amount) / (this.state.rate)
         }
-
+        
 
         return (
             <View style={{ flex: 1, backgroundColor: Theme.bgcolor }}>
@@ -204,6 +216,16 @@ class done extends Component {
                     </View>
                     {
                 
+                     
+                    <View style={styles.container}>
+                        <Table borderStyle={{ borderWidth: 1 }}>
+                            <Row data={this.state.BtableHead} flexArr={[1, 1, 1]} style={styles.head} textStyle={styles.text} />
+                            <TableWrapper style={styles.wrapper}>
+                                <Rows data={this.state.BtableData} flexArr={[1, 1, 1]} style={styles.row} textStyle={styles.text} />
+                            </TableWrapper>
+                        </Table>
+                    </View> 
+                    }
                     <View style={styles.container}>
                         <Table borderStyle={{ borderWidth: 1 }}>
                             <Row data={this.state.RtableHead} flexArr={[1, 1, 1]} style={styles.head} textStyle={styles.text} />
@@ -212,7 +234,8 @@ class done extends Component {
                             </TableWrapper>
                         </Table>
                     </View> 
-                    }
+               
+                    
                     <View style={{ flexDirection: 'row', alignItems: 'center', borderWidth: 1, margin: 15, paddingHorizontal: 15 }}>
                         <Icon family="Feather" name="key" size={25} />
                         <TextInput style={{ paddingLeft: 10, fontSize: 16 }}
@@ -276,7 +299,7 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         marginTop: 50,
         backgroundColor: 'white',
-        padding: 20,
+        padding: 10,
     },
     logContainer: {
         padding: 15,
@@ -316,7 +339,7 @@ const styles = StyleSheet.create({
         fontFamily: 'Poppins-Thin',
         color: '#000'
     },
-    container: { flex: 1, padding: 16, paddingTop: 30, backgroundColor: '#fff' },
+    container: { flex: 1, padding: 16, paddingTop: 10, backgroundColor: '#fff' },
     head: { height: 40, backgroundColor: '#f1f8ff', },
     wrapper: { flexDirection: 'row' },
     title: { flex: 1, backgroundColor: '#f6f8fa' },

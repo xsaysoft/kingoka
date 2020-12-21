@@ -122,9 +122,9 @@ export default class Send extends Component {
             
             if(ben_id=="New")
             {
-                const { ben_phone } = this.state;
-                if(ben_phone.length != this.state.number_length){
-                Alert.alert("Invalid Phone number formate.  Number length must be "+this.state.number_length);
+                
+                if(this.state.ben_bank =="" || this.state.ben_acc=="" || this.state.ben_name=="" ){
+                Alert.alert("Enter Beneficiary Details");
                 return false
                 }
 
@@ -132,7 +132,9 @@ export default class Send extends Component {
                
             this.setState({ben_id: this.state.BenIDList.data.ben_id,
                 ben_name: this.state.BenIDList.data.ben_name, 
-                ben_phone: this.state.BenIDList.data.ben_phone, 
+                ben_phone: this.state.BenIDList.data.ben_phone,
+                ben_bank: this.state.BenIDList.data.ben_bank, 
+                ben_acc: this.state.BenIDList.data.ben_acct, 
                  spinner: false});
             }
             
@@ -223,20 +225,7 @@ export default class Send extends Component {
                             />
                           
                         </View>
-                        <View style={{ flexDirection: 'row', alignItems: 'center', borderWidth: 1, margin: 15, marginTop: 2, paddingHorizontal: 15 }}>
-                        <TextInput
-                                value={this.state.dial_code}
-                            />
-                            <TextInput
-                                style={{ flex: 0.9, paddingLeft: 20 }}
-                                placeholder="Beneficiary Phone"
-                                keyboardType="phone-pad"
-                                maxLength={16}
-                                onChangeText={(ben_phone)=>this.setState({ben_phone})}
-                                value={this.state.ben_phone}
-                            />
-                           
-                        </View>
+                        
                         <View style={{ flexDirection: 'row', alignItems: 'center', borderWidth: 1, margin: 15, marginTop: 2, paddingHorizontal: 15 }}>
                             <TextInput
                                 style={{ flex: 0.9, paddingLeft: 20 }}
@@ -254,10 +243,26 @@ export default class Send extends Component {
                                 keyboardType="phone-pad"
                                 onChangeText={(ben_acc)=>this.setState({ben_acc})}
                                 value={this.state.ben_acc}
-                                maxLength={14}
+                                maxLength={25}
                             />
                           
                         </View>
+
+                        <View style={{ flexDirection: 'row', alignItems: 'center', borderWidth: 1, margin: 15, marginTop: 2, paddingHorizontal: 15 }}>
+                        <TextInput
+                                value={this.state.dial_code}
+                            />
+                            <TextInput
+                                style={{ flex: 0.9, paddingLeft: 20 }}
+                                placeholder="Beneficiary Phone (optional)"
+                                keyboardType="phone-pad"
+                                maxLength={16}
+                                onChangeText={(ben_phone)=>this.setState({ben_phone})}
+                                value={this.state.ben_phone}
+                            />
+                           
+                        </View>
+
                 </View>  ): null}
 
                      

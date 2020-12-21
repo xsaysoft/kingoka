@@ -7,7 +7,7 @@ import { createBottomTabNavigator, createAppContainer } from 'react-navigation';
 
 import HomeScreen from './HomeScreen';
 import TransferScreen from './Transaction';
-import ActiveScreen from './ActiveScreen';
+import Formula from '../Formula';
 import ProfileScreen from './ProfileScreen';
 
 const TabNav = createBottomTabNavigator({
@@ -32,10 +32,10 @@ const TabNav = createBottomTabNavigator({
         }
     },
 
-    ActiveScreen: {
-        screen: ActiveScreen,
+    Formula: {
+        screen: Formula,
         navigationOptions: {
-            tabBarLabel: "Active",
+            tabBarLabel: "Formula",
             tabBarIcon: ({ tintColor }) => (
                 <Icon family="Feather" name="activity" size={25} color={tintColor} />
             ),

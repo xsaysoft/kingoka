@@ -5,7 +5,7 @@ import Theme from '../styles/Theme';
 import Spinner from 'react-native-loading-spinner-overlay';
 import Constant from "../components/Constant";
 import AsyncStorage from '@react-native-community/async-storage';
-
+import DatePicker from 'react-native-datepicker'
 import { SCLAlert, SCLAlertButton } from 'react-native-scl-alert'
 import { connect } from "react-redux";
 
@@ -19,8 +19,9 @@ class TransferCal extends Component {
         this.state = {
 
             c_type: this.props.navigation.getParam('c_type', '0'),
-
+            BenList:[],
             BankList: [],
+            BankListEX: [],
             AgentList: [],
             bank_id: "",bank_id_to:0,
             amount: '',
@@ -31,10 +32,10 @@ class TransferCal extends Component {
             show: false,
             income_bal: 0,
             pin: "",
-            Amessage: "",transfer_t:"",transfer_b:"",
+            Amessage: "",transfer_t:"",transfer_b:"",date: "",
             Smessage: "",
             agent_to_id:0,ben_bank:0,
-            ben_acc:0,ben_name:0
+            ben_acc:0,ben_name:0,ben_id:0,ben_phone:0,
 
 
         }
@@ -48,6 +49,7 @@ class TransferCal extends Component {
             getProfit: await AsyncStorage.getItem('@profit_rate'),
             wallet: await AsyncStorage.getItem('@wallet'),
         });
+        
         try {
 
             const BalApiCall = await fetch(Constant.URL + Constant.getCusBal + "/" + this.state.customer_id);
@@ -69,13 +71,26 @@ class TransferCal extends Component {
          //gET Agent
          try {
 
-            const AgentApiCall = await fetch(Constant.URL + Constant.getAGENT+"/"+this.state.personal_info_id+"/"+this.state.getFrom);
+            const AgentApiCall = await fetch(Constant.URL + Constant.getAGENT+"/"+this.state.personal_info_id+"/"+this.state.getFrom+"/"+1);
             const getAgent = await AgentApiCall.json();
            
             this.setState({ AgentList: getAgent, spinner: false });
         } catch (err) {
             console.log("Error fetching data-----------", err);
         }
+   
+          //getBen
+          try {
+       
+            const BenApiCall = await fetch(Constant.URL+Constant.getBEN+"/"+this.state.customer_id+"/"+this.state.personal_info_id);
+            const getBen = await BenApiCall.json();
+        
+            this.setState({BenList: getBen, spinner: false});
+           
+        } catch(err) {
+            console.log("Error fetching data-----------", err);
+        }
+      
 
     }
 
@@ -89,6 +104,7 @@ class TransferCal extends Component {
             Constant.SetAsyncValue('@wallet', dataSource.bal)
             this.props.getCustomerWallet(dataSource.c_bal)
             this.props.getAgentWallet(dataSource.bal)
+            this.setState({ agent_bal: dataSource.bal });
 
         } catch (err) {
             console.log("Error fetching data-----------", err);
@@ -96,12 +112,31 @@ class TransferCal extends Component {
         }
     }
 
+    async onChangeBank(bank_id){
+    
+         //gET Bank
+         this.setState({ spinner: true });
+         try {
+
+            const BankApiCallEX = await fetch(Constant.URL + Constant.getBanksExclude+"/"+this.state.getFrom+"/"+bank_id);
+            const getBankEX = await BankApiCallEX.json();
+            this.setState({ BankListEX: getBankEX, spinner: false });
+        } catch (err) {
+            console.log("Error fetching data-----------", err);
+        }
+    }
 
 
     handleOpen = () => {
         const { amount } = this.state;
         console.log("bank_id",this.state.bank_id)
         // console.log(Math.round(this.state.wallet))
+        if(this.state.amount > Constant.rawNumber(this.state.wallet) && this.state.c_type==1){
+            Alert.alert("Insufficient Funds.");
+            return false
+        }
+
+
         if(this.state.agent_to_id==0 && this.state.transfer_t==1){
             Alert.alert("Select Agent To Continue.");
             return false
@@ -111,15 +146,15 @@ class TransferCal extends Component {
             return false
         }
 
-        if(this.state.ben_name==0 && this.state.transfer_b==1){
+        if(this.state.ben_name==0 && this.state.bank_id=="New"){
             Alert.alert("Enter Beneficiary  Name");
             return false
         }
-        if(this.state.ben_bank==0 && this.state.transfer_b==1){
+        if(this.state.ben_bank==0 && this.state.bank_id=="New"){
             Alert.alert("Enter Beneficiary Bank Name");
             return false
         }
-        if(this.state.ben_acc==0 && this.state.transfer_b==1){
+        if(this.state.ben_acc==0 && this.state.bank_id=="New"){
             Alert.alert("Enter Beneficiary Bank Account");
             return false
         }
@@ -129,6 +164,15 @@ class TransferCal extends Component {
             Alert.alert("Select Bank To Continue.");
             return false
         }
+        if(this.state.agent_to_id==0 && this.state.transfer_b==1){
+            Alert.alert("Select Agent To Continue.");
+            return false
+        }
+        if(this.state.ben_id==0 && this.state.transfer_b==1){
+            Alert.alert("Select Beneficiary To Continue.");
+            return false
+        }
+
         if(this.state.bank_id_to==0 && this.state.transfer_b==2){
             Alert.alert("Select Bank To Continue.");
             return false
@@ -138,10 +182,15 @@ class TransferCal extends Component {
             Alert.alert("Invalid Transfer , You can not make a self transfer.");
             return false
         }
+        if( this.state.date =="" ){
+            Alert.alert("Enter Date");
+            return false
+        }
         if( this.state.msg =="" ){
             Alert.alert("Enter Transfer Message");
             return false
         }
+       
         if (amount.length <= 0) {
             this.setState({ spinner: false });
             Alert.alert("Please Enter Amount.");
@@ -173,9 +222,12 @@ class TransferCal extends Component {
                 transfer_b:this.state.transfer_b,
                 getCountry_id: this.state.getFrom,
                 getProfit: 0,
+                date:this.state.date,
                 amount: this.state.amount,
+                ben_id:this.state.ben_id,
                 ben_name:this.state.ben_name,
                 ben_bank:this.state.ben_bank,
+                ben_phone:this.state.ben_phone,
                 ben_acc:this.state.ben_acc,
             })
         })
@@ -239,6 +291,7 @@ class TransferCal extends Component {
                         </View>
 
                     </TouchableOpacity>
+                    
                      {/* BANK TRANSFER */}
                     {this.state.c_type == 2 ? (
                      <View>
@@ -259,6 +312,36 @@ class TransferCal extends Component {
                            
                     {this.state.transfer_b == 1 ? (
                          <View >
+                             <View style={{ flexDirection: 'row', alignItems: 'center', borderWidth: 1, margin: 15,marginTop:2, paddingHorizontal: 15 }}>
+                            <Text  style={{ flex: 0.1, paddingLeft: 1 }} ></Text> 
+                            <Picker  style={{ flex: 0.9, paddingLeft: 150 }}  
+                            selectedValue={this.state.agent_to_id}  
+                            onValueChange={(itemValue, itemPosition) => this.setState({agent_to_id: itemValue, toIndex: itemPosition})}   >  
+                             <Picker.Item label="SELECT PAYOUT AGENT" value="0" /> 
+                             {
+                                this.state.AgentList.map( (v)=>{
+                                return <Picker.Item label={v.first_name +" "+v.last_name +" > "+v.phone}  value={v.personal_info_id} />
+                                })
+                                } 
+                            </Picker> 
+                        </View>
+
+                        <View style={{ flexDirection: 'row', alignItems: 'center', borderWidth: 1, margin: 15, paddingHorizontal: 15 }}>
+                    <Picker  style={{ flex: 0.9, paddingLeft: 150 }}  
+                            selectedValue={this.state.ben_id}  
+                            onValueChange={(itemValue, itemPosition) => this.setState({ben_id: itemValue, ben_idIndex: itemPosition})}   > 
+                            
+                             <Picker.Item label=" SELECT BENEFICIARY" value="0"/> 
+                             <Picker.Item label=" CREATE NEW BENEFICIARY" value="New" /> 
+                             {
+                                this.state.BenList.map( (x)=>{
+                                return <Picker.Item label={x.ben_name +" - "+ x.ben_phone }  value={x.ben_id} />
+                                })
+                                } 
+                            </Picker> 
+                          
+                    </View>
+                    {this.state.ben_id=="New" ? (  <View >
                          <View style={{ flexDirection: 'row', alignItems: 'center', borderWidth: 1, margin: 15, marginTop: 2, paddingHorizontal: 15 }}>
                                                  <TextInput
                                                      style={{ flex: 0.9, paddingLeft: 20 }}
@@ -267,6 +350,17 @@ class TransferCal extends Component {
                                                      onChangeText={(ben_name)=>this.setState({ben_name})}
                                                      value={this.state.ben_name}
                                                      
+                                                 />
+                                               
+                                             </View>
+                                             <View style={{ flexDirection: 'row', alignItems: 'center', borderWidth: 1, margin: 15, marginTop: 2, paddingHorizontal: 15 }}>
+                                                 <TextInput
+                                                     style={{ flex: 0.9, paddingLeft: 20 }}
+                                                     placeholder="Beneficiary Phone Number"
+                                                     keyboardType="phone-pad"
+                                                     onChangeText={(ben_phone)=>this.setState({ben_phone})}
+                                                     value={this.state.ben_phone}
+                                                     maxLength={14}
                                                  />
                                                
                                              </View>
@@ -293,6 +387,9 @@ class TransferCal extends Component {
                                                
                                              </View>
                                      </View>
+                                      ) : null}
+                    </View>
+                                      
                       ) : null}
 
 
@@ -302,7 +399,10 @@ class TransferCal extends Component {
                             <Text style={{ flex: 0.1, paddingLeft: 1 }} ></Text>
                             <Picker style={{ flex: 0.9, paddingLeft: 150 }}
                                 selectedValue={this.state.bank_id}
-                                onValueChange={(itemValue, itemPosition) => this.setState({ bank_id: itemValue, toIndex: itemPosition })}   >
+                                onValueChange={(itemValue, itemPosition) =>{ 
+                                    this.setState({ bank_id: itemValue, toIndex: itemPosition })
+                                    this.onChangeBank(itemValue)
+                                    }}   >
                                 <Picker.Item label="SELECT BANK FROM" value="0" />
                                 {
                                     this.state.BankList.map((v) => {
@@ -318,7 +418,7 @@ class TransferCal extends Component {
                                 onValueChange={(itemValue, itemPosition) => this.setState({ bank_id_to: itemValue, toIndex: itemPosition })}   >
                                 <Picker.Item label="SELECT BANK TO" value="0" />
                                 {
-                                    this.state.BankList.map((v) => {
+                                    this.state.BankListEX.map((v) => {
                                         return <Picker.Item label={v.bank_name} value={v.bank_id} />
                                     })
                                 }
@@ -393,12 +493,37 @@ class TransferCal extends Component {
 
                     </View>
                       ) : null}
-                  
+                  <View style={{flexDirection: 'row',alignItems: 'center',borderWidth: 1,margin: 15,marginTop: 2,paddingHorizontal: 15}}>
+                                    <DatePicker
+                                        style={{width: 200, borderColor:"#fff"}}
+                                        date={this.state.date}
+                                        mode="date"
+                                        placeholder="Select Date"
+                                        format="YYYY-MM-DD" 
+                                        confirmBtnText="Confirm"
+                                        cancelBtnText="Cancel"
+                                        customStyles={{
+                                            dateIcon: {
+                                                position: 'absolute',
+                                                left: 0,
+                                                top: 4,
+                                                marginLeft: 0
+                                            },
+                                            dateInput: {
+                                                borderWidth: 0
+                                                
+                                            }
+                                            // ... You can check the source to find the other keys.
+                                        }}
+                                        onDateChange={(date) => {this.setState({date: date})}}
+                                    />
+                                    </View>
+
 
                     <View style={{ flexDirection: 'row', alignItems: 'center', borderBottomWidth: 1, margin: 15, paddingHorizontal: 15 }}>
                         <TextInput style={{ flex: 1, paddingLeft: 10, fontSize: 16, fontFamily: 'Poppins-ExtraLightItalic' }}
                             keyboardType='email-address'
-                            placeholder="Add a message"
+                            placeholder="Add Transfer Details"
                             onChangeText={(msg) => this.setState({ msg })}
                             value={this.state.msg}
                         />

@@ -124,7 +124,7 @@ export default class SplashScreen extends Component {
                     start={{ x: 1, y: 0 }} end={{ x: 0, y: 1 }} style={{ flex: 1 }}>
                     <View style={{flex:1,alignItems:'center',justifyContent:'center'}}>
                         <Image style={styles.logo} source={require("./../assets/img/logo.png")} />
-                        <Text style={{color:'#FFF',fontSize:20,fontFamily:'Poppins-Bold'}}>Kingoka Group</Text>
+                        <Text style={{color:'#FFF',fontSize:20,fontFamily:'Poppins-Bold'}}>Kingoka Logistics</Text>
                     </View>
                 </LinearGradient>
             </View>

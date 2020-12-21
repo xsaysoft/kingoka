@@ -17,8 +17,8 @@ export default class Rate extends Component {
             customer_id: this.props.navigation.getParam('customer_id','0'),
             amount: this.props.navigation.getParam('amount','0'),
             dollar: this.props.navigation.getParam('dollar','0'),
-            local: this.props.navigation.getParam('local','0'),
             dollar2: this.props.navigation.getParam('dollar2','0'),
+            local: this.props.navigation.getParam('local','0'),
             local2: this.props.navigation.getParam('local2','0'),
             charges: this.props.navigation.getParam('charges','0'),
             to: this.props.navigation.getParam('to','0'),
@@ -30,10 +30,14 @@ export default class Rate extends Component {
             due_amount: this.props.navigation.getParam('due_amount','0'),
             r_bal: this.props.navigation.getParam('r_bal','0'),
             getCountry_id: this.props.navigation.getParam('getCountry_id','0'),
-            value: 0,
+            r_bal: this.props.navigation.getParam('r_bal','0'),
+            getCountry_id: this.props.navigation.getParam('getCountry_id','0'),
+            trans_type: this.props.navigation.getParam('trans_type','0'),
+            cov_rate: this.props.navigation.getParam('cov_rate','0'),
+            value: 0,up_val:0,down_val:0,
             rate_v: 0,
             rate_type: 0,
-            r_amount: "",
+            r_amount: 0,r_click:0,
             bal: 0,
             rate1_props: [
                 // {label: 'DOLLAR', value: this.props.navigation.getParam('dollar', '0') },
@@ -50,75 +54,146 @@ export default class Rate extends Component {
     }
 
     async componentDidMount() {
-        console.log("Rate",this.state.local)
-        console.log("Dollar",this.state.local2)
-       // Rate Multiplication
-      var floats = [];
-        let local_val = this.state.local
-        let asc_val = Number(local_val)
-        var i
-       
-          if(asc_val < 1){
-             i = 0.1000
-            while (i < (asc_val)) {
-                i = (i + 0.0001).toFixed(4);
-                floats.push(i);
-                i = parseFloat(i);
-            }
-          }else{
-             i = asc_val - 3
+        //get Rate
+        this.GetRateSet(1);
+   
+    }
+
+
+    async GetRateSet(rate_type) {
+        console.log("keychange",rate_type)
+        var i, floats=[],floats2=[],current_rate,limit_v,rate_inc,rate_dec,sum_v,calulated_rate,up_val,down_val,rate_val,rate_type
+      
+        this.setState({ spinner: true });
+        try {
+
+            const BalApiCall = await fetch(Constant.URL + Constant.getRateSet +"/"+this.state.getCountry_id+"/"+this.state.to_id+"/"+rate_type);
+            const dataSource = await BalApiCall.json();
+            
+            //Generate rate
+          
+            rate_type=Number(dataSource.data.rate_type)
+            if(rate_type==1){ current_rate = Number(this.state.local)}else{current_rate = Number(this.state.local2 )}
+             limit_v=Number(dataSource.data.limited_by) 
+             rate_inc = Number(dataSource.data.increase_by)
+             rate_dec = Number(dataSource.data.decrease_by)
+             sum_v = Number(dataSource.data.sum_up)
+             calulated_rate= current_rate + (rate_inc - rate_dec)
+             
+ 
+             i = calulated_rate
+            floats.push(i.toFixed(4)) //mutiplication
+            floats2.push((1/i).toFixed(6)) //Division
              if(i<0){i=0}else{i}
-            while (i < (asc_val)) {
-                i = (i + 0.001).toFixed(4);
-                floats.push(i);
-                i = parseFloat(i);
+            while (i <= (calulated_rate+limit_v)) {
+                //Set limit for loop
+                if (floats.length === limit_v) {
+                    break;
+                  }
+
+                i = (i + sum_v);
+                floats.push(i.toFixed(4));
+                floats2.push((1/i).toFixed(6));
             }
-          }
-     
+
+            //server Generate rate
+            if(dataSource.data.empty_val==1){
+            up_val=floats.toString()
+            down_val=floats2.toString()
+            }else{
+                up_val=0  
+                down_val=0
+            }
+         
+           //End Generate rate
+            this.setState({  spinner: false,up_val:up_val,down_val:down_val });
+            console.log("doen",this.state.up_val)
+        } catch (err) {
+            console.log("Error fetching data-----------", err);
+            this.setState({ spinner: false });
+        }
         
 
+        //GET RATE SET START
+
+        console.log("Rate",this.state.local)
+        console.log("Dollar",this.state.local2)
+        //Multiplication
+        if(this.state.up_val==0){
+           }else{
+            this.setState({ local: this.state.up_val });
+           }
+             //Division
+        if(this.state.down_val==0){
+        }else{
+         this.setState({ local2: this.state.down_val });
+        }
+
+       // Rate Multiplication
+       var floats = [], asc_val 
+       let local_val = this.state.local
+       var i,x
+       //if no rate corner
+       if(this.state.up_val==0){
+        asc_val = Number(local_val)
+        i = asc_val
+        x=""
+         if(i<0){i=0}else{i}
+        while (i <= (asc_val)) {
+            x+= i.toFixed(4);
+            i++;
+            floats.push(x);
+            x = parseFloat(x);
+        }
+       }else{
+           //if no rate corner
+        asc_val=this.state.up_val
+        floats = asc_val.split(',');
+        
+       }
+       
     //  console.log("Mut",floats)
 
           //Rate Division
-          var floats2 = [];
+          var floats2 = [],asc_val2
           let local_val2 = this.state.local2
-          let asc_val2 = Number(local_val2)
-          var x
-          if(asc_val2 < 1){
-               x = 0.1000
-              while (x < (asc_val2)) {
-                x = (x + 0.0001).toFixed(4);
-                floats2.push(x);
-                x = parseFloat(x);
-            }
-          }else
-          {   x = asc_val2- 3
-            if(x<0){x=0}else{x}
-            while (x < (asc_val2)) {
-                x = (x + 0.001).toFixed(4);
-                floats2.push(x);
-                x = parseFloat(x);
-            }
-        }
-
-        
-         
-        
+          var y,z
+          if(this.state.down_val==0){
+            asc_val2 = Number(local_val2)
+            y =  asc_val2
+            z=""
+          if(y<0){y=0}else{y}
+          while (y <= (asc_val2)) {
+              z+= y.toFixed(4);
+              y++;
+              floats2.push(z);
+              z = parseFloat(z);
+          }
+           }else{
+            asc_val2=this.state.down_val
+            floats2 = asc_val2.split(',');
+           }
           
-          this.setState({mut_float: floats,dv_float:floats2})
+         console.log("floats",floats)
+         console.log("floats2",floats2)
+         if(rate_type==2){
+            this.setState({mut_float:floats2 ,dv_float:floats}) 
+         }else{
+            this.setState({mut_float: floats,dv_float:floats2})
+         }
 
-
+    //END GET RATE
     }
-
 
 
     onPressB = () => {
 
 
-        if (this.state.rate_v <= 0) {
-            Alert.alert("Please Selete Rate Type.");
+        if (this.state.rate_v == "Select Rate") {
+            Alert.alert("Please Select Rate Type.");
             return false;
         }
+        
         if (this.state.rate_type <= 0) {
             Alert.alert("Please Rate is required.");
             return false;
@@ -131,8 +206,18 @@ export default class Rate extends Component {
             Alert.alert("Insufficient Credit.");
             return false;
         }
+        if(this.state.amount==0){
+            Alert.alert("You have not enter a valid amount.");
+            return false;
+        }
+
+        if(this.state.r_amount==0 && this.state.r_click==1){
+            Alert.alert("Enter Recipient Amount to continue.");
+            return false;
+        }
+
         this.setState({show: false})
-        this.props.navigation.navigate("RateConvert",{
+        this.props.navigation.navigate("SendB",{
             cus_name: this.state.cus_name,
             customer_id: this.state.customer_id,
             amount: this.state.amount.toFixed(5),
@@ -156,8 +241,6 @@ export default class Rate extends Component {
 
     render() {
 
-
-
         return (
             <View style={{flex: 1,backgroundColor: Theme.bgcolor}}>
                 <StatusBar backgroundColor="#020cab" barStyle="light-content" />
@@ -165,7 +248,8 @@ export default class Rate extends Component {
                     <TouchableOpacity onPress={() => this.props.navigation.goBack()}>
                         <Icon family="MaterialIcons" name="arrow-back" size={25} color="#FFF" />
                     </TouchableOpacity>
-                    <Text style={styles.logintxt}>Rate Calculation</Text>
+        <Text style={styles.logintxt}>Rate Calculation With Local Conversion</Text>
+       
                 </View>
                 <ScrollView>
                     <View style={styles.AmountCon}>
@@ -197,19 +281,20 @@ export default class Rate extends Component {
                         <Picker style={{flex: 0.9,paddingLeft: 150}}
                             selectedValue={this.state.rate_type}
                             onValueChange={(itemValue,itemPosition) => {
+                                // this.GetRateSet(itemValue)
                                 this.setState({rate_type: itemValue,toIndex: itemPosition,rate_v: 0,r_amount: 0,bal: 0,due_amount: this.props.navigation.getParam('due_amount','0')})
                                 if (itemValue == 1) {
-                                    this.setState({rate_v: this.state.local})
+                                    this.setState({rate_v: "Select Rate"})
 
                                     if (this.state.r_amount == 0) {
-                                        var getBal = this.state.due_amount * this.state.local
+                                        var getBal = this.state.due_amount * (this.state.local)
                                         this.setState({bal: getBal})
                                     }
 
                                 } else if (itemValue == 2) {
-                                    this.setState({rate_v: this.state.local2})
+                                    this.setState({rate_v: "Select Rate"})
                                     if (this.state.r_amount == 0) {
-                                        var getBal = this.state.due_amount / this.state.local2
+                                        var getBal = this.state.due_amount / (this.state.local2)
                                         this.setState({bal: getBal})
 
                                     }
@@ -234,11 +319,13 @@ export default class Rate extends Component {
                         {this.state.rate_type == 1 ? (
                         <Picker style={{ flex: 0.9, paddingLeft: 150 }}
                             selectedValue={this.state.rate_v}
-                            onValueChange={(itemValue, itemPosition) => {this.setState({ rate_v: itemValue, toIndex: itemPosition })
+                            onValueChange={(itemValue, itemPosition) => {this.setState({ rate_v: itemValue, toIndex: itemPosition,r_amount:0})
+                            
                             if (this.state.r_amount == 0) {
                                 var getBal = this.state.due_amount * itemValue
                                 this.setState({bal: getBal})
                             }
+                            
                             }}   >
                                 
                             {
@@ -253,7 +340,7 @@ export default class Rate extends Component {
                         {this.state.rate_type == 2 ? (
                         <Picker style={{ flex: 0.9, paddingLeft: 150 }}
                             selectedValue={this.state.rate_v}
-                            onValueChange={(itemValue, itemPosition) => {this.setState({ rate_v: itemValue, toIndex: itemPosition })
+                            onValueChange={(itemValue, itemPosition) => {this.setState({ rate_v: itemValue, toIndex: itemPosition,r_amount:0 })
                             if (this.state.r_amount == 0) {
                                 var getBal = this.state.due_amount / itemValue
                                 this.setState({bal: getBal})
@@ -272,7 +359,7 @@ export default class Rate extends Component {
 
                     </View>
 
-
+                    {this.state.rate_v != "Select Rate" ? (
                             <View style={{flexDirection: 'row',alignItems: 'center',borderWidth: 1,margin: 15,marginTop: 20,paddingHorizontal: 15}}>
                                 <Text >Recipient Amount</Text>
                                 <TextInputMask style={{paddingLeft: 10,fontSize: 16}}
@@ -287,17 +374,28 @@ export default class Rate extends Component {
                                     }}
                                     value={this.state.r_amount}
                                     onChangeText={text => {
+                                       
                                         this.setState({
-                                            r_amount: text
+                                            r_amount: text,r_click:1
                                         });
-                                        var bal = 0,percent,due,charges,dueBal,ammt
+                                        var bal = 0,percent,due,charges,dueBal,ammt,rect_amt
                                         if (this.state.rate_type == 1) {
                                             const getRaw = Constant.rawNumber(text);
                                             const getRawRate = Constant.rawNumber(this.state.rate_v);
 
-                                            percent = this.state.ch_type / 100
+                                            
 
-                                            ammt = (getRaw) / (getRawRate)
+                                            percent = this.state.ch_type / 100
+                                            if(!getRaw){
+                                                ammt=0
+                                                rect_amt=0
+                                                
+                                            }else{
+                                                ammt = (getRaw) / (getRawRate)
+                                                rect_amt=Constant.rawNumber(text);
+                                                
+                                            }
+                                           
                                             if (this.state.ch_type == 0) {
                                                 charges = this.state.charges
                                             } else {
@@ -309,9 +407,9 @@ export default class Rate extends Component {
                                             if (bal > 0) {
                                                 bal = ammt
                                             } else {
-                                                bal == 0;
+                                                bal =0;
                                             }
-                                            this.setState({amount: (ammt + charges),bal: getRaw,due_amount: bal,charges: charges})
+                                            this.setState({amount: (ammt + charges),bal: rect_amt,due_amount: bal,charges: charges})
 
 
                                         } else if (this.state.rate_type == 2) {
@@ -324,7 +422,17 @@ export default class Rate extends Component {
 
                                                 percent = this.state.ch_type / 100
 
-                                                ammt = (getRaw) * (getRawRate)
+                                                if(!getRaw){
+                                                    ammt=0
+                                                    rect_amt=0
+                                                    console.log("zero")
+                                                }else{
+                                                    ammt = (getRaw) * (getRawRate)
+                                                    rect_amt=Constant.rawNumber(text);
+                                                    console.log("not zero")
+                                                }
+
+                                                
                                                 if (this.state.ch_type == 0) {
                                                     charges = this.state.charges
                                                 } else {
@@ -336,9 +444,9 @@ export default class Rate extends Component {
                                                 if (bal > 0) {
                                                     bal = ammt
                                                 } else {
-                                                    bal == 0;
+                                                    bal = 0;
                                                 }
-                                                this.setState({amount: (ammt + charges),bal: getRaw,due_amount: bal,charges: charges})
+                                                this.setState({amount: (ammt + charges),bal: rect_amt,due_amount: bal,charges: charges})
 
                                             }
                                         } else {
@@ -351,7 +459,7 @@ export default class Rate extends Component {
 
 
                             </View>
-
+                         ):null}
 
 
                             <TouchableOpacity style={{paddingVertical: 10,backgroundColor: '#020cab',marginTop: 30,borderRadius: 50,marginHorizontal: 30}} onPress={this.onPressB}>

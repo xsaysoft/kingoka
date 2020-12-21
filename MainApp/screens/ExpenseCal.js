@@ -40,11 +40,11 @@ import {connect} from "react-redux";
     }
     async componentDidMount() {
         this.setState({ spinner: true });
+     
         this.setState({ 
         personal_info_id: await AsyncStorage.getItem('@personal_info_id') ,
         getCurrency: await AsyncStorage.getItem('@getCurrency'),
         getFrom: await AsyncStorage.getItem('@getFrom'),
-        getProfit: await AsyncStorage.getItem('@profit_rate'),
         wallet: await AsyncStorage.getItem('@wallet') ,  });
         try {
    
@@ -64,6 +64,9 @@ import {connect} from "react-redux";
         } catch(err) {
             console.log("Error fetching data-----------", err);
         }
+
+        //get profit rate
+        this.GetProfitRate();
     
     }
 
@@ -72,7 +75,7 @@ import {connect} from "react-redux";
         this.setState({ spinner: true });
         try {
 
-            const BalApiCall = await fetch(Constant.URL + Constant.getAgBal + "/" + this.state.personal_info_id+"/"+this.state.getFrom);
+            const BalApiCall = await fetch(Constant.URL + Constant.getAgBal + "/" + this.state.personal_info_id+"/"+this.state.getFrom+"/"+2);
             const dataSource = await BalApiCall.json();
             Constant.SetAsyncValue('@wallet', dataSource.bal)
             this.props.getCustomerWallet(dataSource.c_bal)
@@ -84,16 +87,41 @@ import {connect} from "react-redux";
         }
     }
 
+    async GetProfitRate() {
+
+        this.setState({ spinner: true });
+        try {
+
+            const BalApiCall = await fetch(Constant.URL + Constant.getProfitRate +"/"+this.state.getFrom);
+            const dataSource = await BalApiCall.json();
+           
+            this.setState({  spinner: false,getProfit:dataSource.data.profit_rate });
+        } catch (err) {
+            console.log("Error fetching data-----------", err);
+            this.setState({ spinner: false });
+        }
+    }
+    
 
   
     handleOpen = () => {
         const { amount } = this.state;
+        if(this.state.amount > Constant.rawNumber(this.state.wallet) ){
+            Alert.alert("Insufficient Funds.");
+            return false
+        }
+
         if (amount.length <= 0) {
           this.setState({ spinner: false });
-          Alert.alert("Please fill out the required field.");
-        }else {
-        this.setState({ show: true })
+          Alert.alert("Enter Amount .");
+          return false;
         }
+        if( this.state.msg ==""  ){
+            Alert.alert("Enter Transaction  Details");
+            return false
+        }
+        this.setState({ show: true })
+        
       }
     
       handleClose = () => {
@@ -169,7 +197,7 @@ import {connect} from "react-redux";
                         <Icon family="MaterialIcons" name="arrow-back" size={25} color="#FFF" />
                     </TouchableOpacity>
                 
-                    <Text style={styles.headTxt}> Expenses Transaction</Text>
+        <Text style={styles.headTxt}> Expenses Transaction</Text>
           
                 </View>
                 <ScrollView>
@@ -180,7 +208,7 @@ import {connect} from "react-redux";
                         <Icon style={{ padding: 5 }} family="FontAwesome" name="compass" size={30} color="#020cab" />
                         <View>
                             <Text style={{ fontFamily: 'Poppins-Regular' }}>Total Expenses  :</Text>
-                            <Text style={{ fontSize: 18, color: '#000', fontFamily: 'Poppins-ExtraLight' }}> {this.state.getCurrency} {this.state.income_bal }</Text>
+                            <Text style={{ fontSize: 18, color: '#000', fontFamily: 'Poppins-ExtraLight' }}> {this.state.getCurrency} {this.state.amount }</Text>
                         </View>
                         
                     </TouchableOpacity>
@@ -245,7 +273,7 @@ import {connect} from "react-redux";
                     <View style={{ flexDirection: 'row', alignItems: 'center', borderBottomWidth: 1, margin: 15, paddingHorizontal: 15 }}>
                         <TextInput style={{ flex: 1, paddingLeft: 10, fontSize: 16, fontFamily:'Poppins-ExtraLightItalic' }}
                             keyboardType='email-address'
-                            placeholder="Add a message (Optioncal)"
+                            placeholder="Enter Transaction Details"
                             onChangeText={(msg)=>this.setState({msg})}
                             value={this.state.msg}
                         />

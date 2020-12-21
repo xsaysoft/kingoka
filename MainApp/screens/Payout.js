@@ -51,7 +51,7 @@ export default class SendContacts extends Component {
                 message: rowdata.item.message,
                 from: rowdata.item.cur_from,
                 to: rowdata.item.cur_to,
-                cus_name: rowdata.item.cus_name,
+                cus_name:rowdata.item.cus_name,
                 cus_phone: rowdata.item.cus_phone,
                 cus_adr: rowdata.item.cus_adr,
                 ben_name: rowdata.item.ben_name,
@@ -64,6 +64,10 @@ export default class SendContacts extends Component {
                 payout_bal:rowdata.item.payout_bal,
                 bank_id_pay:rowdata.item.payout_bal,
                 payout_due:rowdata.item.payout_due,
+                country_id_to:rowdata.item.country_id_to,
+                ch_type:rowdata.item.ch_type,
+                agent_name:rowdata.item.agent_name,
+                r_amount:rowdata.item.r_amount,
 
               
               })} >
@@ -73,7 +77,9 @@ export default class SendContacts extends Component {
                             <Image style={styles.userimg} source={require('../assets/img/boy.png')} />
                         </View>
                         <View style={styles.userdetails}>
-                            <Text style={{ fontSize: 18, color: '#000',fontFamily: 'Poppins-Light' }}>{rowdata.item.first_name} {rowdata.item.last_name}</Text>
+                       
+                            <Text style={{ fontSize: 18, color: '#000',fontFamily: 'Poppins-Light' }}>{rowdata.item.first_name} {rowdata.item.last_name}</Text>            
+                        
                             <Text style={{ fontSize: 10, color: '#000',fontFamily: 'Poppins-Thin' }}>{rowdata.item.aa_date}  </Text>
                             {rowdata.item.type==4? (<Text  style={{ fontSize: 10,color: 'red'}}>Cash Return</Text>):null }
                         </View>

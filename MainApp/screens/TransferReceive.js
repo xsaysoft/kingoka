@@ -44,6 +44,7 @@ export default class TransferReceive extends Component {
                 last_name: rowdata.item.last_name,
                 amount: rowdata.item.amount,
                 transfer_acct_id:rowdata.item.transfer_acct_id,
+                c_ref:rowdata.item.c_ref,
                 status:rowdata.item.status,
               
               })} >

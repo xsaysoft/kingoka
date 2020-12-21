@@ -5,7 +5,6 @@ import Icon from '../common/icons';
 import Spinner from 'react-native-loading-spinner-overlay';
 import { Table, TableWrapper, Row, Rows, Col } from 'react-native-table-component';
 import Constant from "../components/Constant";
-import AsyncStorage from '@react-native-community/async-storage';
 
 import { SCLAlert, SCLAlertButton } from 'react-native-scl-alert'
 export default class PayoutDone extends Component {
@@ -39,24 +38,34 @@ export default class PayoutDone extends Component {
             payout_bal: this.props.navigation.getParam('payout_bal', '0'),
             bank_id_pay: this.props.navigation.getParam('bank_id_pay', '0'),
             payout_due: this.props.navigation.getParam('payout_due', '0'),
+            country_id_to: this.props.navigation.getParam('country_id_to', '0'),
+            agent_name: this.props.navigation.getParam('agent_name', '0'),
+            ch_type: this.props.navigation.getParam('ch_type', '0'),
+            r_amount: this.props.navigation.getParam('r_amount', '0'),
+            
 
             pin: "",
             spinner: false,
             Amessage: "",
             Smessage: "",
+            tableHeadRQ: [, 'Agent',  'Beneficiary'],
+            tableDataRQ: [
+                [props.navigation.getParam('agent_name', '')  , this.props.navigation.getParam('ben_name', '')],
+                [ this.props.navigation.getParam('ben_phone', ''),this.props.navigation.getParam('ben_phone', '')],
+            ],
             tableHead: [, 'Agent', 'Sender', 'Beneficiary'],
             tableData: [
-                [props.navigation.getParam('first_name', '') + " " + this.props.navigation.getParam('last_name', ''), this.props.navigation.getParam('cus_name', ''), this.props.navigation.getParam('ben_name', '')],
+                [props.navigation.getParam('first_name', '') + " " + this.props.navigation.getParam('last_name', ''), this.props.navigation.getParam('cus_name', '') , this.props.navigation.getParam('ben_name', '')],
                 [this.props.navigation.getParam('phone', '0'), this.props.navigation.getParam('cus_phone', 'phone'), this.props.navigation.getParam('ben_phone', '')],
             ],
-            RtableHead: ['Bank', 'Account', 'Message'],
+            RtableHead: ['Bank', 'Account'],
             RtableData: [
-                [this.props.navigation.getParam('ben_bank', '0'), this.props.navigation.getParam('ben_acct', '0'), this.props.navigation.getParam('message', '0')],
+                [this.props.navigation.getParam('ben_bank', '0'), this.props.navigation.getParam('ben_acct', '0')],
 
             ],
-            RRtableHead: ['Amount', 'Charges', 'Rate'],
+            RRtableHead: ['Message'],
             RRtableData: [
-                [this.props.navigation.getParam('due_amount', '0'), this.props.navigation.getParam('charges', '0'), this.props.navigation.getParam('rate', '0')],
+                [this.props.navigation.getParam('message', '0')],
 
             ]
 
@@ -84,7 +93,10 @@ export default class PayoutDone extends Component {
             due_amount: this.state.due_amount,
             payout_bal: this.state.payout_bal,
             bank_id_pay: this.state.bank_id_pay,
-            payout_due: this.state.payout_due
+            payout_due: this.state.payout_due,
+            country_id_to: this.state.country_id_to,
+            ch_type:this.state.ch_type,
+            r_amount:this.state.r_amount,
 
         })
     }
@@ -136,12 +148,21 @@ export default class PayoutDone extends Component {
         }
     }
     render() {
-        let bal
+        var bal
+       
+        if(this.state.r_amount==0){
+         
         if (this.state.rate_type == 1) {
             bal = (this.state.due_amount) * (this.state.rate)
-        } else {
+        } else if(this.state.rate_type == 2) {
             bal = (this.state.due_amount) / (this.state.rate)
-        }
+        }else{
+            bal = (this.state.due_amount) *1
+        } 
+    }else{
+        bal=this.state.r_amount
+       
+    }
 
 
         return (
@@ -156,19 +177,22 @@ export default class PayoutDone extends Component {
                         <Icon family="MaterialIcons" name="arrow-back" size={25} color="#FFF" />
                     </TouchableOpacity>
                     <Text style={styles.logintxt}>Approve Payout</Text>
+                    
                 </View>
                 <ScrollView>
                     <View style={styles.AmountCon}>
                         <Text style={styles.valTxt}>Value To Transfer between currency</Text>
                         <View style={styles.rowcenter}>
                             {this.state.getCurrency}
-                            <Text style={{ color: "#FFF", fontSize: 40, paddingLeft: 5 }}>{Constant.numberFormate(bal.toFixed(2))}</Text>
+                            <Text style={{ color: "#FFF", fontSize: 40, paddingLeft: 5 }}>{Constant.numberFormate( bal)}</Text>
 
                         </View>
                         {this.state.from ? ( <Text style={styles.updateSty}>{this.state.from} > {this.state.to}</Text>):null}
                     </View>
 
+             
 
+          
                     <View style={styles.container}>
                         <Table borderStyle={{ borderWidth: 1 }}>
                             <Row data={this.state.tableHead} flexArr={[1, 1, 1]} style={styles.head} textStyle={styles.text} />
@@ -177,6 +201,7 @@ export default class PayoutDone extends Component {
                             </TableWrapper>
                         </Table>
                     </View>
+            
 
                     <View style={styles.container}>
                         <Table borderStyle={{ borderWidth: 1 }}>

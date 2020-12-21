@@ -67,7 +67,7 @@ class HomeScreen extends Component {
         this.setState({ spinner: true });
         try {
 
-            const BalApiCall = await fetch(Constant.URL + Constant.getAgBal + "/" + this.state.personal_info_id+"/"+this.state.getFrom);
+            const BalApiCall = await fetch(Constant.URL + Constant.getAgBal + "/" + this.state.personal_info_id+"/"+this.state.getFrom+"/"+2);
             const dataSource = await BalApiCall.json();
             await AsyncStorage.setItem('@wallet', dataSource.bal)
             this.props.getCustomerWallet(dataSource.c_bal)
@@ -79,6 +79,8 @@ class HomeScreen extends Component {
             this.setState({ spinner: false });
         }
     }
+
+
 
     async componentDidMount() {
       this.bal()
@@ -172,9 +174,9 @@ class HomeScreen extends Component {
                         </View>
                     </LinearGradient>
                     <View style={[styles.transferbox, { marginTop: -75 }]}>
-                        <TouchableOpacity onPress={() => this.props.navigation.navigate("WalletHistory")} >
+                        <TouchableOpacity >
                             <View style={styles.balance}>
-                                <Text style={{ fontSize: 15, fontWeight: "bold", color: '#000' }}>Current Bal:</Text>
+                                <Text style={{ fontSize: 15, fontWeight: "bold", color: '#000' }}>Agent Bal:</Text>
                                 <Text style={{ fontSize: 20, fontWeight: "bold", color: '#000' }}>{this.props.agentC} {this.props.agentW}</Text>
                             </View>
                             <View style={styles.balance}>
@@ -272,9 +274,7 @@ class HomeScreen extends Component {
                                 </TouchableOpacity>
                             </View>
                             <View style={{ flex: 0.5, margin: 10 }}>
-                                <TouchableOpacity onPress={() => this.props.navigation.navigate("ExpenseType",{
-                                 transfer:2
-                                })} >
+                                <TouchableOpacity onPress={() => this.props.navigation.navigate("")} >
                                     <LinearGradient colors={['#fc0f84', '#020cab']}
                                         start={{ x: 1, y: 0 }} end={{ x: 0, y: 1 }} style={styles.gradsty}>
                                         <View style={{ padding: 5, alignItems: 'center', }}>
@@ -283,7 +283,7 @@ class HomeScreen extends Component {
                                             </View>
                                         </View>
                                     </LinearGradient>
-                                    <Text style={styles.paytypesty}>Debtor</Text>
+                                    <Text style={styles.paytypesty}>Collection</Text>
                                 </TouchableOpacity>
                             </View>
                             <View style={{ flex: 0.5, margin: 10 }}>
@@ -369,7 +369,7 @@ class HomeScreen extends Component {
 
                         </View>
                     </View>
-
+ 
 
                     <View>
                         <Text style={styles.promoSty}></Text>

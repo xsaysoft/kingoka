@@ -47,13 +47,28 @@ export default class TransferScreen extends Component {
                             
                                 ):null}
                                 {rowdata.item.type == 0 && rowdata.item.status == 0  ? (
-                                <Text style={{ fontSize: 9, color: 'green', fontFamily: 'Poppins-Thin' }}> Cash Send </Text>
+                                <Text style={{ fontSize: 9, color: 'orange', fontFamily: 'Poppins-Thin' }}> Cash Send Pending </Text>
                                 ):null}
                                  {rowdata.item.type == 0 && rowdata.item.status == 1  ? (
                                 <Text style={{ fontSize: 9, color: 'green', fontFamily: 'Poppins-Thin' }}> Cash Send </Text>
                                 ):null}
                                   {rowdata.item.status == 2 ? (
                                 <Text style={{ fontSize: 9, color: 'red', fontFamily: 'Poppins-Thin' }}> Cash Reverse </Text>
+                                ):null}
+                                  {rowdata.item.type == 1 ? (
+                                <Text style={{ fontSize: 9, color: 'green', fontFamily: 'Poppins-Thin' }}> Cash Credit to Customer </Text>
+                                ):null}
+                                 {rowdata.item.type == 6 ? (
+                                <Text style={{ fontSize: 9, color: 'orange', fontFamily: 'Poppins-Thin' }}> Cash Borrow </Text>
+                                ):null}
+                                {rowdata.item.type == 3 ? (
+                                <Text style={{ fontSize: 9, color: 'orange', fontFamily: 'Poppins-Thin' }}> Cash Income </Text>
+                                ):null}
+                                   {rowdata.item.type == 7 ? (
+                                <Text style={{ fontSize: 9, color: 'orange', fontFamily: 'Poppins-Thin' }}> Cash Expenses </Text>
+                                ):null}
+                                {rowdata.item.type == 5 ? (
+                                <Text style={{ fontSize: 9, color: 'orange', fontFamily: 'Poppins-Thin' }}> Cash Transfer </Text>
                                 ):null}
 
                                 <Text style={{ fontSize: 9, color: '#000', fontFamily: 'Poppins-Thin' }}>{rowdata.item.a_date}</Text>
@@ -62,7 +77,7 @@ export default class TransferScreen extends Component {
                         <View style={styles.paymentsty}>
                             <Text style={styles.amountSty}>{this.state.getCurrency} {rowdata.item.amount}</Text>
                             <Text style={{ fontSize: 9, color: 'red', fontFamily: 'Poppins-Thin' }}>{rowdata.item.reason}</Text>
-                            <Text >{rowdata.item.t_type}</Text>
+                            {/* <Text >{rowdata.item.t_type}</Text> */}
                         </View>
                     </View>
                 </View>

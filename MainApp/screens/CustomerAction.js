@@ -22,7 +22,7 @@ import {connect} from "react-redux";
             customer_id: this.props.navigation.getParam('customer_id', '0'),
             c_type:this.props.navigation.getParam('c_type', '0'),
             amount:'',
-            agent_id:'',
+            agent_id:0,
             ben_id:'',
             msg:"",
             personal_info_id:"",
@@ -41,6 +41,8 @@ import {connect} from "react-redux";
     }
     async componentDidMount() {
         this.setState({ spinner: true });
+
+       
         this.setState({ 
         personal_info_id: await AsyncStorage.getItem('@personal_info_id') ,
         getCurrency: await AsyncStorage.getItem('@getCurrency'),
@@ -51,7 +53,7 @@ import {connect} from "react-redux";
         const BalApiCall = await fetch(Constant.URL+Constant.getCusBal+"/"+this.state.customer_id);
             const dataSource = await BalApiCall.json();
            console.log("dataSource",dataSource)
-            this.setState({bal: dataSource.bal, spinner: false});
+            this.setState({bal: dataSource.bal, r_bal:dataSource.r_bal, spinner: false});
         } catch(err) {
             console.log("Error fetching data-----------", err);
         }
@@ -90,7 +92,7 @@ import {connect} from "react-redux";
         this.setState({ spinner: true });
         try {
 
-            const BalApiCall = await fetch(Constant.URL + Constant.getAgBal + "/" + this.state.personal_info_id+"/"+this.state.getFrom);
+            const BalApiCall = await fetch(Constant.URL + Constant.getAgBal + "/" + this.state.personal_info_id+"/"+this.state.getFrom+"/"+2);
             const dataSource = await BalApiCall.json();
             Constant.SetAsyncValue('@wallet', dataSource.bal)
             this.props.getCustomerWallet(dataSource.c_bal)
@@ -106,9 +108,26 @@ import {connect} from "react-redux";
   
     handleOpen = () => {
         const { amount } = this.state;
+
+        if(this.state.agent_id==0 && this.state.c_type==2){
+            Alert.alert("Please Select Agent And Try Again "); 
+            return false
+        }
+
+        if(Constant.rawNumber(this.props.agentW) < this.state.amount && this.state.c_type==1){
+            Alert.alert("Insufficient Please try Again "); 
+            return false
+        }
+
+
+        if( this.state.msg =="" ){
+            Alert.alert("Enter Transaction Message");
+            return false
+        }
+
         if (amount.length <= 0) {
           this.setState({ spinner: false });
-          Alert.alert("Please fill out the required field.");
+          Alert.alert("Enter Amount.");
         }else {
         this.setState({ show: true })
         }
@@ -122,10 +141,11 @@ import {connect} from "react-redux";
     onPressDebit = async() => {
 
         this.setState({ spinner: true });
+      
      
         if ( this.state.amount > Constant.rawNumber(this.state.bal)) {
            
-            this.setState({ spinner: false,Ashow: true ,show: false,Amessage:"Insufficient Please try Again" });
+            this.setState({ spinner: false,Ashow: true ,show: false,Amessage:"Insufficient customer funds Please try Again" });
         }else {
              // post method
     fetch(Constant.URL+Constant.debitWallet,{
@@ -210,7 +230,7 @@ import {connect} from "react-redux";
                             customer_id: this.state.customer_id,
                           
                           }
-                         )}>View History</Text>
+                         )}>View History </Text>
                     </View>
                     <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center', paddingLeft: 20 , paddingTop:10}}  >
                         <Icon style={{ padding: 5 }} family="Entypo" name="wallet" size={30} color="#020cab" />
@@ -257,28 +277,7 @@ import {connect} from "react-redux";
                         ): null }
                    
                    
-                    <View style={{ flexDirection: 'row', alignItems: 'center', borderWidth: 1, margin: 15, paddingHorizontal: 15 }}>
-                        <Icon family="FontAwesome" name="money" size={25} />
-                        <TextInput style={{ paddingLeft: 10, fontSize: 16 }}
-                            keyboardType='number-pad'
-                            placeholder="Enter Amount"
-                            value={this.state.amount}
-                            onChangeText={(amount)=>{this.setState({amount})}}
-                        />
-                    </View>
-                   
-
                     
-                       
-                        
-                    <View style={{ flexDirection: 'row', alignItems: 'center', borderBottomWidth: 1, margin: 15, paddingHorizontal: 15 }}>
-                        <TextInput style={{ flex: 1, paddingLeft: 10, fontSize: 16, fontFamily:'Poppins-ExtraLightItalic' }}
-                            keyboardType='email-address'
-                            placeholder="Add a message (Optional)"
-                            onChangeText={(msg)=>this.setState({msg})}
-                            value={this.state.msg}
-                        />
-                    </View>
                     {this.state.ben_id=="N01" ? (  <View >
              <View style={{ flexDirection: 'row', alignItems: 'center', borderWidth: 1, margin: 15, marginTop: 2, paddingHorizontal: 15 }}>
                             <TextInput
@@ -327,7 +326,28 @@ import {connect} from "react-redux";
                           
                         </View>
                 </View>  ): null}
+                <View style={{ flexDirection: 'row', alignItems: 'center', borderWidth: 1, margin: 15, paddingHorizontal: 15 }}>
+                        <Icon family="FontAwesome" name="money" size={25} />
+                        <TextInput style={{ paddingLeft: 10, fontSize: 16 }}
+                            keyboardType='number-pad'
+                            placeholder="Enter Amount"
+                            value={this.state.amount}
+                            onChangeText={(amount)=>{this.setState({amount})}}
+                        />
+                    </View>
+                   
 
+                    
+                       
+                        
+                    <View style={{ flexDirection: 'row', alignItems: 'center', borderBottomWidth: 1, margin: 15, paddingHorizontal: 15 }}>
+                        <TextInput style={{ flex: 1, paddingLeft: 10, fontSize: 16, fontFamily:'Poppins-ExtraLightItalic' }}
+                            keyboardType='email-address'
+                            placeholder="Enter Transaction Details "
+                            onChangeText={(msg)=>this.setState({msg})}
+                            value={this.state.msg}
+                        />
+                    </View>
 
                     <TouchableOpacity style={{ paddingVertical: 10, backgroundColor: '#020cab', marginTop: 30, borderRadius: 50, marginHorizontal: 30 }} onPress={this.handleOpen}  >
                         <Text style={{ color: '#FFF', textAlign: 'center', fontSize: 16 ,  fontFamily: 'Poppins-Bold',}}>RETURN</Text>

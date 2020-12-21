@@ -1,13 +1,13 @@
-import React, { Component } from 'react';
-import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Image, TextInput, StatusBar, Picker, Alert } from 'react-native';
+import React,{Component} from 'react';
+import {View,Text,ScrollView,StyleSheet,TouchableOpacity,Image,TextInput,StatusBar,Picker,Alert} from 'react-native';
 import Icon from '../common/icons';
 import Theme from '../styles/Theme';
 import Spinner from 'react-native-loading-spinner-overlay';
 import Constant from "../components/Constant";
 import AsyncStorage from '@react-native-community/async-storage';
 
-import { TextInputMask } from 'react-native-masked-text'
-import { SCLAlert, SCLAlertButton } from 'react-native-scl-alert'
+import {TextInputMask} from 'react-native-masked-text'
+import {SCLAlert,SCLAlertButton} from 'react-native-scl-alert'
 
 
 
@@ -15,13 +15,13 @@ export default class Send extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            cus_name: this.props.navigation.getParam('cus_name', 'Name'),
-            cus_phone: this.props.navigation.getParam('cus_phone', 'phone'),
-            customer_id: this.props.navigation.getParam('customer_id', '0'),
-            cc_type: this.props.navigation.getParam('cc_type', '0'),
+            cus_name: this.props.navigation.getParam('cus_name','Name'),
+            cus_phone: this.props.navigation.getParam('cus_phone','phone'),
+            customer_id: this.props.navigation.getParam('customer_id','0'),
+            cc_type: this.props.navigation.getParam('cc_type','0'),
             wallet: "0.00",
             amount: "0",
-            due_amount:0,
+            due_amount: 0,
             charges: "0",
             to: 0,
             rate: "",
@@ -33,9 +33,9 @@ export default class Send extends Component {
             bal: "0.00",
             r_bal: 0,
             BankList: [],
-            dataSource:[],
-            PercentList:[],
-            bank_id: 0,ch_type:2,value:0
+            dataSource: [],
+            PercentList: [],
+            bank_id: 0,ch_type: 2,value: 0,trans_type: ""
 
 
 
@@ -44,7 +44,7 @@ export default class Send extends Component {
     }
     async componentDidMount() {
 
-        this.setState({ spinner: true });
+        this.setState({spinner: true});
         this.setState({
             personal_info_id: await AsyncStorage.getItem('@personal_info_id'),
             getCurrency: await AsyncStorage.getItem('@getCurrency'),
@@ -58,65 +58,118 @@ export default class Send extends Component {
 
             const BalApiCall = await fetch(Constant.URL + Constant.getCusBal + "/" + this.state.customer_id);
             const dataSource = await BalApiCall.json();
-            console.log("dataSource", dataSource)
-            this.setState({ bal: dataSource.bal, r_bal: dataSource.r_bal, spinner: false });
+            console.log("dataSource",dataSource)
+            this.setState({bal: dataSource.bal,r_bal: dataSource.r_bal,spinner: false});
         } catch (err) {
-            console.log("Error fetching data-----------", err);
+            console.log("Error fetching data-----------",err);
         }
 
         try {
 
             const CountryApiCall = await fetch(Constant.URL + Constant.getCOUNTRY + "/" + this.state.getFrom);
             const getCountry = await CountryApiCall.json();
-            console.log("getCountry", getCountry)
-            this.setState({ CountryList: getCountry, spinner: false });
+            console.log("getCountry",getCountry)
+            this.setState({CountryList: getCountry,spinner: false});
         } catch (err) {
-            console.log("Error fetching data-----------", err);
+            console.log("Error fetching data-----------",err);
         }
 
         try {
 
-            const PERApiCall = await fetch(Constant.URL + Constant.getPERCENT );
+            const PERApiCall = await fetch(Constant.URL + Constant.getPERCENT);
             const getPercent = await PERApiCall.json();
-            this.setState({ PercentList: getPercent, spinner: false });
+            this.setState({PercentList: getPercent,spinner: false});
         } catch (err) {
-            console.log("Error fetching data-----------", err);
+            console.log("Error fetching data-----------",err);
         }
 
-
+        //GetRateProfit
+        this.GetProfitRate();
 
     }
 
     handleClose = () => {
-        this.setState({ show: false })
+        this.setState({show: false})
+    }
+
+    async GetProfitRate() {
+
+        this.setState({spinner: true});
+        try {
+
+            const BalApiCall = await fetch(Constant.URL + Constant.getProfitRate + "/" + this.state.getFrom);
+            const dataSource = await BalApiCall.json();
+
+            this.setState({spinner: false,getProfit: dataSource.data.profit_rate});
+        } catch (err) {
+            console.log("Error fetching data-----------",err);
+            this.setState({spinner: false});
+        }
+    }
+
+
+    async onChargersGet(to) {
+
+        //gET Bank
+        this.setState({spinner: true});
+        try {
+
+            const ChargesGet = await fetch(Constant.URL + Constant.getCharges + "/" + this.state.getFrom + "/" + to);
+            const dataSource = await ChargesGet.json();
+            this.setState({get_charges: dataSource,spinner: false});
+            if (dataSource == 1) {
+                this.setState({ch_type: 0,charges: 0});
+            }
+
+        } catch (err) {
+            console.log("Error fetching data-----------",err);
+        }
     }
 
 
     onPress = async () => {
-       
+
+        if (!this.state.getProfit) {
+            Alert.alert("No Profit Rate Has Been Added , Please Contact Admin.");
+            return false
+        }
+
+        if (this.state.get_charges == 0 && this.state.charges == 0) {
+            Alert.alert("Select Percentage Chargers");
+            return false
+        }
+        if (this.state.trans_type == "") {
+            Alert.alert("Select Transaction Type.");
+            return false
+        }
+
         //Get rate
         var getCharges
-        const getAmount = Constant.rawNumber(this.state.amount) ;
-        if(this.state.ch_type==0)
-        {
-            getCharges = 0 ;
-        }else{
-            getCharges = this.state.charges ; 
+        const getAmount = Constant.rawNumber(this.state.amount);
+        if (this.state.ch_type == 0) {
+
+            if (this.state.charges == 0) {
+                getCharges = 0
+            } else {
+                getCharges = Constant.rawNumber(this.state.charges);
+            }
+
+        } else {
+            getCharges = this.state.charges;
         }
-        
-  
-        const getdue = getAmount- getCharges
-        // this.setState({ getAmount: getAmountV, getCharges: getChargesV ,due_amount:getdue});
-   
-      
-        if (this.state.amount == 0 ) {
+
+        const getdue = getAmount - getCharges
+
+
+
+        if (this.state.amount == 0) {
 
             Alert.alert("Please Enter Amount.");
-        } 
+        }
         // else if(this.state.charges <= 0){
         //     Alert.alert("Please Enter Charges.");
         // }
-        else if(this.state.to <= 0){
+        else if (this.state.to <= 0 || this.state.to == "") {
             Alert.alert("Please Select Receiving Currency");
         }
         else if (getAmount <= getCharges) {
@@ -127,29 +180,29 @@ export default class Send extends Component {
         }
 
         else {
-            this.setState({ spinner: true });
+            this.setState({spinner: true});
 
-            fetch(Constant.URL + Constant.getRATE, {
+            fetch(Constant.URL + Constant.getRATE,{
                 method: 'POST',
                 body: JSON.stringify({
                     amount: this.state.amount,
                     rateType: this.state.rateType,
                     to: this.state.to,
-                    from: this.state.getFrom
+                    from: this.state.getFrom,
                 })
             })
                 .then((response) => response.json())
                 .then((result) => {
-                   
+
                     this.setState({
                         spinner: false,
                         dataSource: result,
                     });
 
                     if (this.state.dataSource.code == 200) {
-                    
+                       
 
-                        this.props.navigation.navigate("Rate", {
+                        this.props.navigation.navigate(this.state.trans_type,{
                             cus_name: this.state.cus_name,
                             customer_id: this.state.customer_id,
                             amount: getAmount,
@@ -157,34 +210,39 @@ export default class Send extends Component {
                             local: this.state.dataSource.data.local_rate_1,
                             dollar2: this.state.dataSource.data.dollar_rate_2,
                             local2: this.state.dataSource.data.local_rate_2,
-                            charges:getCharges,
+                            cov_rate: this.state.dataSource.data.from_c_rate,
+                            charges: getCharges,
                             to: this.state.dataSource.data.to_currency,
                             to_id: this.state.to,
                             from: this.state.getCurrency,
                             fromAgent: this.state.personal_info_id,
                             cus_phone: this.state.cus_phone,
                             bank_id: this.state.bank_id,
-                            ch_type:this.state.ch_type,
-                            due_amount:getdue,
-                            r_bal:this.state.r_bal,
-                            getCountry_id:this.state.getFrom,
-        
+                            ch_type: this.state.ch_type,
+                            due_amount: getdue,
+                            r_bal: this.state.r_bal,
+                            getCountry_id: this.state.getFrom,
+                            trans_type: this.state.trans_type,
+                            //dollar usage
+                            from_c_rate: this.state.dataSource.data.from_c_rate,
+                            to_c_rate: this.state.dataSource.data.to_c_rate,
+
                         })
-        
+
                     } else {
-                        this.setState({ spinner: false });
+                        this.setState({spinner: false});
                         Alert.alert(this.state.dataSource.data.message);
                     }
 
 
                 }).catch(function (error) {
-                    this.setState({ spinner: false });
+                    this.setState({spinner: false});
                     console.log("-------- error ------- " + error);
                     alert("result:" + error)
                 });
             //Get Rate
 
-     
+
 
 
         }
@@ -194,7 +252,7 @@ export default class Send extends Component {
     render() {
 
         return (
-            <View style={{ flex: 1, backgroundColor: Theme.bgcolor }}>
+            <View style={{flex: 1,backgroundColor: Theme.bgcolor}}>
                 <Spinner
                     visible={this.state.spinner}
                     overlayColor={'rgba(0, 0, 0, 0.50)'}
@@ -204,33 +262,33 @@ export default class Send extends Component {
                     <TouchableOpacity onPress={() => this.props.navigation.goBack()}>
                         <Icon family="MaterialIcons" name="arrow-back" size={25} color="#FFF" />
                     </TouchableOpacity>
-        <Text style={styles.headTxt}>Send {this.state.cus_name}</Text>
+                    <Text style={styles.headTxt}>Send {this.state.cus_name}</Text>
                 </View>
                 <ScrollView>
-                    <View style={{ flexDirection: 'row', borderBottomWidth: 1, borderColor: 'lightgray', alignItems: 'center' }}>
+                    <View style={{flexDirection: 'row',borderBottomWidth: 1,borderColor: 'lightgray',alignItems: 'center'}}>
                         <View style={styles.imgContainer}>
                             <Image style={styles.userimg} source={require('../assets/img/boy.png')} />
                         </View>
                         <View style={styles.userdetails}>
-                            <Text style={{ fontSize: 18, color: '#000', fontFamily: 'Poppins-Light' }}>{this.state.cus_name}</Text>
-                            <Text style={{ fontSize: 12, color: '#000', fontFamily: 'Poppins-Thin' }}>{this.state.cus_phone}</Text>
+                            <Text style={{fontSize: 18,color: '#000',fontFamily: 'Poppins-Light'}}>{this.state.cus_name}</Text>
+                            <Text style={{fontSize: 12,color: '#000',fontFamily: 'Poppins-Thin'}}>{this.state.cus_phone}</Text>
                         </View>
 
                     </View>
 
-                    <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center', paddingLeft: 20, paddingTop: 10 }} onPress={() => this.props.navigation.navigate("Receive")} >
-                        <Icon style={{ padding: 5 }} family="Entypo" name="wallet" size={30} color="#020cab" />
+                    <TouchableOpacity style={{flexDirection: 'row',alignItems: 'center',paddingLeft: 20,paddingTop: 10}} onPress={() => this.props.navigation.navigate("Receive")} >
+                        <Icon style={{padding: 5}} family="Entypo" name="wallet" size={30} color="#020cab" />
                         <View>
-                            <Text style={{ fontFamily: 'Poppins-Regular' }}>Wallet Balance :</Text>
-                            <Text style={{ fontSize: 20, color: '#000', fontFamily: 'Poppins-ExtraLight' }}> {this.state.getCurrency} : {this.state.bal}</Text>
+                            <Text style={{fontFamily: 'Poppins-Regular'}}>Wallet Balance :</Text>
+                            <Text style={{fontSize: 20,color: '#000',fontFamily: 'Poppins-ExtraLight'}}> {this.state.getCurrency} : {this.state.bal}</Text>
                         </View>
                     </TouchableOpacity>
 
 
-                    <View style={{ flexDirection: 'row', alignItems: 'center', borderWidth: 1, margin: 15, paddingHorizontal: 15 }}>
+                    <View style={{flexDirection: 'row',alignItems: 'center',borderWidth: 1,margin: 15,paddingHorizontal: 15}}>
 
                         <Text >Amount</Text>
-                        <TextInputMask style={{ paddingLeft: 10, fontSize: 16 }}
+                        <TextInputMask style={{paddingLeft: 10,fontSize: 16}}
                             type={'money'}
                             placeholder="Enter Amount"
                             options={{
@@ -244,81 +302,106 @@ export default class Send extends Component {
                             onChangeText={text => {
                                 const getAmountV = Constant.rawNumber(text);
                                 var getpdue,percent
-                                 percent =2/100
-                                 getpdue =getAmountV*percent
+                                percent = 2 / 100
+                                getpdue = getAmountV * percent
                                 this.setState({
-                                    amount: text,charges: getpdue
+                                    amount: text,charges: getpdue,to: 0
                                 })
                             }}
-                            
+
                         />
 
                     </View>
-                
-                        
-                    <View style={{ flexDirection: 'row', alignItems: 'center', borderWidth: 1, margin: 15, marginTop: 2, paddingHorizontal: 15 }}>
-                    <Picker style={{ flex: 0.9, paddingLeft: 150 }}
-                            selectedValue={this.state.ch_type}
-                            onValueChange={(itemValue, itemPosition) =>
-                             {
-                              this.setState({ ch_type: itemValue, toIndex: itemPosition , value:0});
-                              if (this.state.amount != 0 ) {
-                                const getAmountV = Constant.rawNumber(this.state.amount);
-                                var getpdue,percent
-                                 percent =itemValue/100
-                                 getpdue =getAmountV*percent
-                                 this.setState({ charges: getpdue});
+
+                    {this.state.amount != 0 ? (
+                        <View style={{flexDirection: 'row',alignItems: 'center',borderWidth: 1,margin: 15,marginTop: 2,paddingHorizontal: 15}}>
+                            <Text style={{flex: 0.1,paddingLeft: 1}} ></Text>
+                            <Picker style={{flex: 0.9,paddingLeft: 150}}
+                                selectedValue={this.state.to}
+                                onValueChange={(itemValue,itemPosition) => {
+                                    this.setState({to: itemValue,toIndex: itemPosition})
+                                    this.onChargersGet(itemValue)
+
+                                }}   >
+                                <Picker.Item label="RECEIVING CURRENCY" value="0" />
+                                {
+                                    this.state.CountryList.map((v) => {
+                                        return <Picker.Item label={v.country + " - " + v.currency} value={v.country_id} />
+                                    })
                                 }
-                        
-                             
-                             } }   >
-                          
-                          <Picker.Item label="2 %" value="2" />
-                            <Picker.Item label="NO PERCENTAGE" value="0" />
-                            {
-                                this.state.PercentList.map((v) => {
-                                    return <Picker.Item label={v.value + " % "} value={v.value} />
-                                })
-                            }
-                        </Picker>
-                     
-                        <TextInputMask style={{ paddingLeft: 10, fontSize: 16 }}
-                     
-                            type={'money'}
-                            placeholder="Enter Charges"
-                            options={{
-                                precision: 2,
-                                separator: '.',
-                                delimiter: ',',
-                                unit: '',
-                                suffixUnit: ''
-                            }}
-                            value={this.state.charges}
-                            onChangeText={(charges)=>
-                                {this.setState({charges})
-                                this.setState({ ch_type: 0});
-                                }}
-                            
-                            
-                            
-                        />
-                      
-                    </View>
-   
+                            </Picker>
+                        </View>
+                    ) : null}
 
-                    <View style={{ flexDirection: 'row', alignItems: 'center', borderWidth: 1, margin: 15, marginTop: 2, paddingHorizontal: 15 }}>
-                        <Text style={{ flex: 0.1, paddingLeft: 1 }} ></Text>
-                        <Picker style={{ flex: 0.9, paddingLeft: 150 }}
-                            selectedValue={this.state.to}
-                            onValueChange={(itemValue, itemPosition) => this.setState({ to: itemValue, toIndex: itemPosition })}   >
-                            <Picker.Item label="RECEIVING CURRENCY" value="0" />
-                            {
-                                this.state.CountryList.map((v) => {
-                                    return <Picker.Item label={v.country + " - " + v.currency} value={v.country_id} />
-                                })
-                            }
-                        </Picker>
-                    </View>
+                    {this.state.get_charges == 0 ? (
+                        <View style={{flexDirection: 'row',alignItems: 'center',borderWidth: 1,margin: 15,marginTop: 2,paddingHorizontal: 15}}>
+                            <Picker style={{flex: 0.9,paddingLeft: 150}}
+                                selectedValue={this.state.ch_type}
+                                onValueChange={(itemValue,itemPosition) => {
+                                    this.setState({ch_type: itemValue,toIndex: itemPosition,value: 0});
+                                    if (this.state.amount != 0) {
+                                        const getAmountV = Constant.rawNumber(this.state.amount);
+                                        var getpdue,percent
+                                        percent = itemValue / 100
+                                        getpdue = getAmountV * percent
+                                        this.setState({charges: getpdue});
+                                    }
+
+
+                                }}   >
+
+                                <Picker.Item label="2 %" value="2" />
+                                <Picker.Item label="NO PERCENTAGE" value="0" />
+
+                                {
+                                    this.state.PercentList.map((v) => {
+                                        return <Picker.Item label={v.value + " % "} value={v.value} />
+                                    })
+                                }
+                            </Picker>
+
+                            <TextInputMask style={{paddingLeft: 10,fontSize: 16}}
+
+                                type={'money'}
+                                placeholder="Enter Charges"
+                                options={{
+                                    precision: 2,
+                                    separator: '.',
+                                    delimiter: ',',
+                                    unit: '',
+                                    suffixUnit: ''
+                                }}
+                                value={this.state.charges}
+                                onChangeText={(charges) => {
+                                    this.setState({charges})
+                                    this.setState({ch_type: 0});
+                                }}
+
+
+
+                            />
+                        </View>
+                    ) : null}
+                    {this.state.amount != 0 ? (
+                        <View style={{flexDirection: 'row',alignItems: 'center',borderWidth: 1,margin: 15,marginTop: 2,paddingHorizontal: 15}}>
+                            <Text style={{flex: 0.1,paddingLeft: 1}} ></Text>
+                            <Picker style={{flex: 0.9,paddingLeft: 150}}
+                                selectedValue={this.state.trans_type}
+                                onValueChange={(itemValue,itemPosition) => {
+                                    this.setState({trans_type: itemValue,toIndex: itemPosition})
+                                    // this.onChargersGet(itemValue)
+
+                                }}   >
+                                <Picker.Item label="TRANSACTION TYPE" value="" />
+                                <Picker.Item label="Local Transaction" value="Rate" />
+                                {/* <Picker.Item label="Dollar Transaction" value="RateDollar" /> */}
+
+                            </Picker>
+                        </View>
+                    ) : null}
+
+
+
 
 
 
@@ -327,13 +410,13 @@ export default class Send extends Component {
                         show={this.state.show}
                         title="Calculated Amount"
                         onRequestClose={() => {
-                            this.setState({ show: false })
+                            this.setState({show: false})
                         }}
                     >
 
-                        <View style={{ flexDirection: 'row', alignItems: 'center', borderWidth: 1, margin: 15, marginTop: 2, paddingHorizontal: 15 }}>
+                        <View style={{flexDirection: 'row',alignItems: 'center',borderWidth: 1,margin: 15,marginTop: 2,paddingHorizontal: 15}}>
                             <Text >Rate</Text>
-                            <TextInputMask style={{ paddingLeft: 10, fontSize: 16 }}
+                            <TextInputMask style={{paddingLeft: 10,fontSize: 16}}
                                 type={'money'}
                                 placeholder="Enter Rate"
                                 options={{
@@ -354,8 +437,8 @@ export default class Send extends Component {
                         </View>
                         <View>
 
-                            <Text style={{ fontSize: 20, color: '#000', fontFamily: 'Poppins-ExtraLight', textAlign: "center" }}> {this.state.getCurrency} :
-                            <Text style={{ color: 'red', textAlign: "center" }}>{(this.state.getAmount - this.state.getCharges) * (this.state.getRate)}</Text>
+                            <Text style={{fontSize: 20,color: '#000',fontFamily: 'Poppins-ExtraLight',textAlign: "center"}}> {this.state.getCurrency} :
+                            <Text style={{color: 'red',textAlign: "center"}}>{(this.state.getAmount - this.state.getCharges) * (this.state.getRate)}</Text>
                             </Text>
                         </View>
 
@@ -367,10 +450,10 @@ export default class Send extends Component {
 
 
 
-                    <TouchableOpacity style={{ paddingVertical: 10, backgroundColor: '#020cab', marginTop: 30, borderRadius: 50, marginHorizontal: 30 }} onPress={this.onPress}>
-                        <Text style={{ color: '#FFF', textAlign: 'center', fontSize: 16, fontFamily: 'Poppins-Bold', }}>Proccess</Text>
+                    <TouchableOpacity style={{paddingVertical: 10,backgroundColor: '#020cab',marginTop: 30,borderRadius: 50,marginHorizontal: 30}} onPress={this.onPress}>
+                        <Text style={{color: '#FFF',textAlign: 'center',fontSize: 16,fontFamily: 'Poppins-Bold',}}>Proccess</Text>
                     </TouchableOpacity>
-                    <View style={{ margin: 20 }}></View>
+                    <View style={{margin: 20}}></View>
                 </ScrollView>
             </View>
         );
@@ -403,7 +486,7 @@ const styles = StyleSheet.create({
         padding: 5,
         elevation: 2,
         shadowColor: 'lightgrey',
-        shadowOffset: { width: -0.5, height: 0.5 },
+        shadowOffset: {width: -0.5,height: 0.5},
         shadowOpacity: 0.2,
         shadowRadius: 1
     },

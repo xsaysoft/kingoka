@@ -27,7 +27,8 @@ import SendB from '../screens/SendB';
 import agent from '../screens/agent';
 import done from '../screens/done';
 import Rate from '../screens/Rate';
-import RateConvert from '../screens/RateConvert';
+import RateB from '../screens/RateB';
+import RateDollar from '../screens/RateDollar';
 import Payout from '../screens/Payout';
 import PayoutDone from '../screens/PayoutDone';
 import Credit from '../screens/Credit';
@@ -245,6 +246,12 @@ const Routes = {
       header: null
     },
   },
+  RateB: {
+    screen: RateB,
+    navigationOptions: {
+      header: null
+    },
+  },
   Payout: {
     screen: Payout,
     navigationOptions: {
@@ -354,8 +361,8 @@ const Routes = {
       header: null
     },
   },
-  RateConvert: {
-    screen:   RateConvert,
+  RateDollar: {
+    screen:   RateDollar,
     navigationOptions: {
       header: null
     },

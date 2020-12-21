@@ -70,7 +70,7 @@ fetch(Constant.URL+Constant.LOGIN,{
          Constant.SetAsyncValue('@store_vid', this.state.dataSource.data.store_vid),
          Constant.SetAsyncValue('@getCurrency', this.state.dataSource.data.currency),
          Constant.SetAsyncValue('@getFrom', this.state.dataSource.data.country_id),
-         Constant.SetAsyncValue('@profit_rate', this.state.dataSource.data.profit_rate)
+        //  Constant.SetAsyncValue('@profit_rate', this.state.dataSource.data.profit_rate)
          Constant.SetAsyncValue('@dial_code', this.state.dataSource.data.dial_code)
          Constant.SetAsyncValue('@number_length', this.state.dataSource.data.number_length)
          

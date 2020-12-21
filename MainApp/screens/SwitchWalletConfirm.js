@@ -27,7 +27,7 @@ import {connect} from "react-redux";
             bal:"0.00",
             show: false,
             pin:"",
-            Amessage:"",p_status:"",personal_info_id:0,
+            Amessage:"",p_status:2,personal_info_id:0,
             Smessage:"",
   
  
@@ -50,7 +50,7 @@ import {connect} from "react-redux";
             const BalApiCall = await fetch(Constant.URL + Constant.getAgBal + "/" + this.state.personal_info_id+"/"+this.state.country_id+"/"+this.state.p_status);
             const dataSource = await BalApiCall.json();
             await AsyncStorage.setItem('@wallet', dataSource.bal)
-            
+            console.log("kd",dataSource.bal)
             this.props.getCustomerWallet(dataSource.c_bal)
             this.props.getAgentWallet(dataSource.bal)
             this.props.getAgentCurrency(this.state.currency)
@@ -61,8 +61,10 @@ import {connect} from "react-redux";
         }
     }
 
-    async activate() {
 
+
+    async activate() {
+        
         this.setState({ spinner: true });
         try {
 
@@ -103,6 +105,7 @@ import {connect} from "react-redux";
         await AsyncStorage.setItem('@getFrom', this.state.country_id)
        await AsyncStorage.setItem('@getCurrency', this.state.currency)
         this.bal()
+        
          this.setState({ spinner: false,Sshow: true ,Smessage:"Wallet Currecy has been changed successfully" });
         }else{
             this.setState({ spinner: false,Ashow: true ,show: false,Amessage:"Unable to make changes, please try again" });
@@ -189,7 +192,7 @@ import {connect} from "react-redux";
                              <Picker style={{ flex: 0.9, paddingLeft: 150 }}
                                  selectedValue={this.state.p_status}
                                  onValueChange={(itemValue, itemPosition) => this.setState({ p_status: itemValue, toIndex: itemPosition })}   >
-                                 {/* <Picker.Item label="SELECT SWITCH TYPE" value="0" /> */}
+                                 <Picker.Item label="SELECT PAYOUT TYPE" value="" />
                                  <Picker.Item label="DON'T ADD TO PAYOUT LISTING" value="0" />
                                  <Picker.Item label="ADD TO PAYOUT LISTING" value="1" />
                              </Picker>

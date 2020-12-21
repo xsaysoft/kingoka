@@ -24,6 +24,7 @@ class TransferConfirm extends Component {
             amount: this.props.navigation.getParam('amount', '0'),
             transfer_acct_id: this.props.navigation.getParam('transfer_acct_id', '0'),
             status: this.props.navigation.getParam('status', '0'),
+            c_ref: this.props.navigation.getParam('c_ref', '0'),
             spinner: false,
             bal: "0.00",
             show: false,
@@ -48,7 +49,7 @@ class TransferConfirm extends Component {
         this.setState({ spinner: true });
         try {
 
-            const BalApiCall = await fetch(Constant.URL + Constant.getAgBal + "/" + this.state.personal_info_id + "/" + this.state.country_id);
+            const BalApiCall = await fetch(Constant.URL + Constant.getAgBal + "/" + this.state.personal_info_id + "/" + this.state.country_id+"/"+2);
             const dataSource = await BalApiCall.json();
             await AsyncStorage.setItem('@wallet', dataSource.bal)
 
@@ -83,6 +84,7 @@ class TransferConfirm extends Component {
             body: JSON.stringify({
                 transfer_acct_id: this.state.transfer_acct_id,
                 personal_info_id:this.state.personal_info_id,
+                c_ref:this.state.c_ref,
                 pin: this.state.pin,
                 type_id: this.state.type_id,
             })
@@ -134,7 +136,7 @@ class TransferConfirm extends Component {
                     <TouchableOpacity onPress={() => this.props.navigation.goBack()}>
                         <Icon family="MaterialIcons" name="arrow-back" size={25} color="#FFF" />
                     </TouchableOpacity>
-                    <Text style={styles.headTxt}>Confirm Transfer </Text>
+        <Text style={styles.headTxt}>Confirm Transfer </Text>
                 </View>
                 <ScrollView>
                     <View style={{ flexDirection: 'row', borderBottomWidth: 1, borderColor: 'lightgray', alignItems: 'center' }}>

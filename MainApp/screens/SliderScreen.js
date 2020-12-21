@@ -11,11 +11,11 @@ const imagestyle = { width: 150, height: 150, resizeMode: 'contain' };
 const textStyle = { color: '#fff', textAlign: 'center', fontSize: 16, paddingBottom: 16, fontFamily: 'Poppins-Regular' };
 const titleStyle = { color: '#fff', textAlign: 'center', fontSize: 20, fontFamily: 'Poppins-Bold' };
 
-const slides = [
+const slides = [ 
     {
         key: 'slideOne',
         title: 'Make Better Decisions',
-        text: 'Kingoka Group Currency Converter.',
+        text: 'Kingoka Logistics Currency Converter.',
         image: require("./../assets/img/receipt.png"),
         imageStyle: { height: 150, width: 150, resizeMode: 'cover' },
         textStyle: textStyle,
@@ -24,7 +24,7 @@ const slides = [
     {
         key: 'slideTwo',
         title: 'Make Better Decisions',
-        text: 'Kingoka Group  Digital Rate Center',
+        text: 'Kingoka Logistics  Digital Rate Center',
         image: require("./../assets/img/study.png"),
         imageStyle: { height: 150, width: 150, resizeMode: 'cover' },
         textStyle: textStyle,
@@ -33,7 +33,7 @@ const slides = [
     {
         key: 'slideThree',
         title: 'Make Better Decisions',
-        text: ' Kingoka Group Send and Receiving  Transaction',
+        text: ' Kingoka Logistics Send and Receiving  Transaction',
         image: require("./../assets/img/transaction.png"),
         imageStyle: { height: 150, width: 150, resizeMode: 'cover' },
         textStyle: textStyle,

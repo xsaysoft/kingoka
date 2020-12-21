@@ -89,12 +89,14 @@ Constant.removeAsyncValue('@wallet')
                         </View>
 
                         <View style={{ paddingLeft: 35, paddingVertical: 10, }}>
-                            <TouchableOpacity onPress={() => this.props.navigation.navigate("Formula",
-                            { c_type: 2 })}>
+                            <TouchableOpacity onPress={() => this.props.navigation.navigate("ExpenseType",
+                            {
+                                transfer:2
+                               })}>
                                 <View style={styles.settingLayout}>
                                     <View style={styles.settingNamesty}>
                                         <Icon family="Feather" name="activity" size={30} color={Theme.mainColor} />
-                                        <Text style={styles.meunSty}>Formula </Text>
+                                        <Text style={styles.meunSty}>Debtor </Text>
                                     </View>
                                     <Icon family="MaterialIcons" name="keyboard-arrow-right" size={30} color="black" />
                                 </View>

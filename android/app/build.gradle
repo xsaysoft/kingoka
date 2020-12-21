@@ -129,11 +129,12 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.pro"
+        applicationId "com.kingoka" //com.kingoka
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
-        versionName "1.0"
+        versionCode 6
+        versionName "1.6"
+        multiDexEnabled true 
     }
     splits {
         abi {

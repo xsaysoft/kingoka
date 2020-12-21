@@ -71,7 +71,7 @@ import {connect} from "react-redux";
         this.setState({ spinner: true });
         try {
 
-            const BalApiCall = await fetch(Constant.URL + Constant.getAgBal + "/" + this.state.personal_info_id+"/"+this.state.getFrom);
+            const BalApiCall = await fetch(Constant.URL + Constant.getAgBal + "/" + this.state.personal_info_id+"/"+this.state.getFrom+"/"+2);
             const dataSource = await BalApiCall.json();
             Constant.SetAsyncValue('@wallet', dataSource.bal)
             this.props.getCustomerWallet(dataSource.c_bal)
@@ -89,11 +89,16 @@ import {connect} from "react-redux";
         const { amount } = this.state;
         if (amount.length <= 0) {
           this.setState({ spinner: false });
-          Alert.alert("Please fill out the required field.");
-        }else {
-        
-        this.setState({ show: true })
+          Alert.alert("Enter Amount.");
+          return false
         }
+        if( this.state.msg ==""  ){
+            Alert.alert("Enter Transaction  Details");
+            return false
+        }
+
+        this.setState({ show: true })
+        
       }
     
       handleClose = () => {
@@ -229,7 +234,7 @@ import {connect} from "react-redux";
                     <View style={{ flexDirection: 'row', alignItems: 'center', borderBottomWidth: 1, margin: 15, paddingHorizontal: 15 }}>
                         <TextInput style={{ flex: 1, paddingLeft: 10, fontSize: 16, fontFamily:'Poppins-ExtraLightItalic' }}
                             keyboardType='email-address'
-                            placeholder="Add a message (Optional)"
+                            placeholder="Enter Transaction Message"
                             onChangeText={(msg)=>this.setState({msg})}
                             value={this.state.msg}
                         />

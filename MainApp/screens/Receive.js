@@ -1,255 +1,283 @@
-import React, { Component } from 'react';
-import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Image, TextInput,StatusBar ,Alert,Picker} from 'react-native';
+import React,{Component} from 'react';
+import {View,Text,ScrollView,StyleSheet,TouchableOpacity,Image,TextInput,StatusBar,Alert,Picker} from 'react-native';
 import Icon from '../common/icons';
 import Theme from '../styles/Theme';
 import Spinner from 'react-native-loading-spinner-overlay';
 import Constant from "../components/Constant";
 import AsyncStorage from '@react-native-community/async-storage';
-import { TextInputMask } from 'react-native-masked-text'
+import DatePicker from 'react-native-datepicker'
 import {SCLAlert,SCLAlertButton} from 'react-native-scl-alert'
 import {connect} from "react-redux";
 
 
 
 
-     class Receive extends Component {
+class Receive extends Component {
     constructor(props) {
-   
+
         super(props)
         this.state = {
-            cus_name : this.props.navigation.getParam('cus_name', 'Name'),
-            cus_phone: this.props.navigation.getParam('cus_phone', 'phone'),
-            customer_id: this.props.navigation.getParam('customer_id', '0'),
-            c_type: this.props.navigation.getParam('c_type', '0'),
-            income_type: this.props.navigation.getParam('income_type', '0'),
-            income: this.props.navigation.getParam('income', '0'),
-            BankList:[],
-            bank_id:"",
-            amount:'',
-            msg:"",
-            personal_info_id:"",
+            cus_name: this.props.navigation.getParam('cus_name','Name'),
+            cus_phone: this.props.navigation.getParam('cus_phone','phone'),
+            customer_id: this.props.navigation.getParam('customer_id','0'),
+            c_type: this.props.navigation.getParam('c_type','0'),
+            income_type: this.props.navigation.getParam('income_type','0'),
+            income: this.props.navigation.getParam('income','0'),
+            BankList: [],
+            bank_id: "",
+            amount: '',
+            msg: "",
+            personal_info_id: "",date: "",
             spinner: false,
-            bal:"0.00",
+            bal: "0.00",
             show: false,
-            income_bal:0,
-            pin:"",
-            Amessage:"",
-            Smessage:"",
-  
- 
+            income_bal: 0,
+            pin: "",
+            Amessage: "",
+            Smessage: "",
+
+
         }
     }
     async componentDidMount() {
-        this.setState({ spinner: true });
-        this.setState({ 
-        personal_info_id: await AsyncStorage.getItem('@personal_info_id') ,
-        getCurrency: await AsyncStorage.getItem('@getCurrency'),
-        getFrom: await AsyncStorage.getItem('@getFrom'),
-        getProfit: await AsyncStorage.getItem('@profit_rate'),  });
+        this.setState({spinner: true});
+        this.setState({
+            personal_info_id: await AsyncStorage.getItem('@personal_info_id'),
+            getCurrency: await AsyncStorage.getItem('@getCurrency'),
+            getFrom: await AsyncStorage.getItem('@getFrom'),
+        });
         try {
-   
-        const BalApiCall = await fetch(Constant.URL+Constant.getCusBal+"/"+this.state.customer_id);
+
+            const BalApiCall = await fetch(Constant.URL + Constant.getCusBal + "/" + this.state.customer_id);
             const dataSource = await BalApiCall.json();
-           console.log("dataSource",dataSource)
-            this.setState({bal: dataSource.bal, spinner: false});
-        } catch(err) {
-            console.log("Error fetching data-----------", err);
+            console.log("dataSource",dataSource)
+            this.setState({bal: dataSource.bal,spinner: false});
+        } catch (err) {
+            console.log("Error fetching data-----------",err);
         }
         //gET Bank
         try {
-       
-            const BankApiCall = await fetch(Constant.URL+Constant.getBANKS+"/"+this.state.getFrom);
+
+            const BankApiCall = await fetch(Constant.URL + Constant.getBANKS + "/" + this.state.getFrom);
             const getBank = await BankApiCall.json();
-            this.setState({BankList: getBank, spinner: false});
-        } catch(err) {
-            console.log("Error fetching data-----------", err);
+            this.setState({BankList: getBank,spinner: false});
+        } catch (err) {
+            console.log("Error fetching data-----------",err);
         }
-    
+
+        this.GetProfitRate()
+
     }
 
     async bal() {
 
-        this.setState({ spinner: true });
+        this.setState({spinner: true});
         try {
 
-            const BalApiCall = await fetch(Constant.URL + Constant.getAgBal + "/" + this.state.personal_info_id+"/"+this.state.getFrom);
+            const BalApiCall = await fetch(Constant.URL + Constant.getAgBal + "/" + this.state.personal_info_id + "/" + this.state.getFrom + "/" + 2);
             const dataSource = await BalApiCall.json();
-            Constant.SetAsyncValue('@wallet', dataSource.bal)
+            Constant.SetAsyncValue('@wallet',dataSource.bal)
             this.props.getCustomerWallet(dataSource.c_bal)
             this.props.getAgentWallet(dataSource.bal)
-          
+
         } catch (err) {
-            console.log("Error fetching data-----------", err);
-            this.setState({ spinner: false });
+            console.log("Error fetching data-----------",err);
+            this.setState({spinner: false});
         }
     }
 
 
-  
+    async GetProfitRate() {
+
+        this.setState({spinner: true});
+        try {
+
+            const BalApiCall = await fetch(Constant.URL + Constant.getProfitRate + "/" + this.state.getFrom);
+            const dataSource = await BalApiCall.json();
+
+            this.setState({spinner: false,getProfit: dataSource.data.profit_rate});
+        } catch (err) {
+            console.log("Error fetching data-----------",err);
+            this.setState({spinner: false});
+        }
+    }
+
     handleOpen = () => {
-        const { amount } = this.state;
-        if (amount.length <= 0) {
-          this.setState({ spinner: false });
-          Alert.alert("Please fill out the required field.");
-        }else {
-        this.setState({ show: true })
+        const {amount} = this.state;
+        if( this.state.msg ==""  ){
+            Alert.alert("Enter Depositors  Details");
+            return false
         }
-      }
-    
-      handleClose = () => {
-        this.setState({ show: false })
-      }
-
-    onPressCredit = async() => {
-
-        this.setState({ spinner: true });
-        const { amount } = this.state;
         if (amount.length <= 0) {
-          this.setState({ spinner: false });
-          Alert.alert("Please fill out the required field.");
-        }else {
-             // post method
-    fetch(Constant.URL+Constant.addCREDIT,{
-        method: 'POST',
-        body: JSON.stringify({ 
-            customer_id: this.state.customer_id,
-            personal_info_id: this.state.personal_info_id,
-            msg: this.state.msg,
-            pin: this.state.pin,
-            bank_id:this.state.bank_id,
-            getCountry_id:this.state.getFrom,
-            amount: this.state.amount})
-          })
-          .then((response) => response.json())
-          .then((result) => {
-     
-        this.setState({
-                spinner: false,
-             dataSource: result, 
-          });
-      
-          console.log(this.state.dataSource.data);
-          if(this.state.dataSource.code==200){
-         this.bal()
-        this.setState({ spinner: false,Sshow: true ,Smessage:this.state.dataSource.data.message });
-        this.setState({
-            amount:'',
-            pin:"",
-           show: false 
-        });
-          
-          }else{
-            this.setState({ spinner: false,Ashow: true ,show: false,Amessage:this.state.dataSource.data.message });
-          }
-          
-         }).catch(function (error) {
-          this.setState({ spinner: false });
-         console.log("-------- error ------- "+error);
-         alert("result:"+error)
-         });
-      
-      //end post method
+            this.setState({spinner: false});
+            Alert.alert("Please fill out the required field.");
+            return false
+        } 
+    this.setState({show: true})
+        
+    }
+
+    handleClose = () => {
+        this.setState({show: false})
+    }
+
+    onPressCredit = async () => {
+
+
+
+        this.setState({spinner: true});
+        const {amount} = this.state;
+        if (amount.length <= 0) {
+            this.setState({spinner: false});
+            Alert.alert("Please fill out Amount.");
+        } else {
+        
+            // post method
+            fetch(Constant.URL + Constant.addCREDIT,{
+                method: 'POST',
+                body: JSON.stringify({
+                    customer_id: this.state.customer_id,
+                    personal_info_id: this.state.personal_info_id,
+                    msg: this.state.msg,
+                    pin: this.state.pin,
+                    bank_id: this.state.bank_id,
+                    getCountry_id: this.state.getFrom,
+                    amount: this.state.amount,
+                    date:this.state.date
+                })
+            })
+                .then((response) => response.json())
+                .then((result) => {
+
+                    this.setState({
+                        spinner: false,
+                        dataSource: result,
+                    });
+
+                    console.log(this.state.dataSource.data);
+                    if (this.state.dataSource.code == 200) {
+                        this.bal()
+                        this.setState({spinner: false,Sshow: true,Smessage: this.state.dataSource.data.message});
+                        this.setState({
+                            amount: '',
+                            pin: "",
+                            show: false
+                        });
+
+                    } else {
+                        this.setState({spinner: false,Ashow: true,show: false,Amessage: this.state.dataSource.data.message});
+                    }
+
+                }).catch(function (error) {
+                    this.setState({spinner: false});
+                    console.log("-------- error ------- " + error);
+                    alert("result:" + error)
+                });
+
+            //end post method
         }
     }
 
-    onPressDebit = async() => {
+    onPressDebit = async () => {
 
-        this.setState({ spinner: true });
-       var due_amount = this.state.amount * Constant.rawNumber(this.state.getProfit)
-     
+        this.setState({spinner: true});
+        var due_amount = this.state.amount * Constant.rawNumber(this.state.getProfit)
+
         if (due_amount > Constant.rawNumber(this.state.bal)) {
-           
-            this.setState({ spinner: false,Ashow: true ,show: false,Amessage:"Insufficient Please try Again" });
-        }else {
-             // post method
-    fetch(Constant.URL+Constant.addINCOME,{
-        method: 'POST',
-        body: JSON.stringify({ 
-            customer_id: this.state.customer_id,
-            personal_info_id: this.state.personal_info_id,
-            msg: this.state.msg,
-            pin: this.state.pin,
-            bank_id:this.state.income_type,
-            getCountry_id:this.state.getFrom,
-            getProfit: Constant.rawNumber(this.state.getProfit),
-            amount: this.state.amount})
-          })
-          .then((response) => response.json())
-          .then((result) => {
-     
-        this.setState({
-                spinner: false,
-             dataSource: result, 
-          });
-      
-          console.log(this.state.dataSource.data);
-          if(this.state.dataSource.code==200){
-         this.bal()
-        this.setState({ spinner: false,Sshow: true ,Smessage:this.state.dataSource.data.message });
-        this.setState({
-            amount:'',
-            pin:"",
-           show: false 
-        });
-          
-          }else{
-            this.setState({ spinner: false,Ashow: true ,show: false,Amessage:this.state.dataSource.data.message });
-          }
-          
-         }).catch(function (error) {
-          this.setState({ spinner: false });
-         console.log("-------- error ------- "+error);
-         alert("result:"+error)
-         });
-      
-      //end post method
+
+            this.setState({spinner: false,Ashow: true,show: false,Amessage: "Insufficient Please try Again"});
+        } else {
+            // post method
+            fetch(Constant.URL + Constant.addINCOME,{
+                method: 'POST',
+                body: JSON.stringify({
+                    customer_id: this.state.customer_id,
+                    personal_info_id: this.state.personal_info_id,
+                    msg: this.state.msg,
+                    pin: this.state.pin,
+                    bank_id: this.state.bank_id,
+                    getCountry_id: this.state.getFrom,
+                    getProfit: Constant.rawNumber(this.state.getProfit),
+                    amount: this.state.amount,
+                    c_type:this.state.c_type
+                })
+            })
+                .then((response) => response.json())
+                .then((result) => {
+
+                    this.setState({
+                        spinner: false,
+                        dataSource: result,
+                    });
+
+                    console.log(this.state.dataSource.data);
+                    if (this.state.dataSource.code == 200) {
+                        this.bal()
+                        this.setState({spinner: false,Sshow: true,Smessage: this.state.dataSource.data.message});
+                        this.setState({
+                            amount: '',
+                            pin: "",
+                            show: false
+                        });
+
+                    } else {
+                        this.setState({spinner: false,Ashow: true,show: false,Amessage: this.state.dataSource.data.message});
+                    }
+
+                }).catch(function (error) {
+                    this.setState({spinner: false});
+                    console.log("-------- error ------- " + error);
+                    alert("result:" + error)
+                });
+
+            //end post method
         }
     }
 
     render() {
         return (
-            <View style={{ flex: 1, backgroundColor: Theme.bgcolor }} >
-                 <Spinner
-                visible={this.state.spinner}
-                overlayColor={'rgba(0, 0, 0, 0.25)'}
+            <View style={{flex: 1,backgroundColor: Theme.bgcolor}} >
+                <Spinner
+                    visible={this.state.spinner}
+                    overlayColor={'rgba(0, 0, 0, 0.25)'}
                 />
 
-            <StatusBar backgroundColor="#020cab" barStyle="light-content" />
+                <StatusBar backgroundColor="#020cab" barStyle="light-content" />
                 <View style={styles.headContainer}>
                     <TouchableOpacity onPress={() => this.props.navigation.goBack()}>
                         <Icon family="MaterialIcons" name="arrow-back" size={25} color="#FFF" />
                     </TouchableOpacity>
-                    {this.state.income==1? (
-                        <Text style={styles.headTxt}> Debit Income  {this.state.cus_name} </Text>
-                    ): null }
-                     {this.state.income==0? (
-                    <Text style={styles.headTxt}> Credit Wallet  {this.state.cus_name} </Text>
-                    ): null }
+                    {this.state.income == 1 ? (
+                        <Text style={styles.headTxt}> Debit Income   </Text>
+                    ) : null}
+                    {this.state.income == 0 ? (
+                        <Text style={styles.headTxt}> Credit Wallet  {this.state.cus_name}  </Text>
+                    ) : null}
                 </View>
                 <ScrollView>
-                    <View style={{ flexDirection: 'row', borderBottomWidth: 1, borderColor: 'lightgray', alignItems: 'center' }}>
+                    <View style={{flexDirection: 'row',borderBottomWidth: 1,borderColor: 'lightgray',alignItems: 'center'}}>
                         <View style={styles.imgContainer}>
                             <Image style={styles.userimg} source={require('../assets/img/boy.png')} />
                         </View>
                         <View style={styles.userdetails}>
-                            <Text style={{ fontSize: 18, color: '#000', fontFamily: 'Poppins-Light' }}>{this.state.cus_name}</Text>
-                            <Text style={{ fontSize: 12, color: '#000', fontFamily: 'Poppins-Thin' }}>{this.state.cus_phone}</Text>
+                            <Text style={{fontSize: 18,color: '#000',fontFamily: 'Poppins-Light'}}>{this.state.cus_name}</Text>
+                            <Text style={{fontSize: 12,color: '#000',fontFamily: 'Poppins-Thin'}}>{this.state.cus_phone}</Text>
                         </View>
-                        <Text style={{ fontSize: 10, color: '#020cab', paddingRight: 20, fontFamily: 'Poppins-MediumItalic' }} onPress={() => this.props.navigation.navigate("ReceiveHistory",
-                          {
-                            cus_name: this.state.cus_name,
-                            customer_id: this.state.customer_id,
-                          
-                          }
-                         )}>View History</Text>
+                        <Text style={{fontSize: 10,color: '#020cab',paddingRight: 20,fontFamily: 'Poppins-MediumItalic'}} onPress={() => this.props.navigation.navigate("ReceiveHistory",
+                            {
+                                cus_name: this.state.cus_name,
+                                customer_id: this.state.customer_id,
+
+                            }
+                        )}>View History</Text>
                     </View>
-                    <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center', paddingLeft: 20 , paddingTop:10}}  >
-                        <Icon style={{ padding: 5 }} family="Entypo" name="wallet" size={30} color="#020cab" />
+                    <TouchableOpacity style={{flexDirection: 'row',alignItems: 'center',paddingLeft: 20,paddingTop: 10}}  >
+                        <Icon style={{padding: 5}} family="Entypo" name="wallet" size={30} color="#020cab" />
                         <View>
-                            <Text style={{ fontFamily: 'Poppins-Regular' }}>Wallet Balance :</Text>
-                            <Text style={{ fontSize: 20, color: '#000', fontFamily: 'Poppins-ExtraLight' }}> {this.state.getCurrency} {this.state.bal}</Text>
+                            <Text style={{fontFamily: 'Poppins-Regular'}}>Wallet Balance :</Text>
+                            <Text style={{fontSize: 20,color: '#000',fontFamily: 'Poppins-ExtraLight'}}> {this.state.getCurrency} {this.state.bal}</Text>
                         </View>
-                        
+
                     </TouchableOpacity>
                     {/* {this.state.income==1? (
                     <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center', paddingLeft: 20 , paddingTop:10}}  >
@@ -261,82 +289,128 @@ import {connect} from "react-redux";
                         
                     </TouchableOpacity>
                      ): null } */}
-            {this.state.income==0? (
-            <View>
-                    {this.state.c_type==2? (
-                    <View style={{ flexDirection: 'row', alignItems: 'center', borderWidth: 1, margin: 15,marginTop:2, paddingHorizontal: 15 }}>
-                            <Text  style={{ flex: 0.1, paddingLeft: 1 }} ></Text> 
-                            <Picker  style={{ flex: 0.9, paddingLeft: 150 }}  
-                            selectedValue={this.state.bank_id}  
-                            onValueChange={(itemValue, itemPosition) => this.setState({bank_id: itemValue, toIndex: itemPosition})}   >  
-                             <Picker.Item label="SELECT BANK" value="0" /> 
-                             {
-                                this.state.BankList.map( (v)=>{
-                                return <Picker.Item label={v.bank_name  }  value={v.bank_id} />
-                                })
-                                } 
-                            </Picker> 
+                    {this.state.income == 0 ? (
+                        <View>
+                            {this.state.c_type == 2 ? (
+                                <View>
+                                    <View style={{flexDirection: 'row',alignItems: 'center',borderWidth: 1,margin: 15,marginTop: 2,paddingHorizontal: 15}}>
+                                        <Text style={{flex: 0.1,paddingLeft: 1}} ></Text>
+                                        <Picker style={{flex: 0.9,paddingLeft: 150}}
+                                            selectedValue={this.state.bank_id}
+                                            onValueChange={(itemValue,itemPosition) => this.setState({bank_id: itemValue,toIndex: itemPosition})}   >
+                                            <Picker.Item label="SELECT BANK" value="0" />
+                                            {
+                                                this.state.BankList.map((v) => {
+                                                    return <Picker.Item label={v.bank_name} value={v.bank_id} />
+                                                })
+                                            }
+                                        </Picker>
+                                    </View>
+                                    <View style={{flexDirection: 'row',alignItems: 'center',borderWidth: 1,margin: 15,marginTop: 2,paddingHorizontal: 15}}>
+                                    <DatePicker
+                                        style={{width: 200, borderColor:"#fff"}}
+                                        date={this.state.date}
+                                        mode="date"
+                                        placeholder="Select Date"
+                                        format="YYYY-MM-DD" 
+                                        confirmBtnText="Confirm"
+                                        cancelBtnText="Cancel"
+                                        customStyles={{
+                                            dateIcon: {
+                                                position: 'absolute',
+                                                left: 0,
+                                                top: 4,
+                                                marginLeft: 0
+                                            },
+                                            dateInput: {
+                                                borderWidth: 0
+                                                
+                                            }
+                                            // ... You can check the source to find the other keys.
+                                        }}
+                                        onDateChange={(date) => {this.setState({date: date})}}
+                                    />
+                                    </View>
+
+                                </View>
+                            ) : null}
+                            <View style={{flexDirection: 'row',alignItems: 'center',borderWidth: 1,margin: 15,paddingHorizontal: 15}}>
+                                <Icon family="FontAwesome" name="money" size={25} />
+                                <TextInput style={{paddingLeft: 10,fontSize: 16}}
+                                    keyboardType='number-pad'
+                                    placeholder="Enter Amount"
+                                    value={this.state.amount}
+                                    onChangeText={(amount) => {this.setState({amount})}}
+                                />
+                            </View>
+
+
+
+
+
+                            <View style={{flexDirection: 'row',alignItems: 'center',borderBottomWidth: 1,margin: 15,paddingHorizontal: 15}}>
+                                <TextInput style={{flex: 1,paddingLeft: 10,fontSize: 16,fontFamily: 'Poppins-ExtraLightItalic'}}
+                                    keyboardType='email-address'
+                                    placeholder="Add Depositor's Details"
+                                    onChangeText={(msg) => this.setState({msg})}
+                                    value={this.state.msg}
+                                />
+                            </View>
+                            <TouchableOpacity style={{paddingVertical: 10,backgroundColor: '#020cab',marginTop: 30,borderRadius: 50,marginHorizontal: 30}} onPress={this.handleOpen}  >
+                                <Text style={{color: '#FFF',textAlign: 'center',fontSize: 16,fontFamily: 'Poppins-Bold',}}>CREDIT</Text>
+                            </TouchableOpacity>
                         </View>
-                     ): null }
-                    <View style={{ flexDirection: 'row', alignItems: 'center', borderWidth: 1, margin: 15, paddingHorizontal: 15 }}>
-                        <Icon family="FontAwesome" name="money" size={25} />
-                        <TextInput style={{ paddingLeft: 10, fontSize: 16 }}
-                            keyboardType='number-pad'
-                            placeholder="Enter Amount"
-                            value={this.state.amount}
-                            onChangeText={(amount)=>{this.setState({amount})}}
-                        />
-                    </View>
-                   
+                    ) : null}
 
-                    
-                       
-                        
-                    <View style={{ flexDirection: 'row', alignItems: 'center', borderBottomWidth: 1, margin: 15, paddingHorizontal: 15 }}>
-                        <TextInput style={{ flex: 1, paddingLeft: 10, fontSize: 16, fontFamily:'Poppins-ExtraLightItalic' }}
-                            keyboardType='email-address'
-                            placeholder="Add a message (Optional)"
-                            onChangeText={(msg)=>this.setState({msg})}
-                            value={this.state.msg}
-                        />
-                    </View>
-                    <TouchableOpacity style={{ paddingVertical: 10, backgroundColor: '#020cab', marginTop: 30, borderRadius: 50, marginHorizontal: 30 }} onPress={this.handleOpen}  >
-                        <Text style={{ color: '#FFF', textAlign: 'center', fontSize: 16 ,  fontFamily: 'Poppins-Bold',}}>CREDIT</Text>
-                    </TouchableOpacity>
-            </View>
-            ): null }
+                    {/* INCOME DEBIT CODE */}
+                    {this.state.income == 1 ? (
+                        <View>
+                            {this.state.c_type == 211 ? (
+                                
+                                    <View style={{flexDirection: 'row',alignItems: 'center',borderWidth: 1,margin: 15,marginTop: 2,paddingHorizontal: 15}}>
+                                        <Text style={{flex: 0.1,paddingLeft: 1}} ></Text>
+                                        <Picker style={{flex: 0.9,paddingLeft: 150}}
+                                            selectedValue={this.state.bank_id}
+                                            onValueChange={(itemValue,itemPosition) => this.setState({bank_id: itemValue,toIndex: itemPosition})}   >
+                                            <Picker.Item label="SELECT BANK" value="0" />
+                                            {
+                                                this.state.BankList.map((v) => {
+                                                    return <Picker.Item label={v.bank_name} value={v.bank_id} />
+                                                })
+                                            }
+                                        </Picker>
+                                    </View>
+                                     ) : null}
 
-            {/* INCOME DEBIT CODE */}
-            {this.state.income==1? (
-            <View>
-                     <View style={{ flexDirection: 'row', alignItems: 'center', borderWidth: 1, margin: 15, paddingHorizontal: 15 }}>
-                        <Icon family="FontAwesome" name="money" size={25} />
-                        <TextInput style={{ paddingLeft: 10, fontSize: 16 }}
-                            keyboardType='number-pad'
-                            placeholder="Enter Amount"
-                            value={this.state.amount}
-                            onChangeText={(amount)=>{this.setState({amount,income_bal:amount*Constant.rawNumber(this.state.getProfit)})
-                           
-                        }}
-                            
-                        />
-                    </View>
-                          
-              
+                            <View style={{flexDirection: 'row',alignItems: 'center',borderWidth: 1,margin: 15,paddingHorizontal: 15}}>
+                                <Icon family="FontAwesome" name="money" size={25} />
+                                <TextInput style={{paddingLeft: 10,fontSize: 16}}
+                                    keyboardType='number-pad'
+                                    placeholder="Enter Amount"
+                                    value={this.state.amount}
+                                    onChangeText={(amount) => {
+                                        this.setState({amount,income_bal: amount * Constant.rawNumber(this.state.getProfit)})
 
-                    <View style={{ flexDirection: 'row', alignItems: 'center', borderBottomWidth: 1, margin: 15, paddingHorizontal: 15 }}>
-                        <TextInput style={{ flex: 1, paddingLeft: 10, fontSize: 16, fontFamily:'Poppins-ExtraLightItalic' }}
-                            keyboardType='email-address'
-                            placeholder="Add a message (Optional)"
-                            onChangeText={(msg)=>this.setState({msg})}
-                            value={this.state.msg}
-                        />
-                    </View>
-                    <TouchableOpacity style={{ paddingVertical: 10, backgroundColor: '#020cab', marginTop: 30, borderRadius: 50, marginHorizontal: 30 }} onPress={this.handleOpen}  >
-                        <Text style={{ color: '#FFF', textAlign: 'center', fontSize: 16 ,  fontFamily: 'Poppins-Bold',}}>Debit Income</Text>
-                    </TouchableOpacity>
-                </View>
-                    ): null }
+                                    }}
+
+                                />
+                            </View>
+
+
+
+                            <View style={{flexDirection: 'row',alignItems: 'center',borderBottomWidth: 1,margin: 15,paddingHorizontal: 15}}>
+                                <TextInput style={{flex: 1,paddingLeft: 10,fontSize: 16,fontFamily: 'Poppins-ExtraLightItalic'}}
+                                    keyboardType='email-address'
+                                    placeholder="Add Transaction Details"
+                                    onChangeText={(msg) => this.setState({msg})}
+                                    value={this.state.msg}
+                                />
+                            </View>
+                            <TouchableOpacity style={{paddingVertical: 10,backgroundColor: '#020cab',marginTop: 30,borderRadius: 50,marginHorizontal: 30}} onPress={this.handleOpen}  >
+                                <Text style={{color: '#FFF',textAlign: 'center',fontSize: 16,fontFamily: 'Poppins-Bold',}}>Debit Income</Text>
+                            </TouchableOpacity>
+                        </View>
+                    ) : null}
 
                     <View style={{margin: 20}}></View>
 
@@ -347,56 +421,56 @@ import {connect} from "react-redux";
                         onRequestClose
                         subtitle="Enter Pin To Complete Transaction"
                         onRequestClose={() => {
-                            this.setState({ show: false })
-                            }}
-                        >
-                            
-                        <TextInput style={{ paddingLeft: 10, fontSize: 16 }}
+                            this.setState({show: false})
+                        }}
+                    >
+
+                        <TextInput style={{paddingLeft: 10,fontSize: 16}}
                             keyboardType='number-pad'
                             placeholder="Enter Pin"
-                            onChangeText={(pin)=>this.setState({pin})}
+                            onChangeText={(pin) => this.setState({pin})}
                             value={this.state.pin}
                             secureTextEntry={true}
                             maxLength={4}
                         />
-         {this.state.income==0? (
-          <SCLAlertButton theme="info" onPress={this.onPressCredit} >CREDIT</SCLAlertButton>
-          ): null }
-           {this.state.income==1? (
-          <SCLAlertButton theme="info" onPress={this.onPressDebit} >SEND</SCLAlertButton>
-          ): null }
-        </SCLAlert>
+                        {this.state.income == 0 ? (
+                            <SCLAlertButton theme="info" onPress={this.onPressCredit} >CREDIT</SCLAlertButton>
+                        ) : null}
+                        {this.state.income == 1 ? (
+                            <SCLAlertButton theme="info" onPress={this.onPressDebit} >SEND</SCLAlertButton>
+                        ) : null}
+                    </SCLAlert>
 
-        <SCLAlert
+                    <SCLAlert
                         theme="danger"
                         show={this.state.Ashow}
                         title="Error Message"
                         subtitle={this.state.Amessage}
                         onRequestClose={() => {
-                            this.setState({ Ashow: false })
-                            }}
-                        >         
-                 
-                    <SCLAlertButton theme="danger" onPress={() => {
-                            this.setState({ Ashow: false })
-                            }} >Close</SCLAlertButton>
-                 </SCLAlert>
+                            this.setState({Ashow: false})
+                        }}
+                    >
 
-        <SCLAlert
+                        <SCLAlertButton theme="danger" onPress={() => {
+                            this.setState({Ashow: false})
+                        }} >Close</SCLAlertButton>
+                    </SCLAlert>
+
+                    <SCLAlert
                         theme="success"
                         show={this.state.Sshow}
                         title="Successful Message"
                         subtitle={this.state.Smessage}
                         onRequestClose={() => {
-                            this.setState({ Sshow: false })
-                            }}
-                        >
-                            
-                 
-          <SCLAlertButton theme="success" onPress={() => {
+                            this.setState({Sshow: false})
+                        }}
+                    >
+
+
+                        <SCLAlertButton theme="success" onPress={() => {
                             this.props.navigation.navigate("TabNav")
-                            }} >Close</SCLAlertButton>
-        </SCLAlert>
+                        }} >Close</SCLAlertButton>
+                    </SCLAlert>
 
                 </ScrollView>
             </View>
@@ -430,7 +504,7 @@ const styles = StyleSheet.create({
         padding: 5,
         elevation: 2,
         shadowColor: 'lightgrey',
-        shadowOffset: { width: -0.5, height: 0.5 },
+        shadowOffset: {width: -0.5,height: 0.5},
         shadowOpacity: 0.2,
         shadowRadius: 1
     },
@@ -461,25 +535,25 @@ const styles = StyleSheet.create({
     },
 });
 
-function  mapStateProps(state){
-    return{
-        userW:state.userW,
-        agentW:state.agentW
+function mapStateProps(state) {
+    return {
+        userW: state.userW,
+        agentW: state.agentW
     }
- }
-function mapDispatchProps(dispatch){
-    
-    return{
-     getCustomerWallet: (response) => dispatch({
-        type: 'CUSTOMER_WALLET',
-        payload: response
-     }),
-     getAgentWallet: (response) => dispatch({
-         type: 'AGENT_WALLET',
-         payload: response
+}
+function mapDispatchProps(dispatch) {
+
+    return {
+        getCustomerWallet: (response) => dispatch({
+            type: 'CUSTOMER_WALLET',
+            payload: response
+        }),
+        getAgentWallet: (response) => dispatch({
+            type: 'AGENT_WALLET',
+            payload: response
         })
     }
- }
+}
 
 
 export default connect(mapStateProps,mapDispatchProps)(Receive)

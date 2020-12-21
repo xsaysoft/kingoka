@@ -29,6 +29,9 @@ class PayoutConfirm extends Component {
             payout_bal_set:this.props.navigation.getParam('payout_bal','0'),
             bank_id_pay:this.props.navigation.getParam('bank_id_pay','0'),
             payout_due_set:this.props.navigation.getParam('payout_due','0'),
+            country_id_to: this.props.navigation.getParam('country_id_to', '0'),
+            ch_type: this.props.navigation.getParam('ch_type', '0'),
+            r_amount: this.props.navigation.getParam('r_amount', '0'),
             local: 0,
             local2: 0,
             bal: 0,
@@ -41,7 +44,7 @@ class PayoutConfirm extends Component {
             BankList: [],
             bank_id: 0,
             payout_cost: 0,
-            Cbal: 0, pay_to: 0,
+            Cbal: 0, pay_to: 0,new_wallet:0,
             CountryList: [], rate_v: 0,
             rate_type: 0,reason:"",ref_no:"",
             dataSource: [],
@@ -52,16 +55,27 @@ class PayoutConfirm extends Component {
 
 
     async componentDidMount() {
-        let getbal
+        var getbal
+        console.log("r_amount",this.state.r_amount)
+        if(this.state.r_amount!=0){
+        getbal=this.state.r_amount
+          
+    }else{
         if (this.state.rate_type_s == 1) {
             getbal = (this.state.due_amount) * (this.state.rate)
-        } else {
+        } else if( this.state.rate_type_s == 2) {
             getbal = (this.state.due_amount) / (this.state.rate)
+        }else{
+            getbal = (this.state.due_amount) * 1
         }
+       
+    }
+
 
         this.setState({
             getFrom: await AsyncStorage.getItem('@getFrom'),
             personal_info_id: await AsyncStorage.getItem('@personal_info_id'),
+            wallet: await AsyncStorage.getItem('@wallet'),
             bal: getbal,bal_due:getbal,
         })
 
@@ -90,7 +104,7 @@ class PayoutConfirm extends Component {
         this.setState({ spinner: true });
         try {
 
-            const BalApiCall = await fetch(Constant.URL + Constant.getAgBal + "/" + this.state.personal_info_id + "/" + this.state.getFrom);
+            const BalApiCall = await fetch(Constant.URL + Constant.getAgBal + "/" + this.state.personal_info_id + "/" + this.state.getFrom+"/"+2);
             const dataSource = await BalApiCall.json();
             await AsyncStorage.setItem('@wallet', dataSource.bal)
 
@@ -104,13 +118,31 @@ class PayoutConfirm extends Component {
     }
 
 
+    async NewBal(NewCountry_id) {
+        console.log("NewCountry_id",NewCountry_id)
+        this.setState({ spinner: true });
+        try {
+            const BalApiCall = await fetch(Constant.URL + Constant.getAgBal + "/" + this.state.personal_info_id + "/" + NewCountry_id+"/"+2);
+            const dataSource = await BalApiCall.json();
+            console.log('@wallet', Constant.rawNumber(dataSource.bal))
+
+            this.setState({ new_wallet: dataSource.bal, new_c_wallet: dataSource.c_bal, spinner: false });
+        } catch (err) {
+            console.log("Error fetching kdata-----------", err);
+            this.setState({ spinner: false });
+        }
+    }
+
+
+
     handleOpen = () => {
+        console.log("kllll",this.state.pay_to)
         let payoutVV
         if (this.state.payout_cost != 0) {
-            payoutVV = this.payoutV.getRawValue();
+            payoutVV = Constant.rawNumber(this.state.payout_cost)
         } else { payoutVV = 0 ; }
+      
 
-   
         if (this.state.bank_type == 2) {
             if (this.state.bank_id <= 0) {
                 Alert.alert("Please Select a Bank.");
@@ -127,16 +159,26 @@ class PayoutConfirm extends Component {
 
         } else {
 
+            if(this.state.bal_due > Constant.rawNumber(this.state.wallet) && this.state.bank_type==1){
+                Alert.alert("Insufficient Funds.");
+                return false
+            }
+            //cross currency 
+            if(this.state.bal_due > Constant.rawNumber(this.state.new_wallet) && this.state.bank_type==3){
+                Alert.alert("Insufficient Funds on your wallet");
+                return false
+            }
+          
          if(this.state.payout_due_set > 0){
             this.setState({ Cbal: this.state.payout_due_set , tto: this.state.to })
             }else{
             if (this.state.rate_type == 1) {
-                this.setState({ Cbal: (this.state.due_bal + payoutVV), tto: this.state.x_tox })
+                this.setState({ Cbal: Number(this.state.due_bal) + payoutVV, tto: this.state.x_tox })
             } else if (this.state.rate_type == 2) {
-                this.setState({ Cbal: (this.state.due_bal + payoutVV), tto: this.state.x_tox })
+                this.setState({ Cbal: Number(this.state.due_bal) + payoutVV, tto: this.state.x_tox })
 
             } else {
-                this.setState({ Cbal: (this.state.bal + payoutVV), tto: this.state.to })
+                this.setState({ Cbal: Number(this.state.bal) + payoutVV, tto: this.state.to })
             }
         }
             this.setState({ Pshow: true })
@@ -146,6 +188,7 @@ class PayoutConfirm extends Component {
 
 
     onPressTransfer = async () => {
+     
 
         let payoutVV
         if (this.state.payout_cost != 0) {
@@ -163,6 +206,7 @@ class PayoutConfirm extends Component {
             fetch(Constant.URL + Constant.CPAYOUT, {
                 method: 'POST',
                 body: JSON.stringify({
+                    personal_info_id:this.state.personal_info_id,
                     agent_to: this.state.agent_to,
                     agent_acct_id: this.state.agent_acct_id,
                     pin: this.state.pin,
@@ -172,12 +216,15 @@ class PayoutConfirm extends Component {
                     bank_type: this.state.bank_type,
                     payout_rate: this.state.rate_v,
                     payout_to: this.state.pay_to,
+                    country_id_to:this.state.country_id_to,
                     cur_x: this.state.x_tox,
                     payout_due: this.state.Cbal,
                     getFrom: this.state.getFrom,
                     payout_bal:this.state.payout_bal,
                     payout_bal_set:this.state.payout_bal_set,
-                    ref_no:this.state.ref_no
+                    ref_no:this.state.ref_no,
+                    ch_type:this.state.ch_type,
+                    payout_cost:this.state.payout_cost,
                 })
             })
                 .then((response) => response.json())
@@ -282,10 +329,10 @@ class PayoutConfirm extends Component {
                 </View>
                 <ScrollView>
                     <View style={styles.AmountCon}>
-                        <Text style={styles.valTxt}>Value To Transfer between currency</Text>
+        <Text style={styles.valTxt}>Value To Transfer between currency</Text>
                         <View style={styles.rowcenter}>
                             {this.state.getCurrency}
-                            <Text style={{ color: "#FFF", fontSize: 30, paddingLeft: 5 }}>{Constant.numberFormate(this.state.bal.toFixed(2))}</Text>
+                            <Text style={{ color: "#FFF", fontSize: 30, paddingLeft: 5 }}>{Constant.numberFormate(this.state.bal)}</Text>
                         </View>
                         {this.state.from ? ( <Text style={styles.updateSty}>{this.state.from} > {this.state.to}</Text>):null}
 
@@ -296,7 +343,7 @@ class PayoutConfirm extends Component {
                                 {this.state.payout_due_set <=0 ? (
                                 <Text style={{ textAlign: 'right', fontSize: 20, color: "#fff" }}>
 
-                                    {Constant.numberFormate(this.state.bal_due.toFixed(2))}
+                                    {Constant.numberFormate(this.state.bal_due)}
                                 </Text>
                                  ) : null}
                                 {this.state.payout_due_set > 0 ? (
@@ -371,11 +418,12 @@ class PayoutConfirm extends Component {
                                 <Picker style={{ flex: 0.9, paddingLeft: 150 }}
                                     selectedValue={this.state.pay_to}
                                     onValueChange={(itemValue, itemPosition) => {
+                                       
                                         this.setState({ pay_to: itemValue, toIndex: itemPosition })
-                                        //GET RATE 
+                                        //GET RATE
+                                        this.NewBal(itemValue) 
                                         this.setState({ spinner: true });
-                                        console.log(itemValue)
-                                        console.log(this.state.getFrom)
+                                   
                                         fetch(Constant.URL + Constant.getRATE, {
                                             method: 'POST',
                                             body: JSON.stringify({
@@ -410,6 +458,7 @@ class PayoutConfirm extends Component {
 
                                     }}   >
                                     <Picker.Item label="SELECT OTHER WALLET CURRENCY" value="0" />
+                                    
                                     {
                                         this.state.CountryList.map((v) => {
                                             return <Picker.Item label={v.country + " - " + v.currency} value={v.country_id} />
@@ -447,7 +496,7 @@ class PayoutConfirm extends Component {
 
                             {this.state.rate_type != 0 ? (
                                 <View style={{ flexDirection: 'row', alignItems: 'center', borderWidth: 1, margin: 15, marginTop: 20, paddingHorizontal: 15 }}>
-                                    <Text >Rate</Text>
+                                    <Text >Rate </Text>
 
                                     <TextInputMask style={{ paddingLeft: 10, fontSize: 16 }}
                                         type={'money'}
@@ -523,15 +572,20 @@ class PayoutConfirm extends Component {
                                             payout_cost: text
                                         })
                                         let payoutVV = Constant.rawNumber(text)
+                                     
                                         if (this.state.rate_type == 1) {
-                                            this.setState({ Cbal: (this.state.due_bal + payoutVV) })
+                                            let cal =  Number(this.state.due_bal) + payoutVV
+                                            this.setState({ Cbal:cal })
                                         } else if (this.state.rate_type == 2) {
-                                            this.setState({ bal_due: (this.state.due_bal + payoutVV) })
+                                            let cal = Number(this.state.due_bal) + payoutVV
+                                            this.setState({ bal_due: cal })
                             
                                         } else {
-                                            this.setState({ bal_due: (this.state.bal + payoutVV)})
+                                            let cal= Number(this.state.bal)+payoutVV
+                                            this.setState({ bal_due: cal})
                                         }
-                                        this.setState({ payout_bal: (this.state.bal + payoutVV)})
+                                        let g_cal= Number(this.state.bal) + payoutVV
+                                        this.setState({ payout_bal:g_cal})
                                     }}
                                     ref={(ref) => this.payoutV = ref}
                                 />
@@ -540,7 +594,7 @@ class PayoutConfirm extends Component {
                            
                             </View>
                              ) : null}
-                                {this.state.bank_type == 2 ? (
+                                {/* {this.state.bank_type == 2 ? (
                                 <View>
                             <View style={{ flexDirection: 'row', alignItems: 'center', borderWidth: 1, margin: 15, paddingHorizontal: 15 }}>
 
@@ -566,7 +620,7 @@ class PayoutConfirm extends Component {
 
                             </View>
                             </View>
-                             ) : null}
+                             ) : null} */}
                         </View>
                             
                     ) : null}
@@ -697,10 +751,10 @@ class PayoutConfirm extends Component {
                        
                         <View style={styles.rowcenter}>
                         {this.state.payout_due_set <= 0 ? (
-                            <Text style={{ color: "#000", fontSize: 25, paddingLeft: 5, textAlign: "center" }}> {this.state.tto} {Constant.numberFormate(this.state.Cbal.toFixed(2))}</Text>
+                            <Text style={{ color: "#000", fontSize: 25, paddingLeft: 5, textAlign: "center" }}> {this.state.tto} {Constant.numberFormate(this.state.Cbal)}</Text>
                          ):null}
                          {this.state.payout_due_set > 0 ? (
-                            <Text style={{ color: "#000", fontSize: 25, paddingLeft: 5, textAlign: "center" }}> {this.state.tto} {this.state.Cbal}</Text>
+                            <Text style={{ color: "#000", fontSize: 25, paddingLeft: 5, textAlign: "center" }}> {this.state.tto} {Constant.numberFormate(this.state.Cbal)}</Text>
                          ):null}
                         </View>
                       

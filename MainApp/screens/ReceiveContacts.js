@@ -13,15 +13,36 @@ export default class ReceiveContacts extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            customerList: [ ],
+            customerList: [],
             spinner: true,
             personal_info_id:"",
             cus_img: "../assets/img/boy.png",
             c_type : this.props.navigation.getParam('c_type', '0'),
             income_type : this.props.navigation.getParam('income_type', '0'),
             income : this.props.navigation.getParam('income', '0'),
+            text: '',
         }
+    this.arrayholder = [];
     }
+
+    SearchFilterFunction(text) {
+       
+        const newData = this.arrayholder.filter(function(item) {
+          //applying filter for the inserted text in search bar
+          //const itemData = item.cus_name ? item.cus_name.toUpperCase() : ''.toUpperCase();
+          const itemData = `${item.cus_name.toUpperCase()} ${item.cus_phone.toUpperCase()} `;
+
+     
+          const textData = text.toUpperCase();
+          return itemData.indexOf(textData) > -1;
+        });
+
+        this.setState({
+          customerList: newData,
+          text: text,
+        });
+      }
+
 
     async componentDidMount() {
         this.setState({ personal_info_id: await AsyncStorage.getItem('@personal_info_id'),
@@ -32,8 +53,12 @@ export default class ReceiveContacts extends Component {
    
             const CustomerApiCall = await fetch(Constant.URL+Constant.getCUSTOMERS+"/"+this.state.personal_info_id+"/"+this.state.getFrom);
             const getCustomer = await CustomerApiCall.json();
-           
-            this.setState({customerList: getCustomer, spinner: false});
+            this.setState({customerList: getCustomer, spinner: false},
+                function() {
+                    this.arrayholder = getCustomer;
+                  } 
+                );
+            
         } catch(err) {
             console.log("Error fetching data-----------", err);
         }
@@ -84,7 +109,7 @@ export default class ReceiveContacts extends Component {
                         <TextInput style={{ paddingLeft: 10, fontSize: 16 }}
                            
                             placeholder="Quick Search"
-                            // onChangeText={text => this.searchFilterFunction(text)}
+                            onChangeText={text => this.SearchFilterFunction(text)}
                             autoCorrect={false}  
                         />
                 </View>

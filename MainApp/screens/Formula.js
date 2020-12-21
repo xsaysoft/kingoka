@@ -11,7 +11,7 @@ import { SCLAlert, SCLAlertButton } from 'react-native-scl-alert'
 
 
 
-export default class Send extends Component {
+export default class Formula extends Component {
     constructor(props) {
         super(props)
         this.state = {
@@ -83,7 +83,8 @@ export default class Send extends Component {
             console.log("Error fetching data-----------", err);
         }
 
-
+        //GetRateProfit
+        this.GetProfitRate();
 
     }
 
@@ -91,22 +92,71 @@ export default class Send extends Component {
         this.setState({ show: false })
     }
 
+    async GetProfitRate() {
+
+        this.setState({ spinner: true });
+        try {
+
+            const BalApiCall = await fetch(Constant.URL + Constant.getProfitRate +"/"+this.state.getFrom);
+            const dataSource = await BalApiCall.json();
+           
+            this.setState({  spinner: false,getProfit:dataSource.data.profit_rate });
+        } catch (err) {
+            console.log("Error fetching data-----------", err);
+            this.setState({ spinner: false });
+        }
+    }
+  
+    
+    async onChargersGet(to){
+    
+        //gET Bank
+        this.setState({ spinner: true });
+        try {
+
+           const ChargesGet = await fetch(Constant.URL + Constant.getCharges+"/"+this.state.getFrom+"/"+to);
+           const dataSource = await ChargesGet.json();
+           this.setState({ get_charges: dataSource, spinner: false });
+            if(dataSource==1){
+                this.setState({ ch_type: 0 ,charges:0});
+            }
+            
+       } catch (err) {
+           console.log("Error fetching data-----------", err);
+       }
+   }
+
 
     onPress = async () => {
        
+        if (!this.state.getProfit) {
+            Alert.alert("No Profit Rate Has Been Added , Please Contact Admin.");
+            return false
+        } 
+
+        if (this.state.get_charges==0 && this.state.charges==0) {
+            Alert.alert("Select Percentage Chargers");
+            return false
+        } 
+
         //Get rate
         var getCharges
         const getAmount = Constant.rawNumber(this.state.amount) ;
         if(this.state.ch_type==0)
         {
-            getCharges = 0 ;
+           
+            if(this.state.charges==0){
+                getCharges = 0
+            }else{
+                getCharges = Constant.rawNumber(this.state.charges)  ;
+            }
+            
         }else{
             getCharges = this.state.charges ; 
         }
-        
   
         const getdue = getAmount- getCharges
-        // this.setState({ getAmount: getAmountV, getCharges: getChargesV ,due_amount:getdue});
+        
    
       
         if (this.state.amount == 0 ) {
@@ -116,7 +166,7 @@ export default class Send extends Component {
         // else if(this.state.charges <= 0){
         //     Alert.alert("Please Enter Charges.");
         // }
-        else if(this.state.to <= 0){
+        else if(this.state.to <= 0 || this.state.to==""){
             Alert.alert("Please Select Receiving Currency");
         }
         else if (getAmount <= getCharges) {
@@ -141,7 +191,7 @@ export default class Send extends Component {
                         spinner: false,
                         dataSource: result,
                     });
-
+                    
                     if (this.state.dataSource.code == 200) {
                     
 
@@ -200,21 +250,10 @@ export default class Send extends Component {
                     <TouchableOpacity onPress={() => this.props.navigation.goBack()}>
                         <Icon family="MaterialIcons" name="arrow-back" size={25} color="#FFF" />
                     </TouchableOpacity>
-        <Text style={styles.headTxt}>Formula</Text>
+        <Text style={styles.headTxt}>Formula </Text>
                 </View>
                 <ScrollView>
-           
-
-                <View style={{ flexDirection: 'row', alignItems: 'center', borderWidth: 1, margin: 15, marginTop: 10, paddingHorizontal: 15 }}>
-                             <Text style={{ flex: 0.1, paddingLeft: 1 }} ></Text>
-                             <Picker style={{ flex: 0.9, paddingLeft: 150 }}
-                                 selectedValue={this.state.p_status}
-                                 onValueChange={(itemValue, itemPosition) => this.setState({ p_status: itemValue, toIndex: itemPosition })}   >
-                                 <Picker.Item label="FORMULA TYPE" value="0" />
-                                 <Picker.Item label="SEND" value="1" />
-                                 <Picker.Item label="REMIT" value="2" />
-                             </Picker>
-                             </View>
+                    
 
 
                     <View style={{ flexDirection: 'row', alignItems: 'center', borderWidth: 1, margin: 15, paddingHorizontal: 15 }}>
@@ -237,7 +276,7 @@ export default class Send extends Component {
                                  percent =2/100
                                  getpdue =getAmountV*percent
                                 this.setState({
-                                    amount: text,charges: getpdue
+                                    amount: text,charges: getpdue,to:0
                                 })
                             }}
                             
@@ -245,7 +284,27 @@ export default class Send extends Component {
 
                     </View>
                 
+                    {this.state.amount != 0 ? (  
+                    <View style={{ flexDirection: 'row', alignItems: 'center', borderWidth: 1, margin: 15, marginTop: 2, paddingHorizontal: 15 }}>
+                        <Text style={{ flex: 0.1, paddingLeft: 1 }} ></Text>
+                        <Picker style={{ flex: 0.9, paddingLeft: 150 }}
+                            selectedValue={this.state.to}
+                            onValueChange={(itemValue, itemPosition) =>
+                            { this.setState({ to: itemValue, toIndex: itemPosition })
+                            this.onChargersGet(itemValue)
                         
+                            }}   >
+                            <Picker.Item label="RECEIVING CURRENCY" value="0" />
+                            {
+                                this.state.CountryList.map((v) => {
+                                    return <Picker.Item label={v.country + " - " + v.currency} value={v.country_id} />
+                                })
+                            }
+                        </Picker>
+                    </View>
+                    ):null}
+                     
+                    {this.state.get_charges == 0 ? (  
                     <View style={{ flexDirection: 'row', alignItems: 'center', borderWidth: 1, margin: 15, marginTop: 2, paddingHorizontal: 15 }}>
                     <Picker style={{ flex: 0.9, paddingLeft: 150 }}
                             selectedValue={this.state.ch_type}
@@ -265,6 +324,7 @@ export default class Send extends Component {
                           
                           <Picker.Item label="2 %" value="2" />
                             <Picker.Item label="NO PERCENTAGE" value="0" />
+                            
                             {
                                 this.state.PercentList.map((v) => {
                                     return <Picker.Item label={v.value + " % "} value={v.value} />
@@ -294,21 +354,11 @@ export default class Send extends Component {
                         />
                       
                     </View>
+
+                    ):null}
    
 
-                    <View style={{ flexDirection: 'row', alignItems: 'center', borderWidth: 1, margin: 15, marginTop: 2, paddingHorizontal: 15 }}>
-                        <Text style={{ flex: 0.1, paddingLeft: 1 }} ></Text>
-                        <Picker style={{ flex: 0.9, paddingLeft: 150 }}
-                            selectedValue={this.state.to}
-                            onValueChange={(itemValue, itemPosition) => this.setState({ to: itemValue, toIndex: itemPosition })}   >
-                            <Picker.Item label="RECEIVING CURRENCY" value="0" />
-                            {
-                                this.state.CountryList.map((v) => {
-                                    return <Picker.Item label={v.country + " - " + v.currency} value={v.country_id} />
-                                })
-                            }
-                        </Picker>
-                    </View>
+                
 
 
 

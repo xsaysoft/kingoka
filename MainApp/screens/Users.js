@@ -22,7 +22,7 @@ export default class Users extends Component {
             cus_email:'',
             personal_info_id:"",
             Smessage:"",
-            Amessage:"",cus_phone:"",cus_phone_o:"",dial_code:"",number_length:"",
+            Amessage:"",cus_phone:"",cus_phone_o:"",dial_code:"",number_length:"",dial_co:"",
             CountryList:[],CountryData:[]
         };
     }
@@ -83,6 +83,8 @@ export default class Users extends Component {
         body: JSON.stringify({ 
               cus_name: this.state.cus_name,
               cus_phone: this.state.cus_phone,
+              dial_code:this.state.dial_code,
+              dial_co:this.state.dial_co,
               cus_email:this.state.cus_email,
               cus_phone_o:this.state.cus_phone_o,
               personal_info_id: this.state.personal_info_id,
@@ -134,7 +136,7 @@ export default class Users extends Component {
                         <TouchableOpacity onPress={() => this.props.navigation.goBack()}>
                             <Icon family="MaterialIcons" name="arrow-back" size={25} color="#FFF" />
                         </TouchableOpacity>
-        <Text style={styles.headTxt}>Customer </Text>
+        <Text style={styles.headTxt}>Add New Customer </Text>
                     </View>
 
                     <View style={styles.transferbox}>

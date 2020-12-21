@@ -22,10 +22,10 @@ export default class ActiveScreen extends Component {
             spinner: true,
             switchValue: false ,
             showRate: false,
-            tableHead: ['Action','Dollar Rate', 'Local Rate'],
+            tableHead: ['Type','Dollar', 'C/Rate', 'Local'],
             tableData: [
-                ['','', ''],
-                ['','', ''],
+                ['','', '',''],
+                ['','', '',''],
             ]
         };
     }
@@ -70,7 +70,7 @@ export default class ActiveScreen extends Component {
             amt:this.state.dataSource.data.amount,
             from_currency:this.state.dataSource.data.from_currency,
             to_currency:this.state.dataSource.data.to_currency,
-            tableData:[['*',this.state.dataSource.data.dollar_rate_1 ,this.state.dataSource.data.local_rate_1],['÷',this.state.dataSource.data.dollar_rate_2,this.state.dataSource.data.local_rate_2]],
+            tableData:[['*',this.state.dataSource.data.dollar_rate_1 ,this.state.dataSource.data.cov_rate,this.state.dataSource.data.local_rate_1],['÷',this.state.dataSource.data.dollar_rate_2,this.state.dataSource.data.cov_rate,this.state.dataSource.data.local_rate_2]],
             spinner: false ,
             showRate: true });
         console.log("rate",this.state.dataSource.data);
@@ -146,7 +146,7 @@ export default class ActiveScreen extends Component {
                         </View>
                      
 
-                        {this.state.showRate ? ( <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center', paddingLeft: 20 }} >
+                        {this.state.showRate ? ( <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center', paddingRight: 10  }} >
                         {/* <Icon style={{ padding: 1 }} family="Feather" name="arrow-down" size={30} color="#020cab" /> */}
                             
                         <View style={styles.container}>
@@ -179,8 +179,8 @@ const styles = StyleSheet.create({
     headContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        padding: 15,
-        backgroundColor: '#020cab'
+        padding: 5,
+        backgroundColor: '#020cab',
     },
     headTxt: {
         color: 'white',
@@ -228,7 +228,7 @@ const styles = StyleSheet.create({
         margin: 10,
     },
     container: {
-        paddingHorizontal: 20,
+        paddingHorizontal: 15,
     },
     txtStl: {
         flex: 0.9,
